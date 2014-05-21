@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, target-densitydpi=device-dpi, minimal-ui" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <title>The Real Housewives Memory Challenge</title>
+    <link href="assets/MyFontsWebfontsKit.css" rel="stylesheet" type="text/css"/>
+    <link href="assets/memoryMatch.css" rel="stylesheet" type="text/css"/>
+    <link rel="apple-touch-icon" href="assets/icon-72.png" sizes="72x72"/>
+    <link rel="apple-touch-icon" href="assets/icon-76.png"/>
+    <link rel="apple-touch-icon" href="assets/icon-76.png" sizes="76x76"/>
+    <link rel="apple-touch-icon" href="assets/icon-120.png" sizes="120x120"/>
+    <link rel="apple-touch-icon" href="assets/icon-152.png" sizes="152x152"/>
+    <meta property="og:title" content="The Real Housewives Memory Challenge">
+    <meta property="og:url" content="http://www.enginesis.com/games/realHousewivesMemoryChallenge/index.html">
+    <meta property="og:site_name" content="BravoTV">
+    <meta property="og:description" content="A memory match game like no other. Eight different play patterns organized into a quest for the ultimate Real Housewives award. Play through 28 levels of increasing difficulty, earn achievements and special bonus awards, build your memory all while having fun! A unique challenge in the category of puzzle games.">
+    <meta property="og:image" content="http://www.enginesis.com/games/realHousewivesMemoryChallenge/images/1200x900.png">
+    <meta property="og:image" content="http://www.enginesis.com/games/realHousewivesMemoryChallenge/images/gameLogo-1024.png">
+    <meta property="og:image" content="http://www.enginesis.com/games/realHousewivesMemoryChallenge/images/1200x600.png">
+    <meta property="og:image" content="http://www.enginesis.com/games/realHousewivesMemoryChallenge/images/600x600.png">
+    <meta property="og:image" content="http://www.enginesis.com/games/realHousewivesMemoryChallenge/images/2048x1536.png">
+    <meta property="og:type" content="game">
+    <script src="lib/head.min.js"></script>
+    <script type="text/javascript">
+
+        head.ready(function() {
+            initApp();
+        });
+        //head.js("lib/easeljs-0.7.1.min.js", "lib/preloadjs-0.4.1.min.js", "lib/soundjs-0.5.2.min.js", "lib/jquery.min.js", "lib/screenfull.min.js", "lib/enginesis.js", "js/MemoryMatch.min.js");
+        head.js("lib/easeljs-0.7.1.min.js", "lib/preloadjs-0.4.1.min.js", "lib/Sound.js", "lib/jquery.min.js", "lib/screenfull.min.js", "lib/enginesis.js", "js/MemoryMatch.js", "js/setup.js", "js/UserData.js", "js/GameGUI.js", "js/GUIButton.js", "js/MainMenu.js", "js/GameResults.js", "js/GameOptions.js", "js/AnimationHandler.js", "js/LevelButton.js", "js/MainMenuButton.js", "js/ChallengeIntroduction.js", "js/MessagePopup.js", "js/InfoPopup.js", "js/CreditsPopup.js", "js/AchievementItem.js", "js/AwardsPopup.js");
+
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-13133265-1', 'auto');
+        ga('send', 'pageview');
+
+    </script>
+</head>
+
+<body>
+<div id="canvasArea">
+    <div id="loader">
+        <div id="loaderProgress"></div>
+        <div id="loaderBar" style="display: none;"><span id="loaderProgressFrameStroke"></span><span id="loaderProgressFrameTop"></span><span id="loaderProgressFrameMiddle"></span><span id="loaderProgressFrameBottom"></span><span id="loaderProgressStroke"></span><span id="loaderProgressTop"></span><span id="loaderProgressMiddle"></span><span id="loaderProgressBottom"></span></div>
+    </div>
+    <div id="helpArea">
+        <div id="helpContent">
+            <div id="help_contents">
+                <a id="ref_top"><h1>About The Real Housewives Memory Challenge</h1></a>
+                <p>This is a concentration game for all ages. Within this simple game we packed 28 levels of engaging card-flipping wonder that you will enjoy.
+                <ul>
+                    <li>28 levels, 8 unique game patterns;</li>
+                    <li>4 challenge games;</li>
+                    <li>25 achievements;</li>
+                    <li>Multiple card sets;</li>
+                    <li>Earn the Match Master trophy!</li>
+                    <li>Challenge your friends;</li>
+                    <li>Play anytime, anywhere;</li>
+                </ul>
+                </p>
+                <h2>Topics</h2>
+                <p><ul>
+                    <li><a href="#ref_rules">Rules of the Game</a></li>
+                    <li><a href="#ref_achievements">Achievements</a></li>
+                    <li><a href="#ref_techniques">Memory Techniques</a></li>
+                </ul></p>
+            </div>
+            <a id="ref_rules"><h3>Rules of the Game</h3></a>
+            <p>Match cards, just like in your typical card match or concentration style game. But Match Master has some twists!</p>
+            <p>Earn at least 2 stars on each level to advance. Earn 3 stars to maximize your score and your bragging rights! Unlock all levels in each land to unlock the challenge game.</p>
+            <h4>Mix 'n Match</h4>
+            <p>The standard concentration type game, but with some twists!</p>
+            <p>Scoring: 100 points per match.</p>
+            <h4>Mind Dash</h4>
+            <p>Chain together all the matches in as few moves as you can.</p>
+            <p>Scoring: 100 points per match. 500 points to complete the board.</p>
+            <h4>Memory Race</h4>
+            <p>Clear the board before your nemesis beats you!</p>
+            <p>Scoring: 100 points per match. 500 points to complete the board before you nemesis does.</p>
+            <h4>Haystack</h4>
+            <p>Remember the position of all the cards on the board. We then show you one card at a time, you must recall where that card is on the board.</p>
+            <p>Scoring: 100 points per match. 500 points to complete the board.</p>
+            <h4>Challenge Games</h4>
+            <h4>Pattern</h4>
+            <p>Repeat the pattern. Keep going until you miss.</p>
+            <p>Scoring: 100 points per correct card, 500 points to complete each board.</p>
+            <h4>Follow the Card</h4>
+            <p>Keep your eye on the center card. When the movement stops, you must select only that card. Keep going until you miss.</p>
+            <p>Scoring: 500 points per correct card.</p>
+            <h4>Parts vs. Whole</h4>
+            <p>The target card contains several objects. Try to remember everything in this card. Then we show you some cards, you must select the only card that contains an element that was in the target card.</p>
+            <p>Scoring: 500 points per correct card.</p>
+            <h4>Winning The Crown</h4>
+            <p>You must complete all levels and beat all challenge games to be crowned the Match Master.</p>
+            <a id="ref_achievements"><h3>Achievements</h3></a>
+            <p>Earn achievements to boost your score and your satisfaction.</p>
+            <a id="ref_techniques"><h3>Memory Techniques</h3></a>
+            <p>Now we are going to teach you some important memory techniques to make you a better player.</p>
+            <p>** - <a href="#ref_top">Back to top</a> - **</p>
+        </div>
+    </div>
+    <canvas id="memoryMatch">In order to enjoy this content you must upgrade your browser to an HTML5 compatible version.</canvas>
+</div>
+</body>
+</html>
