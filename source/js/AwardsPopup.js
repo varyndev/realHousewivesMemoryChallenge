@@ -50,10 +50,10 @@ MemoryMatch.AwardsPopup = {
         }
         // layout the screen
         this.groupDisplayObject = new createjs.Container();
-        this.marginTop = 140 * MemoryMatch.stageScaleFactor;
-        this.marginLeft = 140 * MemoryMatch.stageScaleFactor;
         this.setColorFilters();
         this.setupBackground();
+        this.marginTop = this.backgroundHeight * 0.05;
+        this.marginLeft = this.backgroundWidth * 0.09;
         this.centerX = this.backgroundWidth * 0.5;
         this.marginX = 12 * MemoryMatch.stageScaleFactor;
         this.contentDisplayObject = new createjs.Container();
@@ -173,8 +173,8 @@ MemoryMatch.AwardsPopup = {
 
     setupMask: function () {
         var maskShape = this.groupDisplayObject.addChild(new createjs.Shape()),
-            startY = this.marginTop * 1.6,
-            height = this.backgroundHeight - (2.4 * this.marginTop);
+            startY = this.marginTop * 3,
+            height = this.backgroundHeight - (4 * this.marginTop);
 
         maskShape.graphics.beginFill("#521852").drawRoundRect(this.marginLeft, startY, this.backgroundWidth - (1.75 * this.marginLeft), height, 8);
         maskShape.alpha = 0.3333;
@@ -261,7 +261,7 @@ MemoryMatch.AwardsPopup = {
         titleTextField.y = Y;
         titleTextField.maxWidth = fieldWidth;
         this.contentDisplayObject.addChild(titleTextField);
-        titleTextField = new createjs.Text(bestScore.toString(), fontSizeBold, fontColor);
+        titleTextField = new createjs.Text(MemoryMatch.formatNumber('###,###', bestScore), fontSizeBold, fontColor);
         titleTextField.textAlign = "right";
         titleTextField.x = rightX;
         titleTextField.y = Y;
@@ -331,7 +331,7 @@ MemoryMatch.AwardsPopup = {
         for (i = 0; i < allAchievements.length; i ++ ) {
             achievementInfo = allAchievements[i];
             earned = MemoryMatch.didUserEarnAchievement(achievementInfo.id);
-            achievementItem = new MemoryMatch.AchievementItem(this.contentDisplayObject, {achievementId: achievementInfo.id, x: x2Column, y: Y, width: width, height: height, autoClose: false, icon: 'iconHudLand1', earned: earned, callback: null});
+            achievementItem = new MemoryMatch.AchievementItem(this.contentDisplayObject, {achievementId: achievementInfo.id, x: x2Column, y: Y, width: width, height: height, autoClose: false, icon: 'awardsCardIcon', earned: earned, callback: null});
             if (i % 2 == 0) {
                 x2Column = X + achievementItem.getBounds().width + margin + margin;
             } else {
@@ -344,23 +344,15 @@ MemoryMatch.AwardsPopup = {
     },
 
     setupButtons: function () {
-        var spriteFrame,
-            spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.guiSpritesheet1Frames),
-            buttonScale = 1.0,
+        var buttonScale = 1.0,
             gameButton,
-            newButtonInstance,
             buttonSize;
 
-        // Close button always shows
-        spriteFrame = "closeButtonUp";
-        buttonSize = MemoryMatch.getSpriteFrameSize(MemoryMatch.GameSetup.guiSpritesheet1Frames, spriteFrame);
-        gameButton = new createjs.Sprite(spriteData, spriteFrame);
-        gameButton.setTransform(this.backgroundWidth - buttonSize.width - buttonSize.width, buttonSize.width * 0.9, buttonScale, buttonScale);
-        gameButton.framerate = 1;
-        newButtonInstance = new createjs.ButtonHelper(gameButton, "closeButtonUp", "closeButtonOver", "closeButtonDown", false);
-        gameButton.addEventListener("click", this.onClickClose.bind(this));
+        // Close button always shows in its own special place
+        gameButton = MemoryMatch.GUIButton({name: "close", tag: 1, disabled: false, callback: this.onClickClose.bind(this), baseUp: "closeButtonUp", baseOver: "closeButtonDown", baseDown: "closeButtonDown"});
+        buttonSize = gameButton.getSize();
+        gameButton.setTransform(this.backgroundWidth * 0.94 - buttonSize.width, this.backgroundHeight * 0.05, buttonScale, buttonScale);
         this.groupDisplayObject.addChild(gameButton);
-        this.closeButtonHelper = newButtonInstance;
         this.closeButtonInstance = gameButton;
     },
 

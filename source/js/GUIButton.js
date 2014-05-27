@@ -175,7 +175,7 @@ MemoryMatch.GUIButton = function (parameters) {
             buttonText.maxWidth = this.width;
         } else {
             buttonText.textAlign = "left";
-            buttonText.x = this.iconSprite.x + this.iconSprite.width * 1.05;
+            buttonText.x = this.iconSprite.x + this.iconSprite.width;
             buttonText.maxWidth = this.width - this.iconSprite.width;
         }
         buttonText.y = (this.height - lineHeight) * 0.5;
@@ -216,7 +216,7 @@ MemoryMatch.GUIButton = function (parameters) {
             if (this.text == null) {
                 x = (this.width - spriteSize.width) * 0.5
             } else {
-                x = this.width * 0.05;
+                x = 0;
             }
             icon.setTransform(x, y, 1, 1);
             icon.width = spriteSize.width;
@@ -242,7 +242,6 @@ MemoryMatch.GUIButton = function (parameters) {
             eventType = event.type,
             clicked = false;
 
-        MemoryMatch.debugLog("guiButton.handleEvent " + eventType);
         switch (eventType) {
             case "click":
                 break;
@@ -294,7 +293,6 @@ MemoryMatch.GUIButton = function (parameters) {
     };
 
     guiButton.onClicked = function (event) {
-        MemoryMatch.debugLog("guiButton.onClicked ");
         if (event != null && event.target != null) {
             var that = event.target.parent;
             if (that.callback != null) {

@@ -161,12 +161,17 @@ MemoryMatch = MemoryMatch || {};
 
     p.setupIcon = function () {
         // add the icon on top of the button frame
+        var colorFilter,
+            spriteData,
+            iconSize,
+            iconSprite,
+            iconScale = 1.0;
+
         if (this.icon != null) {
-            var colorFilter;
-            var spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.guiSpritesheet1Frames);
-            var iconSize = MemoryMatch.getSpriteFrameSize(MemoryMatch.GameSetup.guiSpritesheet1Frames, this.icon);
-            var iconSprite = new createjs.Sprite(spriteData, this.icon);
-            iconSprite.setTransform(this.width * 0.02, (this.height - iconSize.height) * 0.5, 0.75, 0.75);
+            spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.guiSpritesheet1Frames);
+            iconSize = MemoryMatch.getSpriteFrameSize(MemoryMatch.GameSetup.guiSpritesheet1Frames, this.icon);
+            iconSprite = new createjs.Sprite(spriteData, this.icon);
+            iconSprite.setTransform(this.width * 0.005, this.height * 0.01, iconScale, iconScale);
             iconSprite.framerate = 1;
             iconSprite.name = "icon";
             if ( ! this.earned) {

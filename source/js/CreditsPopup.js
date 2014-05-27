@@ -40,10 +40,10 @@ MemoryMatch.CreditsPopup = {
         }
         // layout the screen
         this.groupDisplayObject = new createjs.Container();
-        this.marginTop = 140 * MemoryMatch.stageScaleFactor;
-        this.marginLeft = 140 * MemoryMatch.stageScaleFactor;
         this.setColorFilters();
         this.showBackgroundImage(this.parentDisplayObject.canvas);
+        this.marginTop = this.backgroundHeight * 0.05;
+        this.marginLeft = this.backgroundWidth * 0.09;
         this.centerX = this.backgroundWidth * 0.5;
         this.marginX = 12 * MemoryMatch.stageScaleFactor;
         this.setupTitleText();
@@ -208,16 +208,11 @@ MemoryMatch.CreditsPopup = {
             newButtonInstance,
             buttonSize;
 
-        // Close button always shows
-        spriteFrame = "closeButtonUp";
-        buttonSize = MemoryMatch.getSpriteFrameSize(MemoryMatch.GameSetup.guiSpritesheet1Frames, spriteFrame);
-        gameButton = new createjs.Sprite(spriteData, spriteFrame);
-        gameButton.setTransform(this.backgroundWidth - buttonSize.width - buttonSize.width, buttonSize.width, buttonScale, buttonScale);
-        gameButton.framerate = 1;
-        newButtonInstance = new createjs.ButtonHelper(gameButton, "closeButtonUp", "closeButtonOver", "closeButtonDown", false);
-        gameButton.addEventListener("click", this.onClickClose.bind(this));
+        // Close button always shows in its own special place
+        gameButton = MemoryMatch.GUIButton({name: "close", tag: 1, disabled: false, callback: this.onClickClose.bind(this), baseUp: "closeButtonUp", baseOver: "closeButtonDown", baseDown: "closeButtonDown"});
+        buttonSize = gameButton.getSize();
+        gameButton.setTransform(this.backgroundWidth * 0.94 - buttonSize.width, this.backgroundHeight * 0.05, buttonScale, buttonScale);
         this.groupDisplayObject.addChild(gameButton);
-        this.buttonHelperInstances.push(newButtonInstance);
         this.buttonInstances.push(gameButton);
     },
 

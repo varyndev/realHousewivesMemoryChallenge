@@ -1,0 +1,33 @@
+{
+"images": ["guiSpriteSheet2-100.png"],
+"frames": [
+
+    [738, 0, 96, 176], 
+    [642, 0, 96, 176], 
+    [428, 0, 214, 178], 
+    [214, 0, 214, 178], 
+    [0, 0, 214, 178], 
+    [428, 178, 214, 68], 
+    [214, 178, 214, 68], 
+    [0, 178, 214, 68], 
+    [834, 112, 214, 112], 
+    [834, 0, 214, 112]
+],
+"animations": {
+    
+        "nemisis1":[0], 
+        "nemisis1Empty":[1], 
+        "nemisis2":[2], 
+        "nemisis2Empty":[3], 
+        "nemisis2Empty2":[4], 
+        "nemisis3":[5], 
+        "nemisis3Empty":[6], 
+        "nemisis3Empty2":[7], 
+        "nemisis4":[8], 
+        "nemisis4Empty":[9]
+},
+"texturepacker": [
+        "SmartUpdateHash: $TexturePacker:SmartUpdate:108e0d73df2021d1ab0c586054afb260:890e6d090f4fec3f8cb43670f6542df9:de0e74a592b30a44dc83900bad8cd253$",
+        "Created with TexturePacker (http://www.texturepacker.com) for EaselJS"
+]
+}

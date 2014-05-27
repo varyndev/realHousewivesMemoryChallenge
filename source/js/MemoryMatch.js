@@ -206,16 +206,21 @@ var MemoryMatch = {
         }
         loaderObject = assetLoader.getResult("guiSprites2json");
         if (loaderObject != null) {
-            this.GameSetup.mapSpritesheetFrames = loaderObject;
+            this.GameSetup.guiSpritesheet2Frames = loaderObject;
         }
         loaderObject = assetLoader.getResult("guiSprites3json");
+        if (loaderObject != null) {
+            this.GameSetup.mapSpritesheetFrames = loaderObject;
+        }
+        loaderObject = assetLoader.getResult("guiSprites4json");
         if (loaderObject != null) {
             this.GameSetup.creditsFrames = loaderObject;
         }
 
         this.GameSetup.guiSpritesheet1Frames.images = [assetLoader.getResult("guiSprites1")];
-        this.GameSetup.mapSpritesheetFrames.images = [assetLoader.getResult("guiSprites2")];
-        this.GameSetup.creditsFrames.images = [assetLoader.getResult("guiSprites3")];
+        this.GameSetup.guiSpritesheet2Frames.images = [assetLoader.getResult("guiSprites2")];
+        this.GameSetup.mapSpritesheetFrames.images = [assetLoader.getResult("guiSprites3")];
+        this.GameSetup.creditsFrames.images = [assetLoader.getResult("guiSprites4")];
 
         MemoryMatch.backgroundImage = assetLoader.getResult("background");
         MemoryMatch.cardMargin = 2;
@@ -995,9 +1000,12 @@ var MemoryMatch = {
                             MemoryMatch.GameSetup.guiSpritesheet1Frames = jsonObject;
                             break;
                         case "guiSprites2json":
-                            MemoryMatch.GameSetup.mapSpritesheetFrames = jsonObject;
+                            MemoryMatch.GameSetup.guiSpritesheet2Frames = jsonObject;
                             break;
                         case "guiSprites3json":
+                            MemoryMatch.GameSetup.mapSpritesheetFrames = jsonObject;
+                            break;
+                        case "guiSprites4json":
                             MemoryMatch.GameSetup.creditsFrames = jsonObject;
                             break;
                         default:
@@ -5185,7 +5193,7 @@ function initApp() {
         assetManifest = [
         {src:MemoryMatch.makeResolutionBasedFileNameFromFileName(assetsFolder + MemoryMatch.GameSetup.backgroundImage), id:"background"},
         {src:MemoryMatch.makeResolutionBasedFileNameFromFileName(assetsFolder + MemoryMatch.GameSetup.popupBackground), id:"popup-bg"},
-        {src:assetsFolder + MemoryMatch.GameSetup.particleSprite,       id:"particles"}
+        {src:assetsFolder + MemoryMatch.GameSetup.particleSprite, id:"particles"}
         ];
 
     guiSpritesArray = MemoryMatch.GameSetup.guiSprites;
@@ -5231,7 +5239,8 @@ function initApp() {
             assetManifest.push({src: assetsFolder + MemoryMatch.GameSetup.Sounds[soundAssetName], id: soundAssetName});
         }
     }
-
+    assetLoader = new createjs.LoadQueue(false, '', 'Anonymous');
+    assetLoader.installPlugin(createjs.Sound);
     if ( ! createjs.Sound.initializeDefaultPlugins()) {
         MemoryMatch.debugLog("CreateJS.Sound error cannot init");
     }
@@ -5240,8 +5249,6 @@ function initApp() {
     }
     createjs.Sound.registerPlugins([createjs.HTMLAudioPlugin, createjs.WebAudioPlugin, createjs.FlashPlugin]);
     createjs.Sound.alternateExtensions = ["mp3"];
-    assetLoader = new createjs.LoadQueue(false, '', 'Anonymous');
-    assetLoader.installPlugin(createjs.Sound);
     assetLoader.addEventListener("complete", MemoryMatch.allAssetsLoaded.bind(MemoryMatch));
     assetLoader.addEventListener("progress", MemoryMatch.assetLoadProgress);
     assetLoader.addEventListener("error", MemoryMatch.assetLoadError);
