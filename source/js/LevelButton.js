@@ -25,6 +25,7 @@ MemoryMatch.LevelButton = function (parameters) {
     levelButton.wasPlayed = false;
     levelButton.isLocked = true;
     levelButton.isChallengeGame = false;
+    levelButton.userBeatChallenge = false;
     levelButton.buttonScale = 1.0;
     levelButton.addShadow = false;
     levelButton.spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.mapSpritesheetFrames);
@@ -71,6 +72,9 @@ MemoryMatch.LevelButton = function (parameters) {
             }
             if (parameters.isChallengeGame != null) {
                 levelButton.isChallengeGame = parameters.isChallengeGame;
+                if (levelButton.isChallengeGame) {
+                    levelButton.userBeatChallenge = MemoryMatch.didUserBeatChallenge(levelButton.landNumber);
+                }
             }
             if (parameters.callback != null) {
                 levelButton.callback = parameters.callback;
@@ -79,19 +83,26 @@ MemoryMatch.LevelButton = function (parameters) {
     }
 
     levelButton.createGameNumberText = function () {
-        var gameNumber = this.gameNumber.toString(); // (this.gameNumber + MemoryMatch.getGameLevelNumberOffset(this.landNumber)).toString(),
-            gameNumberText = new createjs.Text(gameNumber, MemoryMatch.getScaledFontSize(44) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.mapLevelColor),
+        var gameNumber = this.gameNumber.toString(),
+            textColor = this.isChallengeGame ? this.primaryColor : MemoryMatch.GameSetup.mapLevelColor,
+            fontSize = this.isChallengeGame ? 56 : 44,
+            gameNumberText = new createjs.Text(gameNumber, MemoryMatch.getScaledFontSize(fontSize) + " " + MemoryMatch.GameSetup.guiBoldFontName, textColor),
             button = this.getChildByName('button'),
             textHeight = gameNumberText.getMeasuredLineHeight();
 
         gameNumberText.textAlign = "center";
         gameNumberText.x = this.width * 0.5;
-        gameNumberText.y = button.y + ((button.height - textHeight) * 0.6666);
         gameNumberText.maxWidth = this.width;
-        gameNumberText.color = '#FFFFFF';
+        gameNumberText.color = textColor;
         gameNumberText.visible = true;
         gameNumberText.name = "gameNumber";
-        gameNumberText.visible = ! this.isLocked && ! this.isChallengeGame;
+        if (this.isChallengeGame) {
+            gameNumberText.visible = ! this.isLocked && ! this.userBeatChallenge;
+            gameNumberText.y = button.y + ((button.height - textHeight) * 0.54);
+        } else {
+            gameNumberText.visible = ! this.isLocked;
+            gameNumberText.y = button.y + ((button.height - textHeight) * 0.6666);
+        }
         if (this.addShadow && this.shadowSource != null) {
             gameNumberText.shadow = this.shadowSource.clone();
         }
@@ -148,7 +159,7 @@ MemoryMatch.LevelButton = function (parameters) {
         gemIcon.setTransform(this.width * 0.5, button.y + (button.height * 0.5), 1, 1, rotation, 0, 0, regx, regy);
         gemIcon.framerate = 0;
         gemIcon.name = 'award';
-        gemIcon.visible = ! this.isLocked;
+        gemIcon.visible = ! this.isLocked && this.userBeatChallenge;
         this.addChild(gemIcon);
     };
 
@@ -383,7 +394,7 @@ MemoryMatch.LevelButton = function (parameters) {
             this.addEventListener("click", this.onLevelSelect);
             lockIcon.visible = false;
             if (this.wasPlayed) {
-                if (this.isChallengeGame && MemoryMatch.didUserBeatChallenge(this.landNumber)) { // challenge game and user passed challenge
+                if (this.isChallengeGame && this.userBeatChallenge) { // challenge game and user passed challenge
                     gemIcon = this.getChildByName("award");
                     if (gemIcon != null) {
                         gemIcon.visible = true;
