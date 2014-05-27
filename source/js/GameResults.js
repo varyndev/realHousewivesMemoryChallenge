@@ -372,7 +372,7 @@ MemoryMatch.GameResults = {
         // Show the icon representing the level and the popup title
         var titleTextField,
             levelSummary,
-            iconScale = 0.8,
+            iconScale = 1,
             spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.guiSpritesheet1Frames),
             icon = MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].icon,
             iconSprite = new createjs.Sprite(spriteData, icon),

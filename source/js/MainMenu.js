@@ -113,18 +113,56 @@ MemoryMatch.MainMenu = {
         // Show Award
         var spriteFrame = 'mapTrophy',
             imageSprite = new createjs.Sprite(this.spriteData, spriteFrame),
-            position = MemoryMatch.GameSetup.mapAwardPosition,
-            spriteSize = MemoryMatch.getSpriteFrameSize(this.mapSpriteFrames, spriteFrame);
+            awardPosition = MemoryMatch.GameSetup.mapAwardPosition,
+            position,
+            spriteSize = MemoryMatch.getSpriteFrameSize(this.mapSpriteFrames, spriteFrame),
+            i,
+            gemPosition,
+            gemName,
+            landNumber,
+            numberOfLevels = MemoryMatch.GameSetup.levels.length;
 
-        if (position == null) {
-            position = {x: this.width * 0.5, y: this.height * 0.5};
-            imageSprite.setTransform(position.x, position.y, 1, 1, 0, 0, 0, spriteSize.width * 0.5, spriteSize.height * 0.5);
+        if (awardPosition == null) {
+            position = {x: (this.width - spriteSize.width) * 0.5, y: (this.height - spriteSize.height) * 0.5};
         } else {
-            imageSprite.setTransform(position.x * MemoryMatch.stageScaleFactor, position.y * MemoryMatch.stageScaleFactor, 1, 1, 0, 0, 0, spriteSize.width * 0.5, spriteSize.height * 0.5);
+            position = {x: awardPosition.x * MemoryMatch.stageScaleFactor, y: awardPosition.y * MemoryMatch.stageScaleFactor};
         }
+        imageSprite.setTransform(position.x, position.y, 1, 1, 0, 0, 0, spriteSize.width * 0.5, spriteSize.height * 0.5);
         imageSprite.framerate = 0;
         this.groupDisplayObject.addChild(imageSprite);
         this.awardSprite = imageSprite;
+
+        // position gems relative to award position, accounting for the center registration of the award sprite
+        spriteFrame = 'mapAwardLand';
+        position.x -= spriteSize.width * 0.5;
+        position.y -= spriteSize.height * 0.5;
+        for (i = 0; i < numberOfLevels; i ++) {
+            landNumber = i + 1;
+            gemName = spriteFrame + landNumber.toString();
+            imageSprite = new createjs.Sprite(this.spriteData, gemName);
+            gemPosition = MemoryMatch.GameSetup.levels[i].gemPosition;
+            imageSprite.setTransform(position.x + (gemPosition.x * MemoryMatch.stageScaleFactor), position.y + (gemPosition.y * MemoryMatch.stageScaleFactor));
+            imageSprite.name = gemName;
+            imageSprite.visible = MemoryMatch.didUserBeatChallenge(landNumber);
+            this.groupDisplayObject.addChild(imageSprite);
+        }
+    },
+
+    showAwardedGems: function () {
+        var gemName = 'mapAwardLand',
+            landNumber,
+            imageSprite,
+            i,
+            numberOfLevels = MemoryMatch.GameSetup.levels.length;
+
+        for (i = 0; i < numberOfLevels; i ++) {
+            landNumber = i + 1;
+            gemName = 'mapAwardLand' + landNumber.toString();
+            imageSprite = this.groupDisplayObject.getChildByName(gemName);
+            if (imageSprite != null) {
+                imageSprite.visible = MemoryMatch.didUserBeatChallenge(landNumber);
+            }
+        }
     },
 
     setupLevelButtons: function (groupDisplayObject) {

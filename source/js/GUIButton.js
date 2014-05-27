@@ -239,8 +239,10 @@ MemoryMatch.GUIButton = function (parameters) {
     guiButton.handleEvent = function(event) {
         var spriteFrameBase,
             spriteFrameIcon,
-            eventType = event.type;
+            eventType = event.type,
+            clicked = false;
 
+        MemoryMatch.debugLog("guiButton.handleEvent " + eventType);
         switch (eventType) {
             case "click":
                 break;
@@ -267,6 +269,7 @@ MemoryMatch.GUIButton = function (parameters) {
                     spriteFrameBase = this.buttonBaseActive;
                     spriteFrameIcon = this.buttonFaceActive;
                 }
+                clicked = true;
                 break;
             case "rollout":
             default:
@@ -285,9 +288,13 @@ MemoryMatch.GUIButton = function (parameters) {
         if (this.iconSprite != null && spriteFrameIcon != null) {
             this.iconSprite.gotoAndStop(spriteFrameIcon);
         }
+        if (clicked) {
+            this.onClicked(event);
+        }
     };
 
     guiButton.onClicked = function (event) {
+        MemoryMatch.debugLog("guiButton.onClicked ");
         if (event != null && event.target != null) {
             var that = event.target.parent;
             if (that.callback != null) {

@@ -38,14 +38,15 @@ MemoryMatch.ChallengeIntroduction = {
         // layout the screen
         this.groupDisplayObject = new createjs.Container();
         this.parentDisplayObject.addChild(this.groupDisplayObject);
-        this.marginTop = 140 * MemoryMatch.stageScaleFactor;
-        this.marginLeft = 140 * MemoryMatch.stageScaleFactor;
         this.setColorFilters();
-        this.showBackgroundImage(this.parentDisplayObject.canvas, this.groupDisplayObject);
+        this.showBackgroundImage(this.parentDisplayObject.canvas);
+        this.marginTop = this.backgroundHeight * 0.05;
+        this.marginLeft = this.backgroundWidth * 0.09;
         this.centerX = this.backgroundWidth * 0.5;
         this.marginX = 12 * MemoryMatch.stageScaleFactor;
-        this.setupTitleAndMessageText(this.groupDisplayObject);
-        this.setupButtons(this.groupDisplayObject);
+        this.setupTitleAndMessageText();
+        this.setupAward();
+        this.setupButtons();
         this.groupDisplayObject.setTransform((this.parentDisplayObject.canvas.width * 0.5) - (this.backgroundWidth * 0.5), (this.parentDisplayObject.canvas.height * 0.5) - (this.backgroundHeight * 0.5), 1, 1);
         if (autoStart === null) {
             autoStart = false;
@@ -96,7 +97,7 @@ MemoryMatch.ChallengeIntroduction = {
         // this just eats the click so anything under the popup is not activated
     },
 
-    showBackgroundImage: function (canvas, groupDisplayObject) {
+    showBackgroundImage: function (canvas) {
         // This method will scale the background image to fit the current stage if it is too big.
         var popupImageAsset = assetLoader.getResult("popup-bg");
         var bgImage = new createjs.Bitmap(popupImageAsset);
@@ -123,8 +124,8 @@ MemoryMatch.ChallengeIntroduction = {
         backgroundCover.alpha = 0.1;
         backgroundCover.addEventListener("click", this.onClickBackground);
 
-        groupDisplayObject.addChild(backgroundCover);
-        groupDisplayObject.addChild(bgImage);
+        this.groupDisplayObject.addChild(backgroundCover);
+        this.groupDisplayObject.addChild(bgImage);
         this.backgroundWidth = popupImageAsset.width * xScale;
         this.backgroundHeight = popupImageAsset.height * yScale;
         if (this.primaryColorFilter != null) {
@@ -133,9 +134,10 @@ MemoryMatch.ChallengeIntroduction = {
         }
     },
 
-    setupTitleAndMessageText: function (groupDisplayObject) {
+    setupTitleAndMessageText: function () {
         var titleTextField;
-        var gameData = MemoryMatch.getGameData(true);
+        var gameData = MemoryMatch.getGameData(true),
+            yOffset;
 
         titleTextField = new createjs.Text("Challenge Game", MemoryMatch.getScaledFontSize(72) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColor);
         titleTextField.textAlign = "center";
@@ -143,26 +145,28 @@ MemoryMatch.ChallengeIntroduction = {
         titleTextField.y = this.marginTop;
         titleTextField.lineWidth = this.backgroundWidth - (this.marginLeft * 2);
         titleTextField.maxWidth = this.backgroundWidth - (this.marginLeft * 2);
-        groupDisplayObject.addChild(titleTextField);
+        this.groupDisplayObject.addChild(titleTextField);
+        yOffset = titleTextField.y + titleTextField.getMeasuredHeight();
 
         titleTextField = new createjs.Text(gameData.levelName, MemoryMatch.getScaledFontSize(72) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColor);
         titleTextField.textAlign = "center";
         titleTextField.x = this.backgroundWidth * 0.5;
-        titleTextField.y = this.marginTop + (72 * MemoryMatch.stageScaleFactor);
+        titleTextField.y = yOffset;
         titleTextField.lineWidth = this.backgroundWidth - (this.marginLeft * 2);
         titleTextField.maxWidth = this.backgroundWidth - (this.marginLeft * 2);
-        groupDisplayObject.addChild(titleTextField);
+        this.groupDisplayObject.addChild(titleTextField);
+        yOffset += titleTextField.getMeasuredHeight();
 
         titleTextField = new createjs.Text(gameData.levelIntro, MemoryMatch.getScaledFontSize(48) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         titleTextField.textAlign = "center";
         titleTextField.x = this.backgroundWidth * 0.5;
-        titleTextField.y = this.backgroundHeight * 0.28;
+        titleTextField.y = yOffset;
         titleTextField.lineWidth = this.backgroundWidth - (this.marginLeft * 2);
         titleTextField.maxWidth = this.backgroundWidth - (this.marginLeft * 2);
-        groupDisplayObject.addChild(titleTextField);
+        this.groupDisplayObject.addChild(titleTextField);
     },
 
-    setupButtons: function (groupDisplayObject) {
+    setupButtons: function () {
         // 2 buttons centered horizontal at bottom of popup
 
         var spriteFrame = "gameOverButtonBase",
@@ -178,14 +182,67 @@ MemoryMatch.ChallengeIntroduction = {
 
         gameButton = MemoryMatch.GUIButton({name: "home", tag: ++ buttonTagCounter, disabled: false, callback: this.onClickHome.bind(this), baseUp: spriteFrame, buttonBaseColor: buttonBaseColor, iconUp: "gameOverHomeUp", iconOver: "gameOverHomeOver", iconDown: "gameOverHomeOver"});
         gameButton.setTransform(xOffset, yOffset, buttonScale, buttonScale);
-        groupDisplayObject.addChild(gameButton);
+        this.groupDisplayObject.addChild(gameButton);
         this.buttonInstances.push(gameButton);
 
         xOffset += buttonWidth + buttonMargin;
         gameButton = MemoryMatch.GUIButton({name: "continue", tag: ++ buttonTagCounter, disabled: false, callback: this.onClickContinue.bind(this), baseUp: spriteFrame, buttonBaseColor: buttonBaseColor, iconUp: "gameOverNextUp", iconOver: "gameOverNextOver", iconDown: "gameOverNextOver"});
         gameButton.setTransform(xOffset, yOffset, buttonScale, buttonScale);
-        groupDisplayObject.addChild(gameButton);
+        this.groupDisplayObject.addChild(gameButton);
         this.buttonInstances.push(gameButton);
+    },
+
+
+    setupAward: function () {
+        // Show Award
+        var spriteFrame = 'mapTrophy',
+            spriteFrames = MemoryMatch.GameSetup.mapSpritesheetFrames,
+            spriteData = new createjs.SpriteSheet(spriteFrames),
+            imageSprite = new createjs.Sprite(spriteData, spriteFrame),
+            spriteSize = MemoryMatch.getSpriteFrameSize(spriteFrames, spriteFrame),
+            position,
+            i,
+            gemPosition,
+            gemName,
+            landNumber,
+            numberOfLevels = MemoryMatch.GameSetup.levels.length;
+
+        position = {x: this.backgroundWidth * 0.5, y: this.backgroundHeight * 0.54};
+        imageSprite.setTransform(position.x, position.y, 1, 1, 0, 0, 0, spriteSize.width * 0.5, spriteSize.height * 0.5);
+        imageSprite.framerate = 0;
+        this.groupDisplayObject.addChild(imageSprite);
+
+        // position gems relative to award position, accounting for the center registration of the award sprite
+        spriteFrame = 'mapAwardLand';
+        position.x -= spriteSize.width * 0.5;
+        position.y -= spriteSize.height * 0.5;
+        for (i = 0; i < numberOfLevels; i ++) {
+            landNumber = i + 1;
+            gemName = spriteFrame + landNumber.toString();
+            imageSprite = new createjs.Sprite(spriteData, gemName);
+            gemPosition = MemoryMatch.GameSetup.levels[i].gemPosition;
+            imageSprite.setTransform(position.x + (gemPosition.x * MemoryMatch.stageScaleFactor), position.y + (gemPosition.y * MemoryMatch.stageScaleFactor));
+            imageSprite.name = gemName;
+            imageSprite.visible = MemoryMatch.didUserBeatChallenge(landNumber);
+            this.groupDisplayObject.addChild(imageSprite);
+        }
+    },
+
+    showAwardedGems: function () {
+        var gemName = 'mapAwardLand',
+            landNumber,
+            imageSprite,
+            i,
+            numberOfLevels = MemoryMatch.GameSetup.levels.length;
+
+        for (i = 0; i < numberOfLevels; i ++) {
+            landNumber = i + 1;
+            gemName = 'mapAwardLand' + landNumber.toString();
+            imageSprite = this.groupDisplayObject.getChildByName(gemName);
+            if (imageSprite != null) {
+                imageSprite.visible = MemoryMatch.didUserBeatChallenge(landNumber);
+            }
+        }
     },
 
     isShowing: function () {

@@ -20,6 +20,7 @@ MemoryMatch.LevelButton = function (parameters) {
     levelButton.landNumber = 0;
     levelButton.starsEarned = 0;
     levelButton.maxStars = 3;
+    levelButton.showStarsForChallenge = false;
     levelButton.bestScore = 0;
     levelButton.wasPlayed = false;
     levelButton.isLocked = true;
@@ -161,7 +162,8 @@ MemoryMatch.LevelButton = function (parameters) {
             regy = spriteHeight * 2,
             x,
             y = regy,
-            rotation;
+            rotation,
+            showStar;
 
         for (i = 0; i < this.maxStars; i ++) {
             if (i < this.starsEarned) {
@@ -182,7 +184,12 @@ MemoryMatch.LevelButton = function (parameters) {
             star.setTransform(x, y, 1, 1, rotation, 0, 0, regx, regy);
             star.framerate = 0;
             star.name = 'star' + (i + 1);
-            star.visible = ! this.isLocked;
+            if (this.isChallengeGame) {
+                showStar = ! this.isLocked && this.showStarsForChallenge;
+            } else {
+                showStar = ! this.isLocked;
+            }
+            star.visible = showStar;
             this.addChild(star);
         }
         this.nextYPosition = spriteHeight * 1.1;
@@ -191,7 +198,8 @@ MemoryMatch.LevelButton = function (parameters) {
 
     levelButton.showStars = function (showFlag) {
         var i,
-            star;
+            star,
+            showStar;
 
         for (i = 0; i < this.maxStars; i ++) {
             star = this.getChildByName('star' + (i + 1));
@@ -201,7 +209,12 @@ MemoryMatch.LevelButton = function (parameters) {
                 } else {
                     star.gotoAndStop('mapStarUnearned');
                 }
-                star.visible = ! this.isLocked;
+                if (this.isChallengeGame) {
+                    showStar = ! this.isLocked && this.showStarsForChallenge;
+                } else {
+                    showStar = ! this.isLocked;
+                }
+                star.visible = showStar;
             }
         }
         this.updateCache();
@@ -354,7 +367,8 @@ MemoryMatch.LevelButton = function (parameters) {
             gameNumberText = this.getChildByName("gameNumber"),
             buttonRing = this.getChildByName("ring"),
             lockIcon = this.getChildByName("lock"),
-            gemIcon;
+            gemIcon,
+            showStarsFlag = false;
 
         if (this.gameNumber == 1 || this.wasPlayed) {
             this.isLocked = false;
@@ -364,7 +378,6 @@ MemoryMatch.LevelButton = function (parameters) {
             bestScoreField.visible = false;
             gameNumberText.visible = false;
             buttonRing.visible = false;
-            this.showStars(false);
             this.removeEventListener("click", this.onLevelSelect);
         } else {
             this.addEventListener("click", this.onLevelSelect);
@@ -382,15 +395,21 @@ MemoryMatch.LevelButton = function (parameters) {
                 bestScoreField.visible = true;
                 bestScoreField.text = MemoryMatch.formatNumber("###,###", this.bestScore);
                 buttonRing.visible = true;
-                this.showStars(true);
+                if (this.isChallengeGame) {
+                    showStarsFlag = ! this.isLocked && this.showStarsForChallenge;
+                } else {
+                    showStarsFlag = ! this.isLocked;
+                }
             } else {
                 gameNumberText.visible = true;
                 bestScoreField.visible = false;
                 buttonRing.visible = false;
-                this.showStars(false);
             }
         }
-        this.setStarsEarned(this.starsEarned);
+        this.showStars(showStarsFlag);
+        if (showStarsFlag) {
+            this.setStarsEarned(this.starsEarned);
+        }
         this.setBestScore(this.bestScore);
         this.updateCache();
     };

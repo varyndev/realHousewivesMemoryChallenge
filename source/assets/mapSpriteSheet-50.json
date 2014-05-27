@@ -45,7 +45,7 @@
         "land1":[8], 
         "land2":[9], 
         "land4":[10],
-        "land3":[11],
+        "land3":[11], 
         "levelSelectCircle":[12], 
         "levelSelectCircleOver":[13], 
         "levelSelectLock":[14], 
@@ -53,8 +53,8 @@
         "levelSelectRingOver":[16], 
         "mapAwardLand1":[17], 
         "mapAwardLand2":[18], 
-        "mapAwardLand3":[19], 
-        "mapAwardLand4":[20], 
+        "mapAwardLand4":[19],
+        "mapAwardLand3":[20],
         "mapOptionsButtonDown":[21], 
         "mapOptionsButtonOver":[22], 
         "mapOptionsButtonUp":[23], 
@@ -65,7 +65,7 @@
         "planeRouteCa":[28]
 },
 "texturepacker": [
-        "SmartUpdateHash: $TexturePacker:SmartUpdate:a2788c6739e7fbc03510ec3f8ce47c68:8ac8cb9e95c699536c95fb8919f76eb6:37e7f9cd0f63285bf6ca8b98d6057c3f$",
+        "SmartUpdateHash: $TexturePacker:SmartUpdate:7d66cddb20ac6cd1520cd003f4592840:d7e0473aaa62081412a6643dd25df621:37e7f9cd0f63285bf6ca8b98d6057c3f$",
         "Created with TexturePacker (http://www.texturepacker.com) for EaselJS"
 ]
 }
