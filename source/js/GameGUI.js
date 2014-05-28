@@ -161,7 +161,7 @@ MemoryMatch.GameGUI = {
             displayGameNumber = gameNumber + MemoryMatch.getGameLevelNumberOffset(MemoryMatch.gameLevel);
         }
         this.levelNumber = level;
-        this.levelIcon.gotoAndStop(MemoryMatch.GameSetup.levels[level - 1].icon);
+        this.levelIcon.gotoAndStop(MemoryMatch.GameSetup.levels[level - 1].iconHUD);
         this.levelField.text = displayGameNumber.toString();
     },
 
@@ -452,7 +452,7 @@ MemoryMatch.GameGUI = {
     setupLevelTextField: function () {
         // add the icon on top of the button frame
         var iconScale = 1,
-            icon = MemoryMatch.GameSetup.levels[this.levelNumber - 1].icon,
+            icon = MemoryMatch.GameSetup.levels[this.levelNumber - 1].iconHUD,
             iconSprite = new createjs.Sprite(this.spriteData, icon),
             spriteSize = MemoryMatch.getSpriteFrameSize(MemoryMatch.GameSetup.guiSpritesheet1Frames, icon),
             levelField;

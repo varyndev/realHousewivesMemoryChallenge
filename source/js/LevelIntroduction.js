@@ -110,7 +110,7 @@ MemoryMatch.LevelIntroduction = {
         var iconScale = 0.6,
             titleTextFontSize = 56,
             spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.guiSpritesheet1Frames),
-            icon = MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].icon,
+            icon = MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].iconPopup,
             iconSprite = new createjs.Sprite(spriteData, icon),
             spriteSize = MemoryMatch.getSpriteFrameSize(MemoryMatch.GameSetup.guiSpritesheet1Frames, icon);
 

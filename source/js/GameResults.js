@@ -12,6 +12,7 @@ MemoryMatch.GameResults = {
     parentDisplayObject: null,
     groupDisplayObject: null,
     buttonInstances: null,
+    spriteData: null,
     matchBonusText: null,
     comboBonusText: null,
     currentScoreTextField: null,
@@ -36,8 +37,6 @@ MemoryMatch.GameResults = {
     gameStarsEarned: 0,
     isChallenge: false,
     isEnabled: false,
-    centerX: 0,
-    marginX: 0,
     lineHeight: 0,
     priorGameData: null,
     gameNumber: 0,
@@ -60,6 +59,7 @@ MemoryMatch.GameResults = {
             return;
         }
         // use the level data to do any level-specific results
+        this.spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.guiSpritesheet1Frames);
         this.levelData = nextLevelData;
         this.gameNumber = MemoryMatch.isChallengeGame ? 99 : MemoryMatch.gameNumber;
         this.streakCount = MemoryMatch.gameNumber - 1;
@@ -104,14 +104,12 @@ MemoryMatch.GameResults = {
             return;
         }
         // layout the screen
-        this.marginTop = 160 * MemoryMatch.stageScaleFactor;
-        this.marginLeft = 160 * MemoryMatch.stageScaleFactor;
         this.groupDisplayObject = new createjs.Container();
         this.parentDisplayObject.addChild(this.groupDisplayObject);
         this.setColorFilters();
         this.showBackgroundImage(this.parentDisplayObject.canvas);
-        this.centerX = this.backgroundWidth * 0.5;
-        this.marginX = 12 * MemoryMatch.stageScaleFactor;
+        this.marginTop = this.backgroundHeight * 0.06;
+        this.marginLeft = this.backgroundWidth * 0.09;
         this.setupTitleText(this.groupDisplayObject);
         if (MemoryMatch.isChallengeGame) {
             this.setupAward(this.groupDisplayObject);
@@ -256,19 +254,18 @@ MemoryMatch.GameResults = {
 
     setupStars: function (groupDisplayObject) {
         var i,
-            spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.guiSpritesheet1Frames),
-            starFrame = "gameOverStar",
+            starFrame = "gameOverStarFill",
             starWidth = MemoryMatch.GameSetup.guiSpritesheet1Frames.frames[MemoryMatch.GameSetup.guiSpritesheet1Frames.animations[starFrame][0]][2],
             starHeight = MemoryMatch.GameSetup.guiSpritesheet1Frames.frames[MemoryMatch.GameSetup.guiSpritesheet1Frames.animations[starFrame][0]][3],
-            slotFrame = "gameOverStarSlot",
+            slotFrame = "gameOverStarEmpty",
             slotWidth = MemoryMatch.GameSetup.guiSpritesheet1Frames.frames[MemoryMatch.GameSetup.guiSpritesheet1Frames.animations[slotFrame][0]][2],
             slotHeight = MemoryMatch.GameSetup.guiSpritesheet1Frames.frames[MemoryMatch.GameSetup.guiSpritesheet1Frames.animations[slotFrame][0]][3],
             starSprite,
             starSpriteCloned,
             slotSprite,
             slotSpriteCloned,
-            starGap = 40 * MemoryMatch.stageScaleFactor,
-            topMargin = Math.floor(this.backgroundHeight * 0.18),
+            starGap = 36 * MemoryMatch.stageScaleFactor,
+            topMargin = Math.floor(this.backgroundHeight * 0.12),
             starsTotalWidth = (3 * (slotWidth + starGap)) - starGap,
             startX = Math.floor((this.backgroundWidth - starsTotalWidth) * 0.5),
             animator,
@@ -281,8 +278,8 @@ MemoryMatch.GameResults = {
         }
         for (i = 0; i < MemoryMatch.GameSetup.numberOfStars; i ++) {
             if (i === 0) {
-                starSprite = new createjs.Sprite(spriteData, starFrame);
-                slotSprite = new createjs.Sprite(spriteData, slotFrame);
+                starSprite = new createjs.Sprite(this.spriteData, starFrame);
+                slotSprite = new createjs.Sprite(this.spriteData, slotFrame);
                 starSprite.framerate = 1;
                 slotSprite.framerate = 1;
                 starSprite.visible = false;
@@ -314,7 +311,7 @@ MemoryMatch.GameResults = {
     showStar: function (starSprite) {
         var numberOfParticles,
             hiFiveWord,
-            starFrame = "gameOverStar",
+            starFrame = "gameOverStarFill",
             starHalfWidth = MemoryMatch.GameSetup.guiSpritesheet1Frames.frames[MemoryMatch.GameSetup.guiSpritesheet1Frames.animations[starFrame][0]][2] * 0.5,
             globalStarPoint = this.groupDisplayObject.localToGlobal(starSprite.x, starSprite.y);
 
@@ -347,15 +344,14 @@ MemoryMatch.GameResults = {
     },
 
     setupAward: function (groupDisplayObject) {
-        var spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.guiSpritesheet1Frames),
-            slotFrame = "gameOverStarSlot",
+        var slotFrame = "gameOverStarEmpty",
             slotWidth = MemoryMatch.GameSetup.guiSpritesheet1Frames.frames[MemoryMatch.GameSetup.guiSpritesheet1Frames.animations[slotFrame][0]][2],
             slotSprite,
             hiFiveWord,
             topMargin = Math.floor(this.backgroundHeight * 0.18),
             startX = Math.floor((this.backgroundWidth - slotWidth) * 0.5);
 
-        slotSprite = new createjs.Sprite(spriteData, slotFrame);
+        slotSprite = new createjs.Sprite(this.spriteData, slotFrame);
         slotSprite.framerate = 1;
         slotSprite.visible = true;
         slotSprite.setTransform(startX, topMargin);
@@ -370,12 +366,12 @@ MemoryMatch.GameResults = {
     setupTitleText: function (groupDisplayObject) {
 
         // Show the icon representing the level and the popup title
+
         var titleTextField,
             levelSummary,
             iconScale = 1,
-            spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.guiSpritesheet1Frames),
-            icon = MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].icon,
-            iconSprite = new createjs.Sprite(spriteData, icon),
+            icon = MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].iconPopup,
+            iconSprite = new createjs.Sprite(this.spriteData, icon),
             spriteSize = MemoryMatch.getSpriteFrameSize(MemoryMatch.GameSetup.guiSpritesheet1Frames, icon);
 
         iconSprite.setTransform(this.marginLeft - (spriteSize.width * 0.25), this.marginTop - (spriteSize.height * 0.25), iconScale, iconScale);
@@ -400,7 +396,7 @@ MemoryMatch.GameResults = {
         titleTextField = new createjs.Text(levelSummary, MemoryMatch.getScaledFontSize(58) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColor);
         titleTextField.textAlign = "center";
         titleTextField.x = this.backgroundWidth * 0.5;
-        titleTextField.y = this.marginTop - (28 * MemoryMatch.stageScaleFactor) * 0.5;
+        titleTextField.y = this.marginTop;
         titleTextField.lineWidth = this.backgroundWidth - (this.marginLeft * 2);
         titleTextField.maxWidth = this.backgroundWidth - (this.marginLeft * 2);
         groupDisplayObject.addChild(titleTextField);
@@ -413,10 +409,18 @@ MemoryMatch.GameResults = {
         tipTextField = new createjs.Text(tipText, MemoryMatch.getScaledFontSize(48) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         tipTextField.textAlign = "center";
         tipTextField.x = this.backgroundWidth * 0.5;
-        tipTextField.y = this.backgroundHeight * 0.38;
+        tipTextField.y = this.backgroundHeight * 0.32;
         tipTextField.lineWidth = this.backgroundWidth - (this.marginLeft * 2);
         tipTextField.maxWidth = this.backgroundWidth - (this.marginLeft * 2);
         groupDisplayObject.addChild(tipTextField);
+    },
+
+    addTextBackgroundSprite: function (groupDisplayObject, textBackgroundSpriteSource, levelTextField, rightX) {
+        var textBackgroundSprite = textBackgroundSpriteSource.clone(),
+            spriteSize = MemoryMatch.getSpriteFrameSize(MemoryMatch.GameSetup.guiSpritesheet1Frames, 'gameOverInfoBoxSmall');
+        textBackgroundSprite.x = rightX - spriteSize.width;
+        textBackgroundSprite.y = levelTextField.y - (spriteSize.height * 0.5);
+        groupDisplayObject.addChild(textBackgroundSprite);
     },
 
     setupLevelText: function (groupDisplayObject) {
@@ -436,22 +440,28 @@ MemoryMatch.GameResults = {
             fontSizeBestScore,
             fontColor = MemoryMatch.GameSetup.guiFontColor,
             fontColorBonus = MemoryMatch.GameSetup.guiFontColorBonus,
-            fontSizeDifference;
+            fontSizeDifference,
+            textBackgroundSpriteSource;
 
-        this.lineHeight = 60 * MemoryMatch.stageScaleFactor;
+        textBackgroundSpriteSource = new createjs.Sprite(this.spriteData, 'gameOverInfoBoxSmall');
+        textBackgroundSpriteSource.alpha = 0.1;
+        this.lineHeight = 96 * MemoryMatch.stageScaleFactor;
         if ( ! MemoryMatch.isChallengeGame) {
             Y = Math.floor(this.backgroundHeight * 0.5);
 
             // 1: Misses
             levelTextField = new createjs.Text("Misses:", fontSize, fontColor);
             levelTextField.textAlign = "left";
+            levelTextField.textBaseline = "middle";
             levelTextField.x = leftX;
             levelTextField.y = Y;
             levelTextField.maxWidth = fieldWidth;
+            this.addTextBackgroundSprite(groupDisplayObject, textBackgroundSpriteSource, levelTextField, rightX * 1.03);
             groupDisplayObject.addChild(levelTextField);
 
             levelTextField = new createjs.Text(this.totalMisses.toString(), fontSizeBold, fontColor);
             levelTextField.textAlign = "right";
+            levelTextField.textBaseline = "middle";
             levelTextField.x = rightX;
             levelTextField.y = Y;
             levelTextField.maxWidth = fieldWidth;
@@ -482,13 +492,16 @@ MemoryMatch.GameResults = {
             accuracy = this.accuracy > 0 ? this.accuracy.toString() + "%" : '--';
             levelTextField = new createjs.Text("Accuracy:", fontSize, fontColor);
             levelTextField.textAlign = "left";
+            levelTextField.textBaseline = "middle";
             levelTextField.x = leftX;
             levelTextField.y = Y;
             levelTextField.maxWidth = fieldWidth;
+            this.addTextBackgroundSprite(groupDisplayObject, textBackgroundSpriteSource, levelTextField, rightX * 1.03);
             groupDisplayObject.addChild(levelTextField);
 
             levelTextField = new createjs.Text(accuracy, fontSizeBold, fontColor);
             levelTextField.textAlign = "right";
+            levelTextField.textBaseline = "middle";
             levelTextField.x = rightX;
             levelTextField.y = Y;
             levelTextField.maxWidth = fieldWidth;
@@ -503,13 +516,16 @@ MemoryMatch.GameResults = {
                 Y += this.lineHeight;
                 levelTextField = new createjs.Text("Combos:", fontSize, fontColor);
                 levelTextField.textAlign = "left";
+                levelTextField.textBaseline = "middle";
                 levelTextField.x = leftX;
                 levelTextField.y = Y;
                 levelTextField.maxWidth = fieldWidth;
+                this.addTextBackgroundSprite(groupDisplayObject, textBackgroundSpriteSource, levelTextField, rightX * 1.03);
                 groupDisplayObject.addChild(levelTextField);
 
                 levelTextField = new createjs.Text(this.totalCombos.toString(), fontSizeBold, fontColor);
                 levelTextField.textAlign = "right";
+                levelTextField.textBaseline = "middle";
                 levelTextField.x = rightX;
                 levelTextField.y = Y;
                 levelTextField.maxWidth = fieldWidth;
@@ -537,17 +553,24 @@ MemoryMatch.GameResults = {
                 fieldOffset ++;
             }
 
+            // Second Column
+            leftX = this.backgroundWidth * 0.56;
+            rightX = this.backgroundWidth * 0.88;
+            Y = Math.floor(this.backgroundHeight * 0.5);
+
             // Time Bonus
-            Y += this.lineHeight;
             levelTextField = new createjs.Text("Time Bonus:", fontSize, fontColor);
             levelTextField.textAlign = "left";
+            levelTextField.textBaseline = "middle";
             levelTextField.x = leftX;
             levelTextField.y = Y;
             levelTextField.maxWidth = fieldWidth;
+            this.addTextBackgroundSprite(groupDisplayObject, textBackgroundSpriteSource, levelTextField, rightX * 1.02);
             groupDisplayObject.addChild(levelTextField);
 
             levelTextField = new createjs.Text(MemoryMatch.formatNumber("###,###.", this.timeBonus), fontSizeBold, fontColor);
             levelTextField.textAlign = "right";
+            levelTextField.textBaseline = "middle";
             levelTextField.x = rightX;
             levelTextField.y = Y;
             levelTextField.maxWidth = fieldWidth;
@@ -556,10 +579,7 @@ MemoryMatch.GameResults = {
             animator = MemoryMatch.AnimationHandler.addToAnimationQueue(levelTextField, starAnimationDelay + (500 * fieldOffset), 0, false, null, this.animateTextTimeBonus.bind(this));
             animator.showAtBegin = true;
 
-            // Second Column
-            leftX = this.backgroundWidth * 0.6;
-            rightX = this.backgroundWidth * 0.88;
-            Y = Math.floor(this.backgroundHeight * 0.5);
+            Y += this.lineHeight;
         } else {
             // Centered
             Y = Math.floor(this.backgroundHeight * 0.52);
@@ -569,23 +589,25 @@ MemoryMatch.GameResults = {
             // 1: Streak
             levelTextField = new createjs.Text("Streak:", fontSize, fontColor);
             levelTextField.textAlign = "left";
+            levelTextField.textBaseline = "middle";
             levelTextField.x = leftX;
             levelTextField.y = Y;
             levelTextField.maxWidth = fieldWidth;
+            this.addTextBackgroundSprite(groupDisplayObject, textBackgroundSpriteSource, levelTextField, rightX * 1.02);
             groupDisplayObject.addChild(levelTextField);
 
             levelTextField = new createjs.Text(this.streakCount.toString(), this.streakCount < 5 ? fontSizeBold : fontSizeBoldBig, fontColor);
             levelTextField.textAlign = "right";
+            levelTextField.textBaseline = "middle";
             levelTextField.x = rightX;
             levelTextField.y = Y;
             levelTextField.maxWidth = fieldWidth;
             groupDisplayObject.addChild(levelTextField);
 
-            Y += this.lineHeight * 1.5;
+            Y += this.lineHeight;
         }
 
         // Score
-        this.lineHeight = 72 * MemoryMatch.stageScaleFactor;
         if (this.playerScore >= this.playerBestScore) {
             fontSizeBestScore = fontSizeBoldBig;
         } else {
@@ -593,13 +615,16 @@ MemoryMatch.GameResults = {
         }
         levelTextField = new createjs.Text("Score:", fontSize, fontColor);
         levelTextField.textAlign = "left";
+        levelTextField.textBaseline = "middle";
         levelTextField.x = leftX;
         levelTextField.y = Y;
         levelTextField.maxWidth = fieldWidth;
+        this.addTextBackgroundSprite(groupDisplayObject, textBackgroundSpriteSource, levelTextField, rightX * 1.02);
         groupDisplayObject.addChild(levelTextField);
 
         levelTextField = new createjs.Text(MemoryMatch.formatNumber("###,###.", this.playerScore), fontSizeBestScore, fontColor);
         levelTextField.textAlign = "right";
+        levelTextField.textBaseline = "middle";
         levelTextField.x = rightX;
         levelTextField.y = Y;
         levelTextField.maxWidth = fieldWidth;
@@ -608,6 +633,7 @@ MemoryMatch.GameResults = {
         this.currentScoreTextField = levelTextField;
 
         // Best Score
+        Y += this.lineHeight;
         if (this.playerScore >= this.playerBestScore) {
             fontSizeBestScore = fontSizeBold;
             fontSizeDifference = 0;
@@ -620,15 +646,18 @@ MemoryMatch.GameResults = {
         }
         levelTextField = new createjs.Text("Best:", fontSize, fontColor);
         levelTextField.textAlign = "left";
+        levelTextField.textBaseline = "middle";
         levelTextField.x = leftX;
-        levelTextField.y = Y + (this.lineHeight * 1.2);
+        levelTextField.y = Y;
         levelTextField.maxWidth = fieldWidth;
+        this.addTextBackgroundSprite(groupDisplayObject, textBackgroundSpriteSource, levelTextField, rightX * 1.02);
         groupDisplayObject.addChild(levelTextField);
 
         levelTextField = new createjs.Text(MemoryMatch.formatNumber("###,###.", this.playerBestScore), fontSizeBestScore, fontColor);
         levelTextField.textAlign = "right";
+        levelTextField.textBaseline = "middle";
         levelTextField.x = rightX;
-        levelTextField.y = Y + this.lineHeight + fontSizeDifference;
+        levelTextField.y = Y;
         levelTextField.maxWidth = fieldWidth;
         levelTextField.name = 'bestscore';
         groupDisplayObject.addChild(levelTextField);
@@ -718,19 +747,19 @@ MemoryMatch.GameResults = {
             yOffset = this.backgroundHeight * 0.77,
             buttonBaseColor = MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].liteColor;
 
-        gameButton = MemoryMatch.GUIButton({name: "home", tag: ++ buttonTagCounter, disabled: false, callback: this.onClickHome.bind(this), baseUp: "gameOverButtonBase", buttonBaseColor: buttonBaseColor, iconUp: "gameOverHomeUp", iconOver: "gameOverHomeOver", iconDown: "gameOverHomeOver"});
+        gameButton = MemoryMatch.GUIButton({name: "home", tag: ++ buttonTagCounter, disabled: false, callback: this.onClickHome.bind(this), baseUp: "gameOverButtonBase", buttonBaseColor: buttonBaseColor, iconUp: "gameOverMenuIcon", iconOver: "gameOverMenuDownIcon", iconDown: "gameOverMenuDownIcon"});
         gameButton.setTransform(xOffset, yOffset, buttonScale, buttonScale);
         groupDisplayObject.addChild(gameButton);
         this.buttonInstances.push(gameButton);
 
         xOffset += buttonWidth + buttonMargin;
-        gameButton = MemoryMatch.GUIButton({name: "replay", tag: ++ buttonTagCounter, disabled: false, callback: this.onClickReplay.bind(this), baseUp: "gameOverButtonBase", buttonBaseColor: buttonBaseColor, iconUp: "optionsRefreshIcon", iconOver: "optionsRefreshIconOver", iconDown: "optionsRefreshIconOver"});
+        gameButton = MemoryMatch.GUIButton({name: "replay", tag: ++ buttonTagCounter, disabled: false, callback: this.onClickReplay.bind(this), baseUp: "gameOverButtonBase", buttonBaseColor: buttonBaseColor, iconUp: "gameOverReplayIcon", iconOver: "gameOverReplayDownIcon", iconDown: "gameOverReplayDownIcon"});
         gameButton.setTransform(xOffset, yOffset, buttonScale, buttonScale);
         groupDisplayObject.addChild(gameButton);
         this.buttonInstances.push(gameButton);
 
         xOffset += buttonWidth + buttonMargin;
-        gameButton = MemoryMatch.GUIButton({name: "continue", tag: ++ buttonTagCounter, disabled: false, callback: this.onClickNext.bind(this), baseUp: "gameOverButtonBase", buttonBaseColor: buttonBaseColor, iconUp: "gameOverNextUp", iconOver: "gameOverNextOver", iconDown: "gameOverNextOver"});
+        gameButton = MemoryMatch.GUIButton({name: "continue", tag: ++ buttonTagCounter, disabled: false, callback: this.onClickNext.bind(this), baseUp: "gameOverButtonBase", buttonBaseColor: buttonBaseColor, iconUp: "gameOverNextIcon", iconOver: "gameOverNextDownIcon", iconDown: "gameOverNextDownIcon"});
         gameButton.setTransform(xOffset, yOffset, buttonScale, buttonScale);
         groupDisplayObject.addChild(gameButton);
         this.buttonInstances.push(gameButton);
@@ -789,6 +818,7 @@ MemoryMatch.GameResults = {
         // remove all display objects and object references:
         var i;
 
+        this.spriteData = null;
         this.primaryColorFilter = null;
         this.secondaryColorFilter = null;
         if (this.backgroundSoundInstance != null) {
