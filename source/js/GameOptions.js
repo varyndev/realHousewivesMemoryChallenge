@@ -192,7 +192,9 @@ MemoryMatch.GameOptions = {
             createjs.Sound.setMute(muteFlag);
             createjs.Sound.play("soundTap");
             MemoryMatch.GameOptions.audioOnButtonInstance.visible = ! muteFlag;
+            MemoryMatch.GameOptions.audioOnButtonInstance.setEnabled( ! muteFlag);
             MemoryMatch.GameOptions.audioOffButtonInstance.visible = muteFlag;
+            MemoryMatch.GameOptions.audioOffButtonInstance.setEnabled(muteFlag);
             MemoryMatch.audioMute = muteFlag;
             MemoryMatch.updateUserDataObject(null);
         }
@@ -321,6 +323,7 @@ MemoryMatch.GameOptions = {
             buttonMargin = 42 * MemoryMatch.stageScaleFactor,
             groupWidth,
             groupHeight,
+            muted,
             xOffset,
             yOffset,
             buttonBaseColor = MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].liteColor;
@@ -345,9 +348,11 @@ MemoryMatch.GameOptions = {
 
         // Audio button always shows but we need to set the correct state
         buttonTagCounter ++;
+        muted = createjs.Sound.getMute();
         gameButton = MemoryMatch.GUIButton({name: "audioOn", tag: buttonTagCounter, disabled: false, callback: this.onClickAudio.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, iconUp: "optionsSmallSoundOnIcon", iconOver: "optionsSmallSoundOnDownIcon", iconDown: "optionsSmallSoundOnDownIcon"});
         gameButton.setTransform(xOffset, yOffset, 1, 1);
-        gameButton.visible = ! createjs.Sound.getMute();
+        gameButton.visible = ! muted;
+        gameButton.setEnabled( ! muted);
         buttonsGroup.addChild(gameButton);
         this.audioOnButtonInstance = gameButton;
         this.buttonInstances.push(gameButton);
@@ -355,7 +360,8 @@ MemoryMatch.GameOptions = {
         buttonTagCounter ++;
         gameButton = MemoryMatch.GUIButton({name: "audioOff", tag: buttonTagCounter, disabled: false, callback: this.onClickAudio.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, iconUp: "optionsSmallSoundOffIcon", iconOver: "optionsSmallSoundOffDownIcon", iconDown: "optionsSmallSoundOffDownIcon"});
         gameButton.setTransform(xOffset, yOffset, 1, 1);
-        gameButton.visible = createjs.Sound.getMute();
+        gameButton.visible = muted;
+        gameButton.setEnabled(muted);
         buttonsGroup.addChild(gameButton);
         this.audioOffButtonInstance = gameButton;
         this.buttonInstances.push(gameButton);
