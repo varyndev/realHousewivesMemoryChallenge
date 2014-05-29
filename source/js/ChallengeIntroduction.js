@@ -180,13 +180,13 @@ MemoryMatch.ChallengeIntroduction = {
             xOffset = (this.backgroundWidth - totalWidth) * 0.5,
             yOffset = this.backgroundHeight * 0.75;
 
-        gameButton = MemoryMatch.GUIButton({name: "home", tag: ++ buttonTagCounter, disabled: false, callback: this.onClickHome.bind(this), baseUp: spriteFrame, buttonBaseColor: buttonBaseColor, iconUp: "gameOverHomeUp", iconOver: "gameOverHomeOver", iconDown: "gameOverHomeOver"});
+        gameButton = MemoryMatch.GUIButton({name: "home", tag: ++ buttonTagCounter, disabled: false, callback: this.onClickHome.bind(this), baseUp: spriteFrame, buttonBaseColor: buttonBaseColor, iconUp: "gameOverMenuIcon", iconOver: "gameOverMenuDownIcon", iconDown: "gameOverMenuDownIcon"});
         gameButton.setTransform(xOffset, yOffset, buttonScale, buttonScale);
         this.groupDisplayObject.addChild(gameButton);
         this.buttonInstances.push(gameButton);
 
         xOffset += buttonWidth + buttonMargin;
-        gameButton = MemoryMatch.GUIButton({name: "continue", tag: ++ buttonTagCounter, disabled: false, callback: this.onClickContinue.bind(this), baseUp: spriteFrame, buttonBaseColor: buttonBaseColor, iconUp: "gameOverNextUp", iconOver: "gameOverNextOver", iconDown: "gameOverNextOver"});
+        gameButton = MemoryMatch.GUIButton({name: "continue", tag: ++ buttonTagCounter, disabled: false, callback: this.onClickContinue.bind(this), baseUp: spriteFrame, buttonBaseColor: buttonBaseColor, iconUp: "gameOverNextIcon", iconOver: "gameOverNextDownIcon", iconDown: "gameOverNextDownIcon"});
         gameButton.setTransform(xOffset, yOffset, buttonScale, buttonScale);
         this.groupDisplayObject.addChild(gameButton);
         this.buttonInstances.push(gameButton);

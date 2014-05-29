@@ -348,23 +348,46 @@ MemoryMatch.GameResults = {
     },
 
     setupAward: function (groupDisplayObject) {
-        var slotFrame = "gameOverStarEmpty",
-            slotWidth = MemoryMatch.GameSetup.guiSpritesheet1Frames.frames[MemoryMatch.GameSetup.guiSpritesheet1Frames.animations[slotFrame][0]][2],
-            slotSprite,
-            hiFiveWord,
-            topMargin = Math.floor(this.backgroundHeight * 0.18),
-            startX = Math.floor((this.backgroundWidth - slotWidth) * 0.5);
 
-        slotSprite = new createjs.Sprite(this.spriteData, slotFrame);
-        slotSprite.framerate = 1;
-        slotSprite.visible = true;
-        slotSprite.setTransform(startX, topMargin);
-        groupDisplayObject.addChild(slotSprite);
-        hiFiveWord = MemoryMatch.hiFiveEarnedInCurrentGame();
-        if (hiFiveWord != null && hiFiveWord.length > 0) {
-            MemoryMatch.showMessageBalloon(null, hiFiveWord + '!', 0, slotSprite.x, slotSprite.y);
+        // Show Award instead of stars
+
+        var spriteFrame = 'mapTrophy',
+            spriteFrames = MemoryMatch.GameSetup.mapSpritesheetFrames,
+            spriteData = new createjs.SpriteSheet(spriteFrames),
+            imageSprite = new createjs.Sprite(spriteData, spriteFrame),
+            spriteSize = MemoryMatch.getSpriteFrameSize(spriteFrames, spriteFrame),
+            position,
+            i,
+            gemPosition,
+            gemName,
+            landNumber,
+            hiFiveWord,
+            numberOfLevels = MemoryMatch.GameSetup.levels.length;
+
+        position = {x: this.backgroundWidth * 0.5, y: this.backgroundHeight * 0.22};
+        imageSprite.setTransform(position.x, position.y, 0.5, 0.5, 0, 0, 0, spriteSize.width * 0.5, spriteSize.height * 0.5);
+        imageSprite.framerate = 0;
+        this.groupDisplayObject.addChild(imageSprite);
+
+        // position gems relative to award position, accounting for the center registration of the award sprite
+        spriteFrame = 'mapAwardLand';
+        position.x -= spriteSize.width * 0.25;
+        position.y -= spriteSize.height * 0.25;
+        for (i = 0; i < numberOfLevels; i ++) {
+            landNumber = i + 1;
+            gemName = spriteFrame + landNumber.toString();
+            imageSprite = new createjs.Sprite(spriteData, gemName);
+            gemPosition = MemoryMatch.GameSetup.levels[i].gemPosition;
+            imageSprite.setTransform(position.x + (gemPosition.x * 0.5 * MemoryMatch.stageScaleFactor), position.y + (gemPosition.y * 0.5 * MemoryMatch.stageScaleFactor), 0.5, 0.5);
+            imageSprite.name = gemName;
+            imageSprite.visible = MemoryMatch.didUserBeatChallenge(landNumber);
+            this.groupDisplayObject.addChild(imageSprite);
         }
 
+        hiFiveWord = MemoryMatch.hiFiveEarnedInCurrentGame();
+        if (hiFiveWord != null && hiFiveWord.length > 0) {
+            MemoryMatch.showMessageBalloon(null, hiFiveWord + '!', 0, imageSprite.x, imageSprite.y);
+        }
     },
 
     setupTitleText: function (groupDisplayObject) {

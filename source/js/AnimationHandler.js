@@ -25,16 +25,18 @@ MemoryMatch.AnimationHandler = {
         var spriteDataParticles = {
             images: [assetLoader.getResult("particles")],
             frames: MemoryMatch.GameSetup.particleFrames
-            };
+            },
+            spriteSize;
 
         this.canvas = _canvas;
         this.stage = _stage;
         this.imgSeq = new Image();
-        // set up an animation instance, which we will clone
+        // set up an animation instance, which we will clone when we need to
         this.spriteTemplateParticles = new createjs.Sprite(new createjs.SpriteSheet(spriteDataParticles));
         this.spriteTemplateStars = new createjs.Sprite(new createjs.SpriteSheet(MemoryMatch.GameSetup.guiSpritesheet1Frames), 'particleStar');
-        this.spriteTemplateStars.regX = (56 * MemoryMatch.stageScaleFactor) * 0.5;
-        this.spriteTemplateStars.regY = (56 * MemoryMatch.stageScaleFactor) * 0.5;
+        spriteSize = MemoryMatch.getSpriteFrameSize(MemoryMatch.GameSetup.guiSpritesheet1Frames, 'particleStar');
+        this.spriteTemplateStars.regX = spriteSize.width * 0.5;
+        this.spriteTemplateStars.regY = spriteSize.height * 0.5;
         this.allParticles = [];
         this.activeCardQueue = [];
         this.maxHeight = this.canvas.height;
@@ -491,7 +493,7 @@ MemoryMatch.AnimationHandler = {
         for (i = 0; i < numberOfStars; i ++) {
             // clone the original star, so we don't need to set shared properties:
             particle = this.spriteTemplateStars.clone();
-            particle.framerate = 1;
+            particle.framerate = 0;
 
             // set display properties:
             particle.x = x;
@@ -520,7 +522,7 @@ MemoryMatch.AnimationHandler = {
             if (particle.vA === 0) {
                 particle.vA = -0.5;
             }
-            particle.gotoAndStop(12);
+            particle.gotoAndStop('particleStar');
             this.stage.addChild(particle);
             this.allParticles.push(particle);
         }

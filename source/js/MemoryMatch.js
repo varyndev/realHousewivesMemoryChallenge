@@ -170,8 +170,6 @@ var MemoryMatch = {
     monteMoves: null,
     monteIndex: 0,
     monteNumberOfMoves: 0,
-    nemesisGroupDisplayObject: null,
-    nemesisCharacter: null,
     chainsGroupDisplayObject: null,
     chainsStreakCount: 0,
     eyeSpyImageGroups: null,
@@ -752,7 +750,7 @@ var MemoryMatch = {
 
         // clean up these assets now as we left them on the stage while Results was showing
         if (MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.NEMESIS) {
-            MemoryMatch.removeNemesisCharacter();
+            MemoryMatch.Nemesis.removeNemesisCharacter();
         } else if (MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.CHAINS) {
             MemoryMatch.removeChainsSprites();
         }
@@ -813,7 +811,7 @@ var MemoryMatch = {
         // perform clean up tasks when a level is completed
         switch (MemoryMatch.gameType) {
             case MemoryMatch.GAMEPLAYTYPE.NEMESIS:
-                MemoryMatch.removeNemesisCharacter();
+                MemoryMatch.Nemesis.removeNemesisCharacter();
                 break;
             case MemoryMatch.GAMEPLAYTYPE.CHAINS:
                 MemoryMatch.removeChainsSprites();
@@ -1263,7 +1261,7 @@ var MemoryMatch = {
                     cardAnimator.showAtBegin = true;
                     break;
                 case MemoryMatch.GAMEPLAYTYPE.NEMESIS:
-                    MemoryMatch.layoutNemesisPath();
+                    MemoryMatch.Nemesis.layoutNemesisPath();
                     break;
                 case MemoryMatch.GAMEPLAYTYPE.CHAINS:
                     MemoryMatch.chainCount = [0];
@@ -1531,146 +1529,6 @@ var MemoryMatch = {
             lastUsedValue = nextValue;
         }
         return shuffledArray;
-    },
-
-    layoutNemesisPath: function () {
-        var spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.guiSpritesheet1Frames),
-            numberOfTiles = MemoryMatch.levelTolerance, // how many misses allowed == # of tiles
-            maxTiles = 10,
-            tileFrame = "nemisisSquarePurple",
-            nemesisFrame = "spiderMoveFrame1",
-            tileSize = MemoryMatch.getSpriteFrameSize(MemoryMatch.GameSetup.guiSpritesheet1Frames, tileFrame),
-            nemesisSize = MemoryMatch.getSpriteFrameSize(MemoryMatch.GameSetup.guiSpritesheet1Frames, nemesisFrame),
-            tileGap = 0,
-            tileSpriteSource = new createjs.Sprite(spriteData, tileFrame),
-            i,
-            tileSprite,
-            totalHeightRequired = numberOfTiles * (tileSize.height + tileGap),
-            deadTile = numberOfTiles,
-            almostDeadTile = numberOfTiles - 1,
-            warningTile = numberOfTiles - 2,
-            animator,
-            tileAnimationDelay = 500;
-
-        if (MemoryMatch.nemesisGroupDisplayObject == null) {
-            MemoryMatch.nemesisGroupDisplayObject = new createjs.Container();
-            MemoryMatch.stage.addChild(MemoryMatch.nemesisGroupDisplayObject);
-
-            MemoryMatch.nemesisCharacter = new createjs.Sprite(spriteData, nemesisFrame);
-            tileSpriteSource.framerate = 1;
-            for (i = 0; i < maxTiles; i ++) {
-                tileSprite = tileSpriteSource.clone();
-                tileSprite.setTransform(0, (tileSize.height * i) + tileGap, 1, 1, 0, 0, 0, 0, 0);
-                switch (i) {
-                    case warningTile:
-                        tileFrame = "nemisisSquareYellow";
-                        break;
-                    case almostDeadTile:
-                        tileFrame = "nemisisSquareOrange";
-                        break;
-                    case deadTile:
-                        tileFrame = "nemisisSquareRed";
-                        break
-                    default:
-                        tileFrame = "nemisisSquarePurple";
-                        break;
-                }
-                tileSprite.gotoAndStop(tileFrame);
-                if (i < numberOfTiles + 1) {
-                    tileSprite.visible = false;
-                    animator = MemoryMatch.AnimationHandler.addToAnimationQueue(tileSprite,  tileAnimationDelay + (250 * i), 0, false, null, null);
-                    animator.showAtBegin = true;
-                } else {
-                    tileSprite.visible = false;
-                }
-                MemoryMatch.nemesisGroupDisplayObject.addChild(tileSprite);
-            }
-            MemoryMatch.nemesisCharacter.name = "nemesis";
-            MemoryMatch.nemesisCharacter.framerate = 30;
-            MemoryMatch.nemesisCharacter.gotoAndStop("stand");
-            MemoryMatch.nemesisCharacter.setTransform((tileSize.width - nemesisSize.width) * 0.5, (tileSize.height - nemesisSize.height) * 0.5, 1, 1, 0, 0, 0, 0, 0);
-            MemoryMatch.nemesisCharacter.alpha = 0;
-            MemoryMatch.nemesisCharacter.visible = false;
-            animator = MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.nemesisCharacter,  tileAnimationDelay + (150 * i), 0, false, null, null);
-            animator.showAtBegin = true;
-            animator.vAlpha = 0.05;
-            animator.endAlpha = 1;
-            MemoryMatch.nemesisGroupDisplayObject.addChild(MemoryMatch.nemesisCharacter);
-        } else {
-            for (i = 0; i < maxTiles; i ++) {
-                tileSprite = MemoryMatch.nemesisGroupDisplayObject.getChildAt(i);
-                switch (i) {
-                    case warningTile:
-                        tileFrame = "nemisisSquareYellow";
-                        break;
-                    case almostDeadTile:
-                        tileFrame = "nemisisSquareOrange";
-                        break;
-                    case deadTile:
-                        tileFrame = "nemisisSquareRed";
-                        break
-                    default:
-                        tileFrame = "nemisisSquarePurple";
-                        break;
-                }
-                tileSprite.gotoAndStop(tileFrame);
-                if (i < numberOfTiles + 1) {
-                    tileSprite.visible = false;
-                    animator = MemoryMatch.AnimationHandler.addToAnimationQueue(tileSprite,  tileAnimationDelay + (250 * i), 0, false, null, null);
-                    animator.showAtBegin = true;
-                } else {
-                    tileSprite.visible = false;
-                }
-            }
-            MemoryMatch.moveNemesisCharacter();
-        }
-        MemoryMatch.nemesisGroupDisplayObject.setTransform(MemoryMatch.stageWidth - tileSize.width - (tileSize.width * 0.25), (MemoryMatch.stageHeight - totalHeightRequired) * 0.5, 1, 1, 0, 0, 0, 0, 0);
-        MemoryMatch.stageUpdated = true;
-    },
-
-    moveNemesisCharacter: function () {
-        var tileFrame = "nemisisSquarePurple",
-            tileSize = MemoryMatch.getSpriteFrameSize(MemoryMatch.GameSetup.guiSpritesheet1Frames, tileFrame),
-            tileGap = 0,
-            distance,
-            finalPosition,
-            animator;
-
-        if (MemoryMatch.nemesisCharacter != null) {
-            MemoryMatch.nemesisCharacter.gotoAndPlay("walk");
-            finalPosition = MemoryMatch.missCount * (tileSize.height + tileGap);
-            distance = finalPosition - MemoryMatch.nemesisCharacter.y;
-            animator = MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.nemesisCharacter, 100, 0, false, null, MemoryMatch.moveNemesisCharacterComplete);
-            animator.vY = distance / (0.9 * MemoryMatch.fps);
-            animator.endY = finalPosition;
-            MemoryMatch.stageUpdated = true;
-        }
-    },
-
-    moveNemesisCharacterComplete: function () {
-        if (MemoryMatch.nemesisCharacter != null) {
-            MemoryMatch.nemesisCharacter.gotoAndStop("stand");
-            MemoryMatch.stageUpdated = true;
-        }
-    },
-
-    awakeNemesisCharacter: function () {
-        // only advance animation if character is in the idle state
-        if (MemoryMatch.nemesisCharacter != null) {
-            MemoryMatch.nemesisCharacter.gotoAndPlay("idle");
-            MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.nemesisCharacter, 1000, 0, false, null, MemoryMatch.moveNemesisCharacterComplete);
-            MemoryMatch.stageUpdated = true;
-        }
-    },
-
-    removeNemesisCharacter: function () {
-        if (MemoryMatch.nemesisGroupDisplayObject != null) {
-            MemoryMatch.nemesisGroupDisplayObject.removeAllChildren();
-            MemoryMatch.stage.removeChild(MemoryMatch.nemesisGroupDisplayObject);
-            MemoryMatch.nemesisCharacter = null;
-            MemoryMatch.nemesisGroupDisplayObject = null;
-            MemoryMatch.stageUpdated = true;
-        }
     },
 
     layoutChainsPath: function () {
@@ -1995,7 +1853,7 @@ var MemoryMatch = {
                 MemoryMatch.cardSelected = null;
 
                 if (MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.NEMESIS) {
-                    MemoryMatch.awakeNemesisCharacter();
+                    MemoryMatch.Nemesis.awakeNemesisCharacter();
                 }
                 if ((MemoryMatch.matchCount < MemoryMatch.gameMatchCount)) {
                     MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.CHOOSE_FIRST_CARD;
@@ -2014,7 +1872,7 @@ var MemoryMatch = {
                 MemoryMatch.cardSelected.select();
 
                 if (MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.NEMESIS) {
-                    MemoryMatch.moveNemesisCharacter();
+                    MemoryMatch.Nemesis.moveNemesisCharacter();
                 }
             }
         } else {

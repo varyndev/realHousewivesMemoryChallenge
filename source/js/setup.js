@@ -217,20 +217,20 @@ MemoryMatch.GameSetup = {
             {id: 26, category: 'tip', text: 'Don\'t worry so much about keeping up with the Joneses and give it another try!'}
         ],
         [
-            {id: 9, category: 'win', text: 'Get the pinot ready, because it\'s turtle time! Congrats!'},
-            {id: 10, category: 'win', text: 'You have a taste for winning, and winning has a taste for you!'},
-            {id: 11, category: 'win', text: 'To some people, winning elegantly just comes naturally.'},
-            {id: 12, category: 'tip', text: 'A true New Yorker never backs down, and you\'re no exception. Holla!'},
-            {id: 24, category: 'tip', text: 'You may not be the sharpest tool in the shed, but you\'re pretty, so don\'t give up!'},
-            {id: 25, category: 'tip', text: 'You\'re living the American dream, one mistake at a time... Try again!'}
-        ],
-        [
             {id: 13, category: 'win', text: 'You\'re a Jersey girl, no one can knock you down!'},
             {id: 14, category: 'win', text: 'Haters are gonna hate, but you just win, win, win!'},
             {id: 15, category: 'win', text: 'Life is short, you have no time for losing!'},
             {id: 21, category: 'tip', text: 'Life is about change, sometimes you just have to roll with the punches. Give it another shot!'},
             {id: 21, category: 'tip', text: 'When times get tough, you learn who your real friends are. Don\'t give up!'},
             {id: 22, category: 'tip', text: 'You\'ve faced your share of challenges, but you\'re tougher than you look, so try again!'}
+        ],
+        [
+            {id: 9, category: 'win', text: 'Get the pinot ready, because it\'s turtle time! Congrats!'},
+            {id: 10, category: 'win', text: 'You have a taste for winning, and winning has a taste for you!'},
+            {id: 11, category: 'win', text: 'To some people, winning elegantly just comes naturally.'},
+            {id: 12, category: 'tip', text: 'A true New Yorker never backs down, and you\'re no exception. Holla!'},
+            {id: 24, category: 'tip', text: 'You may not be the sharpest tool in the shed, but you\'re pretty, so don\'t give up!'},
+            {id: 25, category: 'tip', text: 'You\'re living the American dream, one mistake at a time... Try again!'}
         ]],
     mapLevelPositions: [
         [{x:166, y:140}, {x:236, y:340}, {x:110, y:510}, {x:230, y:650}, {x:90, y:804}, {x:300, y:840}, {x:370, y:1020}],

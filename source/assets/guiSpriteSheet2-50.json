@@ -2,32 +2,40 @@
 "images": ["guiSpriteSheet2-50.png"],
 "frames": [
 
-    [369, 0, 48, 88], 
-    [321, 0, 48, 88], 
-    [214, 0, 107, 89], 
-    [107, 0, 107, 89], 
-    [0, 0, 107, 89], 
-    [214, 89, 107, 34], 
-    [107, 89, 107, 34], 
-    [0, 89, 107, 34], 
-    [417, 56, 107, 56], 
-    [417, 0, 107, 56]
+    [343, 112, 61, 83], 
+    [0, 0, 128, 147], 
+    [128, 0, 108, 127], 
+    [236, 0, 94, 114], 
+    [437, 88, 48, 88], 
+    [437, 0, 48, 88], 
+    [0, 147, 107, 89], 
+    [128, 127, 107, 89], 
+    [236, 114, 107, 89], 
+    [107, 216, 107, 34], 
+    [235, 203, 107, 34], 
+    [343, 195, 107, 34], 
+    [330, 56, 107, 56], 
+    [330, 0, 107, 56]
 ],
 "animations": {
     
-        "nemisis1":[0], 
-        "nemisis1Empty":[1], 
-        "nemisis2":[2], 
-        "nemisis2Empty":[3], 
-        "nemisis2Empty2":[4], 
-        "nemisis3":[5], 
-        "nemisis3Empty":[6], 
-        "nemisis3Empty2":[7], 
-        "nemisis4":[8], 
-        "nemisis4Empty":[9]
+        "chainCard":[0], 
+        "chainCardSlot1":[1], 
+        "chainCardSlot2":[2], 
+        "chainCardSlot3":[3], 
+        "nemesis1":[4], 
+        "nemesis1Empty":[5], 
+        "nemesis2":[6], 
+        "nemesis2Empty":[7], 
+        "nemesis2Empty2":[8], 
+        "nemesis3":[9], 
+        "nemesis3Empty":[10], 
+        "nemesis3Empty2":[11], 
+        "nemesis4":[12], 
+        "nemesis4Empty":[13]
 },
 "texturepacker": [
-        "SmartUpdateHash: $TexturePacker:SmartUpdate:eb59ee254457050b52c788be9dcc1913:77e213274fb42ca7e7a786d57c273cd0:f04d9b0743f934a5da82649e036e9904$",
+        "SmartUpdateHash: $TexturePacker:SmartUpdate:9161e3ee48c16d447b7c56181bd73eda:e6e577e86044ba2a1e30bd98c195728c:bf8c97c0b8f80eaa05a59e209830dfff$",
         "Created with TexturePacker (http://www.texturepacker.com) for EaselJS"
 ]
 }

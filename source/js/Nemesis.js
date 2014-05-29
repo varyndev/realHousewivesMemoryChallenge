@@ -1,0 +1,188 @@
+/**
+ * Nemesis.js
+ *
+ * Handle all the logic to control the Nemesis Character and tile layout.
+ * Use this object in the following interface:
+ * 1. layoutNemesisPath will place all Nemesis sprites on the stage
+ * 2. moveNemesisCharacter will update the state of the sprites based on number of misses. Typically called when player misses.
+ * 3. awakeNemesisCharacter will show an animation when player makes a match or on idle.
+ * 4. removeNemesisCharacter when Nemesis games is over and remove sprites from stage
+ *
+ */
+
+MemoryMatch.Nemesis = {
+    nemesisGroupDisplayObject: null,
+    spriteFrameData: null,
+    bottleTopFilled: "nemesis1",
+    bottleTopEmpty: "nemesis1Empty",
+    bottleNeckFilled: "nemesis2",
+    bottleNeckEmpty: "nemesis2Empty",
+    bottleNeckEmptyEmpty: "nemesis2Empty2",
+    bottleSectionFilled: "nemesis3",
+    bottleSectionEmpty: "nemesis3Empty",
+    bottleSectionEmptyEmpty: "nemesis3Empty2",
+    bottleBottomFilled: "nemesis4",
+    bottleBottomEmpty: "nemesis4Empty",
+
+    layoutNemesisPath: function () {
+
+        // function to call to initialize and layout the Nemesis tiles and setup the character
+
+        var spriteData,
+            numberOfPieces = MemoryMatch.levelTolerance, // how many misses allowed == # of pieces
+            topPieceSize,
+            middlePieceSize,
+            tileSize,
+            nextY,
+            missCounter,
+            i,
+            bottleTopSprite,
+            bottleNeckSprite,
+            bottleMiddleSprite,
+            bottleMiddleSpriteCloned,
+            bottleBottomSprite,
+            numberOfMiddlePieces,
+            groupWidth,
+            groupCenterX;
+
+        this.spriteFrameData = MemoryMatch.GameSetup.guiSpritesheet2Frames;
+        spriteData = new createjs.SpriteSheet(this.spriteFrameData);
+
+        if (this.nemesisGroupDisplayObject == null) {
+            this.nemesisGroupDisplayObject = new createjs.Container();
+            MemoryMatch.stage.addChild(this.nemesisGroupDisplayObject);
+        } else {
+            this.nemesisGroupDisplayObject.removeAllChildren();
+        }
+
+        numberOfMiddlePieces = numberOfPieces - 3;
+        nextY = 0;
+        missCounter = 1;
+        bottleTopSprite = new createjs.Sprite(spriteData, this.bottleTopFilled);
+        bottleTopSprite.framerate = 1;
+        bottleTopSprite.name = 'miss' + missCounter.toString();
+        bottleTopSprite.gotoAndStop(this.bottleTopFilled);
+        topPieceSize = MemoryMatch.getSpriteFrameSize(this.spriteFrameData, this.bottleTopFilled);
+
+        missCounter ++;
+        bottleNeckSprite = new createjs.Sprite(spriteData, this.bottleNeckFilled);
+        bottleNeckSprite.framerate = 1;
+        bottleNeckSprite.name = 'miss' + missCounter.toString();
+        bottleNeckSprite.gotoAndStop(this.bottleNeckFilled);
+        tileSize = MemoryMatch.getSpriteFrameSize(this.spriteFrameData, this.bottleNeckFilled);
+        groupWidth = tileSize.width; // all remaining pieces have the same width
+        groupCenterX = groupWidth * 0.5;
+
+        bottleTopSprite.setTransform(groupCenterX, nextY, 1, 1, 0, 0, 0, topPieceSize.width * 0.5, 0);
+        nextY += topPieceSize.height;
+        bottleNeckSprite.setTransform(groupCenterX, nextY, 1, 1, 0, 0, 0, groupCenterX, 0);
+        nextY += tileSize.height;
+        this.nemesisGroupDisplayObject.addChild(bottleTopSprite);
+        this.nemesisGroupDisplayObject.addChild(bottleNeckSprite);
+
+        bottleMiddleSprite = new createjs.Sprite(spriteData, this.bottleSectionFilled);
+        bottleMiddleSprite.framerate = 1;
+        bottleMiddleSprite.gotoAndStop(this.bottleSectionFilled);
+        middlePieceSize = MemoryMatch.getSpriteFrameSize(this.spriteFrameData, this.bottleSectionFilled);
+        for (i = 0; i < numberOfMiddlePieces; i ++) {
+            missCounter ++;
+            if (i == 0) {
+                bottleMiddleSpriteCloned = bottleMiddleSprite;
+            } else {
+                bottleMiddleSpriteCloned = bottleMiddleSprite.clone();
+            }
+            this.nemesisGroupDisplayObject.addChild(bottleMiddleSpriteCloned);
+            bottleMiddleSpriteCloned.setTransform(groupCenterX, nextY, 1, 1, 0, 0, 0, middlePieceSize.width * 0.5, 0);
+            bottleMiddleSpriteCloned.name = 'miss' + missCounter.toString();
+            nextY += middlePieceSize.height;
+        }
+
+        missCounter ++;
+        bottleBottomSprite = new createjs.Sprite(spriteData, this.bottleBottomFilled);
+        bottleBottomSprite.framerate = 1;
+        bottleBottomSprite.name = 'miss' + missCounter.toString();
+        bottleBottomSprite.gotoAndStop(this.bottleBottomFilled);
+        tileSize = MemoryMatch.getSpriteFrameSize(this.spriteFrameData, this.bottleBottomFilled);
+        bottleBottomSprite.setTransform(groupCenterX, nextY, 1, 1, 0, 0, 0, tileSize.width * 0.5, 0);
+        nextY += tileSize.height;
+        this.nemesisGroupDisplayObject.addChild(bottleBottomSprite);
+
+        this.nemesisGroupDisplayObject.setTransform(MemoryMatch.stageWidth - tileSize.width - (tileSize.width * 0.14), (MemoryMatch.stageHeight - nextY) * 0.5, 1, 1, 0, 0, 0, 0, 0);
+        MemoryMatch.stageUpdated = true;
+    },
+
+    moveNemesisCharacter: function () {
+
+        // function called when the Nemesis character should advance.
+        // Based on number of misses update all the sections.
+
+        var spritePiece,
+            numberOfPieces = MemoryMatch.levelTolerance,
+            numberOfMisses = MemoryMatch.missCount,
+            nextFrame,
+            i;
+
+        for (i = 1; i <= numberOfPieces; i ++) {
+            spritePiece = this.nemesisGroupDisplayObject.getChildByName('miss' + i.toString());
+            if (spritePiece != null) {
+                if (i <= numberOfMisses) { // set to empty
+                    if (i == 1) { // top
+                        nextFrame = this.bottleTopEmpty;
+                    } else if (i == 2) { // neck
+                        if (numberOfMisses > i) {
+                            nextFrame = this.bottleNeckEmptyEmpty;
+                        } else {
+                            nextFrame = this.bottleNeckEmpty;
+                        }
+                    } else if (i == numberOfPieces) { // bottom
+                        nextFrame = this.bottleBottomEmpty;
+                    } else { // middle
+                        if (numberOfMisses > i) {
+                            nextFrame = this.bottleSectionEmptyEmpty;
+                        } else {
+                            nextFrame = this.bottleSectionEmpty;
+                        }
+                    }
+                } else {
+                    if (i == 1) { // top
+                        nextFrame = this.bottleTopFilled;
+                    } else if (i == 2) { // neck
+                        nextFrame = this.bottleNeckFilled;
+                    } else if (i == numberOfPieces) { // bottom
+                        nextFrame = this.bottleBottomFilled;
+                    } else { // middle
+                        nextFrame = this.bottleSectionFilled;
+                    }
+                }
+            }
+            spritePiece.gotoAndStop(nextFrame);
+        }
+    },
+
+    awakeNemesisCharacter: function () {
+
+        // function to call to update a Nemesis character animation. Only advance animation if character is in the idle state.
+
+    },
+
+    removeNemesisCharacter: function () {
+
+        // funciton to call to remove the Nemesis from the stage.
+
+        if (this.nemesisGroupDisplayObject != null) {
+            this.spriteFrameData = null;
+            this.nemesisGroupDisplayObject.removeAllChildren();
+            MemoryMatch.stage.removeChild(this.nemesisGroupDisplayObject);
+            this.nemesisCharacterSprite = null;
+            this.nemesisGroupDisplayObject = null;
+            MemoryMatch.stageUpdated = true;
+        }
+    },
+
+    moveNemesisCharacterComplete: function () {
+        if (this.nemesisCharacterSprite != null) {
+            this.nemesisCharacterSprite.gotoAndStop("stand");
+            MemoryMatch.stageUpdated = true;
+        }
+    }
+};
