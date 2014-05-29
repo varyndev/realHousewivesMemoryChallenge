@@ -1538,10 +1538,11 @@ var MemoryMatch = {
     },
 
     layoutChainsPath: function () {
-        var spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.guiSpritesheet1Frames),
+        var spriteFrames = MemoryMatch.GameSetup.guiSpritesheet2Frames,
+            spriteData = new createjs.SpriteSheet(spriteFrames),
             numberOfTiles = MemoryMatch.levelTolerance, // how many misses allowed == # of tiles
             tileFrame = "chainCardSlot1",
-            tileSize = MemoryMatch.getSpriteFrameSize(MemoryMatch.GameSetup.guiSpritesheet1Frames, tileFrame),
+            tileSize = MemoryMatch.getSpriteFrameSize(spriteFrames, tileFrame),
             tileGap = 0,
             tileHeight,
             tileSpriteSource = new createjs.Sprite(spriteData, tileFrame),
@@ -1573,7 +1574,7 @@ var MemoryMatch = {
             }
             tileSprite.gotoAndStop(tileFrame);
             tileSprite.name = "chainstile" + i;
-            tileSize = MemoryMatch.getSpriteFrameSize(MemoryMatch.GameSetup.guiSpritesheet1Frames, tileFrame);
+            tileSize = MemoryMatch.getSpriteFrameSize(spriteFrames, tileFrame);
             tileSprite.setTransform(tileSize.width * -0.5, (tileHeight * i) + tileGap, 1, 1, 0, 0, 0, 0, 0);
             tileSprite.width = tileSize.width;
             tileSprite.height = tileSize.height;
@@ -1601,17 +1602,19 @@ var MemoryMatch = {
     showChainsMatches: function () {
         // display the match summary for the chains game.
         var chains = MemoryMatch.chainCount,
+            spriteFrames = MemoryMatch.GameSetup.guiSpritesheet2Frames,
             i,
             m,
             x = 0,
             y = 0,
             offset = 0,
+            xGap = [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],// these are fudge to get the cards to align, for some reason there is extra alpha gaps in the sprites
+            yGap = [24, 16, 4, 4, 4, 4, 4, 4, 4, 4],
             matchCount,
-            spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.guiSpritesheet1Frames),
+            spriteData = new createjs.SpriteSheet(spriteFrames),
             cardFrame = "chainCard",
-            cardSize = MemoryMatch.getSpriteFrameSize(MemoryMatch.GameSetup.guiSpritesheet1Frames, cardFrame),
+            cardSize = MemoryMatch.getSpriteFrameSize(spriteFrames, cardFrame),
             cardSpriteName,
-            tileSpriteName,
             cardSprite,
             tileSprite,
             totalMatchCounter = 0,
@@ -1624,11 +1627,10 @@ var MemoryMatch = {
             for (i = 0; i < chains.length; i ++) {
                 matchCount = chains[i];
                 offset = 0;
-                tileSpriteName = "chainstile" + i;
-                tileSprite = MemoryMatch.chainsGroupDisplayObject.getChildByName(tileSpriteName);
+                tileSprite = MemoryMatch.chainsGroupDisplayObject.getChildByName("chainstile" + i);
                 if (tileSprite != null) {
-                    x = tileSprite.x + (tileSprite.width - cardSize.width) * 0.5;
-                    y = tileSprite.y + (tileSprite.height - cardSize.height) * 0.5;
+                    x = tileSprite.x + (xGap[i] * MemoryMatch.stageScaleFactor) + (tileSprite.width - cardSize.width) * 0.5;
+                    y = tileSprite.y + (yGap[i] * MemoryMatch.stageScaleFactor) + (tileSprite.height - cardSize.height) * 0.5;
                     for (m = 0; m < matchCount; m ++) {
                         totalMatchCounter ++;
                         cardSpriteName = "chaincard" + totalMatchCounter;
@@ -1646,7 +1648,7 @@ var MemoryMatch = {
                             cardSprite.visible = true;
                         }
                         cardSprite.setTransform(x + offset, y - offset);
-                        offset += 4;
+                        offset += 4 * MemoryMatch.stageScaleFactor;
                     }
                 }
             }
