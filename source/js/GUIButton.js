@@ -51,6 +51,7 @@ MemoryMatch.GUIButton = function (parameters) {
     guiButton.buttonBaseColor = null;
     guiButton.spriteSheet = guiButton.spriteData;
     guiButton.buttonColorFilter = null;
+    guiButton.refreshParent = null;
 
     guiButton.setParameters = function (parameters) {
         if (parameters != null) {
@@ -286,6 +287,9 @@ MemoryMatch.GUIButton = function (parameters) {
         }
         if (this.iconSprite != null && spriteFrameIcon != null) {
             this.iconSprite.gotoAndStop(spriteFrameIcon);
+        }
+        if (this.refreshParent != null && this.refreshParent.refreshCache != null) {
+            this.refreshParent.refreshCache();
         }
         if (clicked) {
             this.onClicked(event);

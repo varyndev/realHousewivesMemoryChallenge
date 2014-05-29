@@ -223,6 +223,10 @@ MemoryMatch.GameResults = {
         }
     },
 
+    refreshCache: function () {
+        this.groupDisplayObject.updateCache();
+    },
+
     showBackgroundImage: function (canvas) {
         // This method will scale the background image to fit the current stage.
         var popupImageAsset = assetLoader.getResult("popup-bg"),
@@ -749,18 +753,21 @@ MemoryMatch.GameResults = {
 
         gameButton = MemoryMatch.GUIButton({name: "home", tag: ++ buttonTagCounter, disabled: false, callback: this.onClickHome.bind(this), baseUp: "gameOverButtonBase", buttonBaseColor: buttonBaseColor, iconUp: "gameOverMenuIcon", iconOver: "gameOverMenuDownIcon", iconDown: "gameOverMenuDownIcon"});
         gameButton.setTransform(xOffset, yOffset, buttonScale, buttonScale);
+        gameButton.refreshParent = this;
         groupDisplayObject.addChild(gameButton);
         this.buttonInstances.push(gameButton);
 
         xOffset += buttonWidth + buttonMargin;
         gameButton = MemoryMatch.GUIButton({name: "replay", tag: ++ buttonTagCounter, disabled: false, callback: this.onClickReplay.bind(this), baseUp: "gameOverButtonBase", buttonBaseColor: buttonBaseColor, iconUp: "gameOverReplayIcon", iconOver: "gameOverReplayDownIcon", iconDown: "gameOverReplayDownIcon"});
         gameButton.setTransform(xOffset, yOffset, buttonScale, buttonScale);
+        gameButton.refreshParent = this;
         groupDisplayObject.addChild(gameButton);
         this.buttonInstances.push(gameButton);
 
         xOffset += buttonWidth + buttonMargin;
         gameButton = MemoryMatch.GUIButton({name: "continue", tag: ++ buttonTagCounter, disabled: false, callback: this.onClickNext.bind(this), baseUp: "gameOverButtonBase", buttonBaseColor: buttonBaseColor, iconUp: "gameOverNextIcon", iconOver: "gameOverNextDownIcon", iconDown: "gameOverNextDownIcon"});
         gameButton.setTransform(xOffset, yOffset, buttonScale, buttonScale);
+        gameButton.refreshParent = this;
         groupDisplayObject.addChild(gameButton);
         this.buttonInstances.push(gameButton);
     },
