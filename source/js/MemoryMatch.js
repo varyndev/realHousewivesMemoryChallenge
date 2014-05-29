@@ -690,7 +690,13 @@ var MemoryMatch = {
         if (nextRequest == "home") {
             MemoryMatch.goToHomeScreen();
         } else { // "continue"
-            MemoryMatch.startNextGame();
+            if (MemoryMatch.isChallengeGameUnlocked(MemoryMatch.gameLevel)) {
+                MemoryMatch.isChallengeGame = true;
+                MemoryMatch.gameNumber = 1;
+                MemoryMatch.startNextGame();
+            } else {
+                MemoryMatch.goToHomeScreen();
+            }
         }
     },
 
