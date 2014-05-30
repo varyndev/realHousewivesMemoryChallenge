@@ -761,15 +761,16 @@ MemoryMatch.GameResults = {
     },
 
     setupButtons: function (groupDisplayObject) {
-        // 3 buttons centered horizontal at bottom of popup
+        // 2 or 3 buttons centered horizontal at bottom of popup
 
         var spriteFrame = "gameOverButtonBase",
+            numberOfButtons = MemoryMatch.gamePlayState == MemoryMatch.GAMEPLAYSTATE.WIN ? 3 : 2,
             buttonScale = 1.0,
             buttonWidth = MemoryMatch.GameSetup.guiSpritesheet1Frames.frames[MemoryMatch.GameSetup.guiSpritesheet1Frames.animations[spriteFrame][0]][2] * buttonScale,
             gameButton,
             buttonTagCounter = 0,
             buttonMargin = 0, // 8 * MemoryMatch.stageScaleFactor;
-            totalWidth = (3 * (buttonWidth + buttonMargin)) - buttonMargin,
+            totalWidth = (numberOfButtons * (buttonWidth + buttonMargin)) - buttonMargin,
             xOffset = (this.backgroundWidth - totalWidth) * 0.5,
             yOffset = this.backgroundHeight * 0.77,
             buttonBaseColor = MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].liteColor;
@@ -787,12 +788,14 @@ MemoryMatch.GameResults = {
         groupDisplayObject.addChild(gameButton);
         this.buttonInstances.push(gameButton);
 
-        xOffset += buttonWidth + buttonMargin;
-        gameButton = MemoryMatch.GUIButton({name: "continue", tag: ++ buttonTagCounter, disabled: false, callback: this.onClickNext.bind(this), baseUp: "gameOverButtonBase", buttonBaseColor: buttonBaseColor, iconUp: "gameOverNextIcon", iconOver: "gameOverNextDownIcon", iconDown: "gameOverNextDownIcon"});
-        gameButton.setTransform(xOffset, yOffset, buttonScale, buttonScale);
-        gameButton.refreshParent = this;
-        groupDisplayObject.addChild(gameButton);
-        this.buttonInstances.push(gameButton);
+        if (MemoryMatch.gamePlayState == MemoryMatch.GAMEPLAYSTATE.WIN) {
+            xOffset += buttonWidth + buttonMargin;
+            gameButton = MemoryMatch.GUIButton({name: "continue", tag: ++ buttonTagCounter, disabled: false, callback: this.onClickNext.bind(this), baseUp: "gameOverButtonBase", buttonBaseColor: buttonBaseColor, iconUp: "gameOverNextIcon", iconOver: "gameOverNextDownIcon", iconDown: "gameOverNextDownIcon"});
+            gameButton.setTransform(xOffset, yOffset, buttonScale, buttonScale);
+            gameButton.refreshParent = this;
+            groupDisplayObject.addChild(gameButton);
+            this.buttonInstances.push(gameButton);
+        }
     },
 
     isShowing: function () {
