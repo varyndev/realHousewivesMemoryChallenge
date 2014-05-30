@@ -346,8 +346,8 @@ MemoryMatch.GameGUI = {
             timerTextFieldAnimate.name = 'timerAnimate';
 
             backgroundShape = new createjs.Shape();
-            backgroundShape.graphics.beginFill("#FF0").drawRoundRect(0, 0, containerWidth, containerHeight, 8);
-            backgroundShape.alpha = 0.4;
+            backgroundShape.graphics.beginFill("#000000").drawRoundRect(0, 0, containerWidth, containerHeight, 8);
+            backgroundShape.alpha = 0.2;
             backgroundShape.name = 'background';
 
             containerGroup = new createjs.Container();
@@ -493,8 +493,8 @@ MemoryMatch.GameGUI = {
         matchCountWidth = this.width * 0.18;
         matchCountHeight = this.hudHeight * 0.68;
         backgroundShape = new createjs.Shape();
-        backgroundShape.graphics.beginFill("#CCCCCC").drawRect(0, 0, matchCountWidth, matchCountHeight);
-        backgroundShape.alpha = 0.3;
+        backgroundShape.graphics.beginFill("#000000").drawRect(0, 0, matchCountWidth, matchCountHeight);
+        backgroundShape.alpha = 0.2;
         backgroundShape.setTransform((this.width - matchCountWidth) * 0.5, this.hudHeight * 0.14);
         this.groupDisplayObject.addChild(backgroundShape);
 

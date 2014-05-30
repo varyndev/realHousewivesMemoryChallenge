@@ -2846,6 +2846,15 @@ var MemoryMatch = {
                 // user finished a game but was in the lose state, in this case force a Results screen to appear. Clicking Next on that will determine what to do next.
                 if (MemoryMatch.isChallengeGame) {
                     updateUserStats = true;
+
+
+
+
+                    MemoryMatch.userBeatAllChallengesFirstTime = true;
+
+
+
+
                     if (MemoryMatch.challengePassed()) {
                         MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.WIN;
                         if ( ! MemoryMatch.userBeatAllChallenges) {

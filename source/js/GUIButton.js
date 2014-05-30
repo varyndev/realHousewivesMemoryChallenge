@@ -291,9 +291,9 @@ MemoryMatch.GUIButton = function (parameters) {
         if (this.refreshParent != null && this.refreshParent.refreshCache != null) {
             this.refreshParent.refreshCache();
         }
-        if (clicked) {
-            this.onClicked(event);
-        }
+//        if (clicked) {
+//            this.onClicked(event);
+//        }
     };
 
     guiButton.onClicked = function (event) {

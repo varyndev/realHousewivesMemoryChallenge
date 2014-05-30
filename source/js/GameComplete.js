@@ -58,7 +58,7 @@ MemoryMatch.GameComplete = {
         if (this.backgroundSoundInstance !== null) {
             this.backgroundSoundInstance.play({delay: 0, loop: -1});
         } else {
-            this.backgroundSoundInstance = createjs.Sound.play("soundChallenge", {delay: 0, loop: -1});
+            this.backgroundSoundInstance = createjs.Sound.play("soundWin", {delay: 0, loop: -1});
         }
         if (this.stateCompleteCallback !== null) {
             // stateCompleteCallback();
@@ -68,16 +68,16 @@ MemoryMatch.GameComplete = {
     closePopup: function (closeEventType) {
         this.isEnabled = false;
         // begin animation, then once close is complete send notification
-        if (MemoryMatch.ChallengeIntroduction.stateCompleteCallback !== null) {
-            MemoryMatch.ChallengeIntroduction.stateCompleteCallback(closeEventType);
+        if (MemoryMatch.GameComplete.stateCompleteCallback !== null) {
+            MemoryMatch.GameComplete.stateCompleteCallback(closeEventType);
         }
-        MemoryMatch.ChallengeIntroduction.killScreen();
+        MemoryMatch.GameComplete.killScreen();
     },
 
     onClickHome: function (event) {
         createjs.Sound.play("soundTap");
-        if (MemoryMatch.ChallengeIntroduction.isEnabled) {
-            MemoryMatch.ChallengeIntroduction.closePopup("home");
+        if (MemoryMatch.GameComplete.isEnabled) {
+            MemoryMatch.GameComplete.closePopup("home");
         }
     },
 
