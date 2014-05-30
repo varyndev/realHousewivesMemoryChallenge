@@ -200,11 +200,15 @@ MemoryMatch.GameSetup = {
         {id: 20, name: "Picasso", value: 275, icon: "picasso", description: "Beat 10 pattern boards."},
         {id: 21, name: "Eagle Eye", value: 275, icon: "eagleeye", description: "Beat 15 eyespy boards."}
     ],
+    winState: {
+        title: "Congratulations! You Win!",
+        subtitle: "You completed the Real Housewives Memory Challenge! You\'re the hottest gamer in the country!",
+        info: "Now try to go back and improve your scores, earn all the achievements, and earn 3 stars in every game! You can do it!"},
     tips: [[
             {id: 1, category: 'win', text: 'When the going gets tough, you just get stronger and stronger!'},
             {id: 2, category: 'win', text: 'You\'re the hottest gamer in the O.C.!'},
             {id: 3, category: 'win', text: 'You like to have fun, and you do play games (pretty well we might add)!'},
-            {id: 17, category: 'tip', text: 'Life isn\'t always diamonds and rose, so don\'t give up!'},
+            {id: 17, category: 'tip', text: 'Life isn\'t always diamonds and roses, so don\'t give up!'},
             {id: 18, category: 'tip', text: 'In Beverly Hills, the higher you climb, the farther you fall. You\'ll get it next time!'},
             {id: 22, category: 'tip', text: 'Everyone loves a comeback story, especially starring you!'}
         ],

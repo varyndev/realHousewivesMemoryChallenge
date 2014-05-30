@@ -9,7 +9,7 @@ var assetLoader;
 
 
 var MemoryMatch = {
-    GameVersion: "1.0.58",
+    GameVersion: "1.0.59",
     platform: "unknown",
     locale: "en-US",
     debugMode: true,
@@ -25,11 +25,12 @@ var MemoryMatch = {
         LEVELSELECT:         4,
         PLAY:                5,
         RESULTS:             6,
-        SHOWAD:              7,
-        ACHIEVEMENTS:        8,
-        LEADERBOARD:         9,
-        STORE:              10,
-        MOREGAMES:          11,
+        GAMECOMPLETE:        7,
+        SHOWAD:             21,
+        ACHIEVEMENTS:       22,
+        LEADERBOARD:        23,
+        STORE:              24,
+        MOREGAMES:          25,
         LOADING:            97,
         IDLE:               98,
         UNKNOWN:            99
@@ -130,6 +131,7 @@ var MemoryMatch = {
     challengeGameId: 0,
     challengeAdvanceStreak: 0,
     userBeatAllChallenges: false,
+    userBeatAllChallengesFirstTime: false,
     gameNumber: 1,
     isChallengeGame: false,
     gameType: 0,
@@ -718,9 +720,6 @@ var MemoryMatch = {
     levelUp: function () {
         MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.LEVEL_UP;
         MemoryMatch.gameLevel = MemoryMatch.getNextGameLevel();
-        if (MemoryMatch.gameLevel == 1) {
-            // TODO: Check to see if we should show the final game over win at this time
-        }
         MemoryMatch.gameNumber = 1;
         MemoryMatch.startLevel(MemoryMatch.gameLevel);
     },
@@ -764,7 +763,13 @@ var MemoryMatch = {
             // If the next button was requested we need to determine where to go next based on the users current situation
             if (MemoryMatch.canUserAdvance()) {
                 if (MemoryMatch.isChallengeGame) {
-                    MemoryMatch.levelUp();
+                    // When a Challenge game is completed check if the game has been completed
+                    if (MemoryMatch.userBeatAllChallengesFirstTime) {
+                        MemoryMatch.userBeatAllChallengesFirstTime = false;
+                        MemoryMatch.showGameCompleted();
+                    } else {
+                        MemoryMatch.levelUp();
+                    }
                 } else if (MemoryMatch.gameNumber == MemoryMatch.numberOfGamesInLevel) {
                     MemoryMatch.startLevelChallenge();
                 } else {
@@ -811,6 +816,17 @@ var MemoryMatch = {
             MemoryMatch.GameResults.setup(MemoryMatch.stage, MemoryMatch.getGameData(MemoryMatch.isChallengeGame), MemoryMatch.levelResultsClosed);
             MemoryMatch.GameResults.buildScreen(true);
         }
+    },
+
+    showGameCompleted: function () {
+        MemoryMatch.GameGUI.show(false);
+        MemoryMatch.changeGameState(MemoryMatch.GAMESTATE.GAMECOMPLETE);
+        MemoryMatch.GameComplete.setup(MemoryMatch.stage, MemoryMatch.gameCompleteClosed);
+        MemoryMatch.GameComplete.buildScreen(true);
+    },
+
+    gameCompleteClosed: function (request) {
+        MemoryMatch.goToHomeScreen();
     },
 
     levelCleanUp: function () {
@@ -2835,6 +2851,7 @@ var MemoryMatch = {
                         if ( ! MemoryMatch.userBeatAllChallenges) {
                             MemoryMatch.userBeatAllChallenges = MemoryMatch.didUserBeatAllChallenges();
                             if (MemoryMatch.userBeatAllChallenges) {
+                                MemoryMatch.userBeatAllChallengesFirstTime = true;
                                 earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.ACONTENDER) | earnedAchievement;
                             }
                         }
@@ -3105,6 +3122,7 @@ var MemoryMatch = {
             userDataObject = this.UserData.getUserDataObject();
             if (userDataObject != null) {
                 this.audioMute = userDataObject['audioMute'] | false;
+                this.userBeatAllChallenges = userDataObject['beatAllChallenges'] | false;
                 this.lastPlayedDate = userDataObject['lastPlayedDate'];
                 createjs.Sound.setMute(this.audioMute);
             }
@@ -3149,6 +3167,7 @@ var MemoryMatch = {
                 userDataObject['lastPlayedDate'] = this.lastPlayedDate;
             }
             userDataObject['audioMute'] = this.audioMute;
+            userDataObject['beatAllChallenges'] = this.userBeatAllChallenges;
             MemoryMatch.UserData.flush();
         }
     },
@@ -3224,6 +3243,7 @@ var MemoryMatch = {
             }
         } else { // otherwise save what we know we are supposed to be tracking
             userDataObject['audioMute'] = this.audioMute;
+            userDataObject['beatAllChallenges'] = this.userBeatAllChallenges;
             updated = true;
         }
         if (updated) {
@@ -3352,15 +3372,16 @@ var MemoryMatch = {
 
     isChallengeGameUnlocked: function (levelNumber) {
 
-        // The Challenge game is unlocked if player earned at least 2 stars on all games in the level
+        // The Challenge game is unlocked if player earned at least 1 stars on all games in the level
 
         var i,
+            starsNeeded = 1,
             gamesWithTwoOrMoreStars = 0,
             gameScoresCollection = MemoryMatch.UserData.getLevelDataItem(levelNumber, "levelScoreCollection");
 
         if (gameScoresCollection != null && gameScoresCollection.length > 0) {
             for (i = 0; i < gameScoresCollection.length; i ++) {
-                if (gameScoresCollection[i].starsEarned > 1) {
+                if (gameScoresCollection[i].starsEarned >= starsNeeded) {
                     gamesWithTwoOrMoreStars ++;
                 } else {
                     break;
@@ -3914,7 +3935,7 @@ var MemoryMatch = {
                     // get title
                     achievementInfo = MemoryMatch.getAchievementInfo(id);
                     if (achievementInfo != null) {
-                        MemoryMatch.showMessageBalloon("iconParts", achievementInfo.name, null, MemoryMatch.stageWidth * 0.5, MemoryMatch.stageHeight * 0.96);
+                        MemoryMatch.showMessageBalloon("awardsCardIcon", achievementInfo.name, null, MemoryMatch.stageWidth * 0.5, MemoryMatch.stageHeight * 0.96);
                     }
                 } else { // Just show the message at location indicated
                     MemoryMatch.showMessageBalloon(null, id.title, id.points, id.x, id.y);
