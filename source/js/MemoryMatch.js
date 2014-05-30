@@ -2849,8 +2849,8 @@ var MemoryMatch = {
 
 
 
-
-                    MemoryMatch.userBeatAllChallengesFirstTime = true;
+// TODO: Remove before release
+//                    MemoryMatch.userBeatAllChallengesFirstTime = true;
 
 
 
@@ -4349,15 +4349,20 @@ var MemoryMatch = {
             cardBackSprite,
             cardFrontSprite,
             cardMatchCounter,
+            cardMatchCounterBg,
+            cardMatchCounterBgSize,
+            guiSpriteFrames = MemoryMatch.GameSetup.guiSpritesheet1Frames,
+            guiSpriteData = new createjs.SpriteSheet(guiSpriteFrames),
             cardBorderWidth = MemoryMatch.cardMargin * 2.0,
             card = new createjs.Container();
 
         card.SPRITEINDEX = {
             SPRITE_HIGHLIGHT:    0,
             SPRITE_CARDBACK:     1,
-            SPRITE_CARDFACE:     2,
+            SPRITE_MATCHBG:      2,
             SPRITE_MATCHCOUNTER: 3,
-            SPRITE_SPECIALFX:    4
+            SPRITE_CARDFACE:     4,
+            SPRITE_SPECIALFX:    5
         };
 
         // layer 0 is the card highlight to indicate the card is selected
@@ -4372,34 +4377,39 @@ var MemoryMatch = {
         cardBackSprite.gotoAndStop(0);
         cardBackSprite.visible = false;
 
-        // layer 2 is the card face
-        cardFrontSprite = new createjs.Sprite(spriteData, 0);
-        card.addChild(cardFrontSprite);
-        cardFrontSprite.gotoAndStop(cardValue);
-        cardFrontSprite.visible = false;
+        // layer 2 & 3 is the card match counter
+        cardMatchCounterBg = new createjs.Sprite(guiSpriteData, 'cardCounter');
+        card.addChild(cardMatchCounterBg);
+//        cardMatchCounterBg.gotoAndStop('cardCounter');
+        cardMatchCounterBg.visible = false;
+        cardMatchCounterBgSize = MemoryMatch.getSpriteFrameSize(guiSpriteFrames, 'cardCounter');
 
-        // layer 3 is the card match counter
-        cardMatchCounter = new createjs.Text("", MemoryMatch.getScaledFontSize(56) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.cardMatchCounterColor);
+        cardMatchCounter = new createjs.Text("", MemoryMatch.getScaledFontSize(MemoryMatch.GameSetup.cardMatchCounterSize) + " " + MemoryMatch.GameSetup.cardMatchCounterFont, MemoryMatch.GameSetup.cardMatchCounterColor);
+        cardMatchCounter.textAlign = 'center';
         if (cardMatchCounterPositionIndex === null) {
             cardMatchCounterPositionIndex = 4;
         }
         switch (cardMatchCounterPositionIndex) {
             case 1: // top-left
-                cardMatchCounterPosition = {x: 36 * MemoryMatch.stageScaleFactor, y: 24 * MemoryMatch.stageScaleFactor};
+                cardMatchCounterPosition = {x: MemoryMatch.cardHeight * 0.16, y: MemoryMatch.cardHeight * 0.28};
                 cardMatchCounter.textAlign = "left";
+                cardMatchCounterBg.setTransform(0, 0, 1, 1, 0, 0, 0, 0, 0);
                 break;
             case 2: // top-right
-                cardMatchCounterPosition = {x: MemoryMatch.cardWidth - (36 * MemoryMatch.stageScaleFactor), y: 24 * MemoryMatch.stageScaleFactor};
+                cardMatchCounterPosition = {x: MemoryMatch.cardHeight * 0.84, y: MemoryMatch.cardHeight * 0.28};
                 cardMatchCounter.textAlign = "right";
+                cardMatchCounterBg.setTransform(MemoryMatch.cardWidth, 0, 1, 1, 0, 0, 0, cardMatchCounterBgSize.width, 0);
                 break;
-            case 3: // bottom-left
-                cardMatchCounterPosition = {x: 36 * MemoryMatch.stageScaleFactor, y: MemoryMatch.cardHeight - (86 * MemoryMatch.stageScaleFactor)};
+            case 4: // bottom-left
+                cardMatchCounterPosition = {x: MemoryMatch.cardHeight * 0.16, y: MemoryMatch.cardHeight * 0.72};
                 cardMatchCounter.textAlign = "left";
+                cardMatchCounterBg.setTransform(0, MemoryMatch.cardHeight, 1, 1, 0, 0, 0, 0, cardMatchCounterBgSize.height);
                 break;
-            case 4: // bottom-right
+            case 3: // bottom-right
             default:
-                cardMatchCounterPosition = {x: MemoryMatch.cardWidth - (36 * MemoryMatch.stageScaleFactor), y: MemoryMatch.cardHeight - (86 * MemoryMatch.stageScaleFactor)};
+                cardMatchCounterPosition = {x: MemoryMatch.cardHeight * 0.84, y: MemoryMatch.cardHeight * 0.72};
                 cardMatchCounter.textAlign = "right";
+                cardMatchCounterBg.setTransform(MemoryMatch.cardWidth, MemoryMatch.cardHeight, 1, 1, 0, 0, 0, cardMatchCounterBgSize.width, cardMatchCounterBgSize.height);
                 break;
         }
         cardMatchCounter.x = cardMatchCounterPosition.x; // Place counter in lower right corner of card
@@ -4407,6 +4417,12 @@ var MemoryMatch = {
         cardMatchCounter.maxWidth = 86 * MemoryMatch.stageScaleFactor; // allow 2 digits at scale
         card.addChild(cardMatchCounter);
         cardMatchCounter.visible = false;
+
+        // layer 4 is the card face
+        cardFrontSprite = new createjs.Sprite(spriteData, 0);
+        card.addChild(cardFrontSprite);
+        cardFrontSprite.gotoAndStop(cardValue);
+        cardFrontSprite.visible = false;
 
         card.bounds = new createjs.Rectangle(MemoryMatch.cardMargin * -1.0, MemoryMatch.cardMargin * -1.0, MemoryMatch.cardWidth + cardBorderWidth, MemoryMatch.cardHeight + cardBorderWidth);
         card.cardNum = cardNumber;
@@ -4436,23 +4452,28 @@ var MemoryMatch = {
             this.updateCache();
         }
 
+        card.kill = function () {
+            card.removeAllChildren();
+            guiSpriteFrames = null;
+            guiSpriteData = null;
+        }
+
         card.toggleFace = function () {
             var cardBack = this.getChildAt(this.SPRITEINDEX.SPRITE_CARDBACK),
                 cardFace = this.getChildAt(this.SPRITEINDEX.SPRITE_CARDFACE),
-                matchCounter = this.getChildAt(this.SPRITEINDEX.SPRITE_MATCHCOUNTER);
+                showingMatchCounter = false;
 
-            MemoryMatch.debugLog("Match counter " + this.matchCounter + " card sprite " + matchCounter.toString());
             if (cardBack.visible && ! cardFace.visible) {
                 cardBack.visible = false;
                 cardFace.visible = true;
-                matchCounter.visible = false;
             } else {
                 cardBack.visible = true;
                 cardFace.visible = false;
                 if (this.matchCount > 0) {
-                    matchCounter.visible = true;
+                    showingMatchCounter = true;
                 }
             }
+            this.showMatchCounter(showingMatchCounter);
             this.updateCache();
         }
 
@@ -4508,7 +4529,7 @@ var MemoryMatch = {
             if (cardSelectType == 1) {
                 centerX = MemoryMatch.cardWidth * 0.5;
                 centerY = MemoryMatch.cardHeight * 0.5;
-                shapeFx = this.addChild(new createjs.Shape());
+                shapeFx = this.addChild(new createjs.Shape()); // TODO: Must be at layer SPRITEINDEX.SPRITE_SPECIALFX
                 shapeFx.graphics.setStrokeStyle(4, "round").beginStroke("#FFFFFF").drawCircle(0, 0, 5).drawCircle(0, 0, 10);
                 shapeFx.setTransform(centerX, centerY, 1, 1);
                 shapeFx.alpha = 0.6;
@@ -4556,15 +4577,27 @@ var MemoryMatch = {
             createjs.Sound.play("soundCardFlip");
         }
 
+        card.showMatchCounter = function (showFlag) {
+            var matchCounter = card.getChildAt(card.SPRITEINDEX.SPRITE_MATCHCOUNTER),
+                matchCounterBg = card.getChildAt(card.SPRITEINDEX.SPRITE_MATCHBG);
+
+            if (matchCounter != null && matchCounterBg != null) {
+                if (showFlag == null) {
+                    showFlag = true;
+                }
+                matchCounterBg.visible = showFlag;
+                matchCounter.visible = showFlag;
+            }
+        }
+
         card.flipAnimationPhaseTwo = function (card) {
             var cardAnimator,
-                cardImage = card.getChildAt(card.SPRITEINDEX.SPRITE_CARDFACE),
-                matchCounter = card.getChildAt(card.SPRITEINDEX.SPRITE_MATCHCOUNTER);
+                cardImage = card.getChildAt(card.SPRITEINDEX.SPRITE_CARDFACE);
 
             cardImage.visible = true;
             card.seenCount ++;
             if (card.matchCounter > 0) {
-                matchCounter.visible = false;
+                card.showMatchCounter(false);
             }
             cardAnimator = MemoryMatch.AnimationHandler.addToAnimationQueue(card, 0, 0, false, null, card.flipAnimationComplete);
             if (cardAnimator != null) {
@@ -4577,13 +4610,12 @@ var MemoryMatch = {
         card.unflipAnimationPhaseTwo = function (card) {
             var cardBack = card.getChildAt(card.SPRITEINDEX.SPRITE_CARDBACK),
                 cardImage = card.getChildAt(card.SPRITEINDEX.SPRITE_CARDFACE),
-                matchCounter = card.getChildAt(card.SPRITEINDEX.SPRITE_MATCHCOUNTER),
                 cardAnimator;
 
             cardBack.visible = true;
             cardImage.visible = false;
             if (card.matchCounter > 0) {
-                matchCounter.visible = true;
+                card.showMatchCounter(true);
             }
             cardAnimator = MemoryMatch.AnimationHandler.addToAnimationQueue(card, 0, 0, false, null, card.flipAnimationComplete);
             if (cardAnimator != null) {
@@ -4625,12 +4657,11 @@ var MemoryMatch = {
         }
 
         card.showCard = function (cardToShow) {
-            var cardBackSprite = cardToShow.actor.getChildAt(card.SPRITEINDEX.SPRITE_CARDBACK),
-                matchCounter = cardToShow.actor.getChildAt(card.SPRITEINDEX.SPRITE_MATCHCOUNTER);
+            var cardBackSprite = cardToShow.actor.getChildAt(card.SPRITEINDEX.SPRITE_CARDBACK);
 
             createjs.Sound.play("soundCardDeal");
             cardBackSprite.visible = true;
-            matchCounter.visible = cardToShow.actor.matchCounter > 0;
+            cardToShow.actor.showMatchCounter(cardToShow.actor.matchCounter > 0);
             cardToShow.actor.regX = MemoryMatch.cardWidth * 0.5;
             cardToShow.actor.regY = MemoryMatch.cardHeight * 0.5;
             cardToShow.actor.state = MemoryMatch.CARDSTATE.DOWN;
@@ -4660,38 +4691,39 @@ var MemoryMatch = {
         }
 
         card.setMatchCounter = function (startValue) {
-            var matchCounter = this.getChildAt(card.SPRITEINDEX.SPRITE_MATCHCOUNTER);
+            var matchCounter = this.getChildAt(card.SPRITEINDEX.SPRITE_MATCHCOUNTER),
+                showingMatchCounter = false;
 
             this.matchCounter = startValue;
             if (this.matchCounter > 0) {
                 matchCounter.text = this.matchCounter.toString();
-                matchCounter.visible = this.state == MemoryMatch.CARDSTATE.DOWN;
+                showingMatchCounter = this.state == MemoryMatch.CARDSTATE.DOWN;
             } else {
                 matchCounter.text = "";
-                matchCounter.visible = false;
             }
+            this.showMatchCounter(showingMatchCounter);
             this.updateCache();
         }
 
         card.updateMatchCounter = function () {
-            var matchCounter = this.getChildAt(card.SPRITEINDEX.SPRITE_MATCHCOUNTER);
+            var matchCounter = this.getChildAt(card.SPRITEINDEX.SPRITE_MATCHCOUNTER),
+                showingMatchCounter = false;
 
             if (this.matchCounter > 0) {
                 this.matchCounter --;
                 if (this.matchCounter > 0) {
                     matchCounter.text = this.matchCounter.toString();
-                    matchCounter.visible = true;
+                    showingMatchCounter = true;
                 } else {
-                    matchCounter.visible = false;
+                    matchCounter.text = "";
                 }
-            } else {
-                matchCounter.visible = false;
             }
+            this.showMatchCounter(showingMatchCounter);
             this.updateCache();
         }
 
         card.toString = function () {
-            return "CardNum=" + this.cardNum + "; Name=" + this.name + "; Value=" + this.value + "; State=" + this.state + "; Selected=" + (this.isSelected ? "YES" : "NO") + "; Seen=" + this.seenCount;
+            return "CardNum=" + this.cardNum + "; Name=" + this.name + "; Value=" + this.value + "; State=" + this.state + "; Selected=" + (this.isSelected ? "YES" : "NO") + "; Seen=" + this.seenCount + "; MatchCount=" + this.matchCounter.toString();
         }
         return card;
     },
