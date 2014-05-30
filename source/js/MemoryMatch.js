@@ -1560,10 +1560,13 @@ var MemoryMatch = {
             tileFrame = "chainCardSlot1",
             tileSize = MemoryMatch.getSpriteFrameSize(spriteFrames, tileFrame),
             tileGap = 0,
+            yGap = [24, 16, 4, 4, 4, 4, 4, 4, 4, 4],
             tileHeight,
             tileSpriteSource = new createjs.Sprite(spriteData, tileFrame),
+            tileNumberSource = new createjs.Text("1", MemoryMatch.getScaledFontSize(64) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColor),
             i,
             tileSprite,
+            tileText,
             totalHeightRequired = numberOfTiles * (tileSize.height + tileGap);
 
         if (MemoryMatch.chainsGroupDisplayObject == null) {
@@ -1574,9 +1577,12 @@ var MemoryMatch = {
         }
 
         tileSpriteSource.framerate = 1;
+        tileNumberSource.textAlign = 'center';
+        tileNumberSource.textBaseline = 'middle';
         tileHeight = tileSize.height; // the first tile is the tallest, use that for reference since all the other tiles are different heights!
         for (i = 0; i < numberOfTiles; i ++) {
             tileSprite = tileSpriteSource.clone();
+            tileText = tileNumberSource.clone();
             switch (i) {
                 case 0:
                     tileFrame = "chainCardSlot1";
@@ -1594,9 +1600,13 @@ var MemoryMatch = {
             tileSprite.setTransform(tileSize.width * -0.5, (tileHeight * i) + tileGap, 1, 1, 0, 0, 0, 0, 0);
             tileSprite.width = tileSize.width;
             tileSprite.height = tileSize.height;
+            tileText.name = "chainstext" + i;
+            tileText.text = (i + 1).toString();
+            tileText.setTransform(0, tileSprite.y + (yGap[i] * MemoryMatch.stageScaleFactor) + (tileSize.height * 0.5), 1, 1, 0, 0, 0, 0, 0);
             MemoryMatch.chainsGroupDisplayObject.addChild(tileSprite);
+            MemoryMatch.chainsGroupDisplayObject.addChild(tileText);
         }
-        MemoryMatch.chainsGroupDisplayObject.setTransform(MemoryMatch.stageWidth - (tileSize.width * 0.5), (MemoryMatch.stageHeight - totalHeightRequired) * 0.5, 1, 1, 0, 0, 0, 0, 0);
+        MemoryMatch.chainsGroupDisplayObject.setTransform(MemoryMatch.stageWidth - (tileSize.width * 0.8), (MemoryMatch.stageHeight - totalHeightRequired) * 0.5, 1, 1, 0, 0, 0, 0, 0);
         MemoryMatch.stageUpdated = true;
     },
 
@@ -1624,7 +1634,7 @@ var MemoryMatch = {
             x = 0,
             y = 0,
             offset = 0,
-            xGap = [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],// these are fudge to get the cards to align, for some reason there is extra alpha gaps in the sprites
+            xGap = [4, 4, 4, 4, 4, 4, 4, 4, 4, 4], // these are fudge to get the cards to align, for some reason there is extra alpha gaps in the sprites
             yGap = [24, 16, 4, 4, 4, 4, 4, 4, 4, 4],
             matchCount,
             spriteData = new createjs.SpriteSheet(spriteFrames),
