@@ -9,7 +9,7 @@ var assetLoader;
 
 
 var MemoryMatch = {
-    GameVersion: "1.0.59",
+    GameVersion: "1.0.60",
     platform: "unknown",
     locale: "en-US",
     debugMode: true,
@@ -3740,6 +3740,8 @@ var MemoryMatch = {
                     possibleMatches = (MemoryMatch.rows * MemoryMatch.columns) * 0.5;
                     if (MemoryMatch.missCount < 1) {
                         starsEarned = 3;
+                    } else if (possibleMatches > 5 && MemoryMatch.missCount < 2) {
+                        starsEarned = 3;
                     } else if (possibleMatches > 6 && MemoryMatch.missCount < 4) {
                         starsEarned = 2;
                     } else if (possibleMatches > 5 && MemoryMatch.missCount < 3) {
@@ -3752,10 +3754,18 @@ var MemoryMatch = {
                     break;
                 case MemoryMatch.GAMEPLAYTYPE.HAYSTACK:
                     possibleMatches = MemoryMatch.rows * MemoryMatch.columns;
-                    if (possibleMatches > 4) {
+                    if (possibleMatches > 6) {
                         if (MemoryMatch.missCount < 3) {
                             starsEarned = 3;
-                        } else if (MemoryMatch.missCount < 6) {
+                        } else if (MemoryMatch.missCount < 4) {
+                            starsEarned = 2;
+                        } else {
+                            starsEarned = 1;
+                        }
+                    } else if (possibleMatches > 4) {
+                        if (MemoryMatch.missCount < 2) {
+                            starsEarned = 3;
+                        } else if (MemoryMatch.missCount < 3) {
                             starsEarned = 2;
                         } else {
                             starsEarned = 1;
@@ -3763,7 +3773,7 @@ var MemoryMatch = {
                     } else {
                         if (MemoryMatch.missCount < 1) {
                             starsEarned = 3;
-                        } else if (MemoryMatch.missCount < 3) {
+                        } else if (MemoryMatch.missCount < 2) {
                             starsEarned = 2;
                         } else {
                             starsEarned = 1;
