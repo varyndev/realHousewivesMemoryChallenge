@@ -3740,13 +3740,13 @@ var MemoryMatch = {
                     possibleMatches = (MemoryMatch.rows * MemoryMatch.columns) * 0.5;
                     if (MemoryMatch.missCount < 1) {
                         starsEarned = 3;
-                    } else if (possibleMatches > 5 && MemoryMatch.missCount < 2) {
-                        starsEarned = 3;
-                    } else if (possibleMatches > 6 && MemoryMatch.missCount < 4) {
-                        starsEarned = 2;
-                    } else if (possibleMatches > 5 && MemoryMatch.missCount < 3) {
-                        starsEarned = 2;
                     } else if (possibleMatches > 4 && MemoryMatch.missCount < 2) {
+                        starsEarned = 3;
+                    } else if (possibleMatches > 5 && MemoryMatch.missCount < 4) {
+                        starsEarned = 2;
+                    } else if (possibleMatches > 4 && MemoryMatch.missCount < 3) {
+                        starsEarned = 2;
+                    } else if (possibleMatches > 3 && MemoryMatch.missCount < 2) {
                         starsEarned = 2;
                     } else {
                         starsEarned = 1;
