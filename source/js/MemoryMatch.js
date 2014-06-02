@@ -741,7 +741,7 @@ var MemoryMatch = {
     replayCurrentGame: function () {
         // Do this ONLY if a game is in progress
         MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.LOSE;
-        createjs.Sound.play("soundMiss", {delay: 100});
+        MemoryMatch.triggerSoundFx("soundMiss", {delay: 100});
         MemoryMatch.gameEndTime = Date.now();
         MemoryMatch.gamePaused = false;
         MemoryMatch.removeAllCards(MemoryMatch.restartGameRemoveCardThenRestart); // calls replayLastGame after cards are removed
@@ -939,7 +939,7 @@ var MemoryMatch = {
     },
 
     setImageSheet: function (spriteSheetAsset, spriteWidth, spriteHeight) {
-        MemoryMatch.debugLog("Loading sprites " + spriteSheetAsset + " size (" + spriteWidth + "," + spriteHeight + ")");
+//        MemoryMatch.debugLog("Loading sprites " + spriteSheetAsset + " size (" + spriteWidth + "," + spriteHeight + ")");
         MemoryMatch.imageSheetImage = assetLoader.getResult(spriteSheetAsset);
         MemoryMatch.imageSheetSpriteWidth = spriteWidth;
         MemoryMatch.imageSheetSpriteHeight = spriteHeight;
@@ -972,13 +972,18 @@ var MemoryMatch = {
         MemoryMatch.stageUpdated = true;
     },
 
+    triggerSoundFx: function (tag, params) {
+        MemoryMatch.debugLog("triggerSoundFx: " + tag);
+        createjs.Sound.play(tag, params);
+    },
+
     playNote: function (noteNumber) {
         if (noteNumber == null || noteNumber < 1) {
             noteNumber = 1;
         } else if (noteNumber > 8) {
             noteNumber = 8;
         }
-        createjs.Sound.play("note" + noteNumber.toString());
+        MemoryMatch.triggerSoundFx("note" + noteNumber.toString(), {interrupt: createjs.Sound.INTERRUPT_NONE, delay: 0, offset:0, loop: false, volume: 1});
     },
 
     setBoardSize: function (numRows, numColumns) {
@@ -1667,7 +1672,7 @@ var MemoryMatch = {
                             animationDelay = startAnimationDelay + (100 * m);
                             animator = MemoryMatch.AnimationHandler.addToAnimationQueue(cardSprite, startAnimationDelay + (100 * m), 0, false, null, null);
                             animator.showAtBegin = true;
-                            createjs.Sound.play("soundCardDeal", {delay: animationDelay});
+                            MemoryMatch.triggerSoundFx("soundCardDeal", {delay: animationDelay});
                         } else {
                             cardSprite.visible = true;
                         }
@@ -1876,7 +1881,7 @@ var MemoryMatch = {
                 isMatch = true;
                 earnedAchievement = MemoryMatch.cardsMatch(MemoryMatch.cardSelected, secondCardSelected);
                 if ( ! earnedAchievement) {
-                    createjs.Sound.play("soundCorrect", {delay: 250});
+                    MemoryMatch.triggerSoundFx("soundCorrect", {delay: 250});
                 }
 
                 // unselect both and remove cards
@@ -1893,7 +1898,7 @@ var MemoryMatch = {
             } else {
                 isMiss = true;
                 MemoryMatch.cardsDoNotMatch();
-                createjs.Sound.play("soundMiss", {delay: 500});
+                MemoryMatch.triggerSoundFx("soundMiss", {delay: 500});
 
                 // unselect the first card then unflip it after a delay
                 MemoryMatch.cardSelected.unselect();
@@ -1947,12 +1952,12 @@ var MemoryMatch = {
                 MemoryMatch.updateChainCount(true);
                 if ((MemoryMatch.matchCount >= MemoryMatch.gameMatchCount)) {
                     MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.WIN;
-                    createjs.Sound.play("soundCorrect", {delay: 250});
+                    MemoryMatch.triggerSoundFx("soundCorrect", {delay: 250});
                     MemoryMatch.gameEndTime = Date.now();
                     MemoryMatch.removeAllCards(MemoryMatch.gameCompleteRemoveCardThenAdvance); // user completed the game, but wait for cards to dissolve before advancing
                     MemoryMatch.showChainsMatches();
                 } else {
-                    createjs.Sound.play("soundCorrectLess", {delay: 250});
+                    MemoryMatch.triggerSoundFx("soundCorrectLess", {delay: 250});
                     MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.CHOOSE_FIRST_CARD;
                 }
             } else {
@@ -1961,7 +1966,7 @@ var MemoryMatch = {
                 MemoryMatch.updateChainCount(false);
                 MemoryMatch.showChainsMatches();
                 MemoryMatch.cardsDoNotMatch();
-                createjs.Sound.play("soundMiss", {delay: 500});
+                MemoryMatch.triggerSoundFx("soundMiss", {delay: 500});
                 // unselect both cards then unflip after a delay
                 MemoryMatch.cardSelected.unselect();
                 MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.cardSelected, 400, 0, false, null, MemoryMatch.onCardMissWaitComplete);
@@ -1991,14 +1996,14 @@ var MemoryMatch = {
             if (MemoryMatch.matchCount >= MemoryMatch.gameMatchCount) {
                 MemoryMatch.gameEndTime = Date.now();
                 MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.WIN;
-                createjs.Sound.play("soundCorrect", {delay: 250});
+                MemoryMatch.triggerSoundFx("soundCorrect", {delay: 250});
                 MemoryMatch.removeAllCards(MemoryMatch.gameCompleteRemoveCardThenAdvance); // user completed the game, but wait for cards to dissolve before advancing
             } else {
                 MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.CHOOSE_SECOND_CARD;
             }
         } else {
             MemoryMatch.cardsDoNotMatch();
-            createjs.Sound.play("soundMiss", {delay: 500});
+            MemoryMatch.triggerSoundFx("soundMiss", {delay: 500});
             if (MemoryMatch.moveCountDown > 0 || MemoryMatch.levelTolerance == 0) {
                 MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.CHOOSE_SECOND_CARD;
             } else {
@@ -2023,13 +2028,13 @@ var MemoryMatch = {
         cardSelected.select();
         if (cardSelected.value == MemoryMatch.cardSelected.value) {
             MemoryMatch.cardsMatch(cardSelected, null);
-            createjs.Sound.play("soundCorrect", {delay: 250});
+            MemoryMatch.triggerSoundFx("soundCorrect", {delay: 250});
             MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.CHOOSE_SECOND_CARD;
             MemoryMatch.AnimationHandler.addToAnimationQueue(cardSelected, 500, 0, false, null, MemoryMatch.onCardFlipBackWaitComplete);
             MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.cardSelected, 500, 0, false, null, MemoryMatch.onCardFlipBackWaitCompleteTargetCard);
         } else {
             MemoryMatch.cardsDoNotMatch();
-            createjs.Sound.play("soundMiss", {delay: 500});
+            MemoryMatch.triggerSoundFx("soundMiss", {delay: 500});
             if (MemoryMatch.matchCount >= MemoryMatch.gameMatchCount) {
                 MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.LOSE;
             } else {
@@ -2061,7 +2066,7 @@ var MemoryMatch = {
                     MemoryMatch.updateMatchCountDisplay();
                     MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.PLAY_WAIT;
                     MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.allCardsOnBoard[MemoryMatch.simonBag[MemoryMatch.simonUserIndex]], 2000, 0, false, null, MemoryMatch.simonPlayback);
-                    createjs.Sound.play("soundCorrectLess", {delay: 200});
+                    MemoryMatch.triggerSoundFx("soundCorrectLess", {delay: 200});
                     MemoryMatch.updateScoreForSimonGameAdvance();
                     globalCardPoint = MemoryMatch.boardContainer.localToGlobal(cardClicked.x, cardClicked.y);
                     MemoryMatch.matchEffectsStars(globalCardPoint.x, globalCardPoint.y, MemoryMatch.simonPlaybackIndex);
@@ -2074,8 +2079,8 @@ var MemoryMatch = {
                 MemoryMatch.missCount ++;
                 MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.LOSE;
                 MemoryMatch.gameEndTime = Date.now();
-                createjs.Sound.play("soundMiss", {delay: 800});
-                createjs.Sound.play("soundMiss", {delay: 1000});
+                MemoryMatch.triggerSoundFx("soundMiss", {delay: 800});
+                MemoryMatch.triggerSoundFx("soundMiss", {delay: 1200});
                 MemoryMatch.removeAllCards(MemoryMatch.gameCompleteNextGameOrLevel);
             }
         }
@@ -2098,14 +2103,14 @@ var MemoryMatch = {
         if (cardSelected.value == MemoryMatch.cardTargetValue) {
             MemoryMatch.cardsMatch(cardSelected, null);
             MemoryMatch.gamePlayState = priorState;
-            createjs.Sound.play("soundCorrect", {delay: 250});
+            MemoryMatch.triggerSoundFx("soundCorrect", {delay: 250});
             globalCardPoint = MemoryMatch.boardContainer.localToGlobal(cardSelected.x, cardSelected.y);
             MemoryMatch.matchEffectsStars(globalCardPoint.x, globalCardPoint.y, 1);
             MemoryMatch.gameEndTime = Date.now();
             MemoryMatch.removeAllCards(MemoryMatch.gameCompleteNextGameOrLevel); // user completed the game, but wait for cards to dissolve before advancing
         } else {
             MemoryMatch.cardsDoNotMatch();
-            createjs.Sound.play("soundMiss", {delay: 500});
+            MemoryMatch.triggerSoundFx("soundMiss", {delay: 500});
             // unselect card then unflip after a delay
             cardAnimator = MemoryMatch.AnimationHandler.addToAnimationQueue(cardSelected, 400, 0, false, null, MemoryMatch.onCardMissWaitComplete);
             if ( ! (MemoryMatch.moveCountDown > 0 || MemoryMatch.levelTolerance == 0)) { // game over? show target card
@@ -2135,7 +2140,7 @@ var MemoryMatch = {
         if (cardSelected.value == matchCardValue) {
             MemoryMatch.cardsMatch(cardSelected, null);
             MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.WIN;
-            createjs.Sound.play("soundCorrect", {delay: 250});
+            MemoryMatch.triggerSoundFx("soundCorrect", {delay: 250});
             globalCardPoint = MemoryMatch.boardContainer.localToGlobal(cardSelected.x, cardSelected.y);
             MemoryMatch.matchEffectsStars(globalCardPoint.x, globalCardPoint.y, 1);
             MemoryMatch.gameEndTime = Date.now();
@@ -2143,7 +2148,7 @@ var MemoryMatch = {
             MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.cardSelected, 1000, 0, false, null, MemoryMatch.onCardFlipCompleteEyeSpy);
         } else {
             MemoryMatch.cardsDoNotMatch();
-            createjs.Sound.play("soundMiss", {delay: 500});
+            MemoryMatch.triggerSoundFx("soundMiss", {delay: 500});
             // unselect card then unflip after a delay
             MemoryMatch.AnimationHandler.addToAnimationQueue(cardSelected, 400, 0, false, null, MemoryMatch.onCardMissWaitComplete);
             if (MemoryMatch.moveCountDown == 0) {
@@ -2299,7 +2304,7 @@ var MemoryMatch = {
         MemoryMatch.GameGUI.updateMatchCountDisplay(newValue);
         if (isChallenge && MemoryMatch.gameState != MemoryMatch.GAMESTATE.LOSE && newValue > 0 && newValue % 5 == 0) {
             bonusPoints = 500;
-            createjs.Sound.play("soundBonus");
+            MemoryMatch.triggerSoundFx("soundBonus");
             MemoryMatch.GameGUI.flashMatchCountDisplay(true, 6);
             MemoryMatch.updateScoreDisplay(bonusPoints);
             MemoryMatch.showScoreBalloon(bonusPoints, {x: MemoryMatch.stageWidth * 0.8, y: MemoryMatch.stageHeight * 0.94});
@@ -2854,25 +2859,6 @@ var MemoryMatch = {
                 // user finished a game but was in the lose state, in this case force a Results screen to appear. Clicking Next on that will determine what to do next.
                 if (MemoryMatch.isChallengeGame) {
                     updateUserStats = true;
-
-
-
-// TODO: Remove before release
-//                    MemoryMatch.userBeatAllChallengesFirstTime = true;
-
-
-
-
-                    if (MemoryMatch.challengePassed()) {
-                        MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.WIN;
-                        if ( ! MemoryMatch.userBeatAllChallenges) {
-                            MemoryMatch.userBeatAllChallenges = MemoryMatch.didUserBeatAllChallenges();
-                            if (MemoryMatch.userBeatAllChallenges) {
-                                MemoryMatch.userBeatAllChallengesFirstTime = true;
-                                earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.ACONTENDER) | earnedAchievement;
-                            }
-                        }
-                    }
                 }
                 MemoryMatch.levelCleanUp();
             } else if (MemoryMatch.gameData != null) {
@@ -2917,6 +2903,27 @@ var MemoryMatch = {
             MemoryMatch.setGameUserData(MemoryMatch.gameLevel, gameNumber, finalScore, starsEarned, MemoryMatch.gameEndTime, longestStreak);
             if (starsEarned == 3 && MemoryMatch.userEarnedAllStars()) {
                 earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.THREESTAR) | earnedAchievement;
+            }
+            if (MemoryMatch.isChallengeGame) {
+
+
+
+// TODO: Remove before release
+//                    MemoryMatch.userBeatAllChallengesFirstTime = true;
+
+
+
+
+                if (MemoryMatch.challengePassed()) {
+                    MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.WIN;
+                    if ( ! MemoryMatch.userBeatAllChallenges) {
+                        MemoryMatch.userBeatAllChallenges = MemoryMatch.didUserBeatAllChallenges();
+                        if (MemoryMatch.userBeatAllChallenges) {
+                            MemoryMatch.userBeatAllChallengesFirstTime = true;
+                            earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.ACONTENDER) | earnedAchievement;
+                        }
+                    }
+                }
             }
         } else {
             finalScore = MemoryMatch.gameScore;
@@ -2996,7 +3003,7 @@ var MemoryMatch = {
             score = (firstCard.matchCounter | secondCard.matchCounter) * 100;
             MemoryMatch.updateScoreDisplay(score);
             MemoryMatch.showScoreBalloonOnCard(score, card);
-            createjs.Sound.play("soundAchievement", {delay: 100});
+            MemoryMatch.triggerSoundFx("soundAchievement", {delay: 100});
         }
         return score > 0;
     },
@@ -3230,8 +3237,11 @@ var MemoryMatch = {
     },
 
     resetUserData: function () {
-        // Reset the user data to initial conditions
+
+        // Reset the user data to initial conditions. Current user will lose everything!
+
         var levelNumber,
+            userDataObject = MemoryMatch.UserData.getUserDataObject(),
             unlockAllFirstLevels = MemoryMatch.GameSetup.unlockAllFirstLevels || false;
 
         for (levelNumber = 1; levelNumber <= MemoryMatch.GameSetup.levels.length; levelNumber ++) {
@@ -3241,6 +3251,16 @@ var MemoryMatch = {
                 MemoryMatch.UserData.setLevelDataItem(levelNumber, "levelScoreCollection", []);
             }
         }
+        MemoryMatch.UserData.clearAllUserAchievements();
+        userDataObject['audioMute'] = this.audioMute; // keep the Audio setting
+        userDataObject['beatAllChallenges'] = false;
+        userDataObject['numberOfGamesPlayed'] = 0;
+        userDataObject['luckyGuessCount'] = 0;
+        userDataObject['totalMatchCount'] = 0;
+        userDataObject['totalCombos'] = 0;
+        userDataObject['totalTimePlayed'] = 0;
+        userDataObject['bestScore'] = 0;
+        userDataObject['lastPlayedDate'] = null;
         MemoryMatch.UserData.flush();
     },
 
@@ -3649,7 +3669,7 @@ var MemoryMatch = {
     },
 
     challengePassed: function () {
-        return MemoryMatch.isChallengeGame && MemoryMatch.gameNumber > MemoryMatch.challengeAdvanceStreak;
+        return MemoryMatch.isChallengeGame && MemoryMatch.gameNumber >= MemoryMatch.challengeAdvanceStreak;
     },
 
     didUserBeatChallenge: function (landNumber) {
@@ -3726,12 +3746,23 @@ var MemoryMatch = {
                 case MemoryMatch.GAMEPLAYTYPE.CONCENTRATION:
                 case MemoryMatch.GAMEPLAYTYPE.NEMESIS:
                     accuracy = MemoryMatch.calculateLevelAccuracy();
-                    if (accuracy > 49) {
-                        starsEarned = 3;
-                    } else if (accuracy > 34) {
-                        starsEarned = 2;
+                    possibleMatches = (MemoryMatch.rows * MemoryMatch.columns) * 0.5;
+                    if (possibleMatches < 7) {
+                        if (accuracy > 54) {
+                            starsEarned = 3;
+                        } else if (accuracy > 44) {
+                            starsEarned = 2;
+                        } else {
+                            starsEarned = 1;
+                        }
                     } else {
-                        starsEarned = 1;
+                        if (accuracy > 49) {
+                            starsEarned = 3;
+                        } else if (accuracy > 34) {
+                            starsEarned = 2;
+                        } else {
+                            starsEarned = 1;
+                        }
                     }
                     break;
                 case MemoryMatch.GAMEPLAYTYPE.CHAINS:
@@ -3963,11 +3994,12 @@ var MemoryMatch = {
                     achievementInfo = MemoryMatch.getAchievementInfo(id);
                     if (achievementInfo != null) {
                         MemoryMatch.showMessageBalloon("awardsCardIcon", achievementInfo.name, null, MemoryMatch.stageWidth * 0.5, MemoryMatch.stageHeight * 0.96);
+                        MemoryMatch.triggerSoundFx('soundAchievement', {delay: 350});
                     }
                 } else { // Just show the message at location indicated
                     MemoryMatch.showMessageBalloon(null, id.title, id.points, id.x, id.y);
                     if (id.sound != null) {
-                        createjs.Sound.play(id.sound, {delay: 100});
+                        MemoryMatch.triggerSoundFx(id.sound, {delay: 100});
                     }
                 }
             }
@@ -4592,7 +4624,7 @@ var MemoryMatch = {
                 cardAnimator.vYSkew = MemoryMatch.cardFlipSpeed;
                 cardAnimator.endYSkew = 90;
             }
-            createjs.Sound.play("soundCardFlip");
+            MemoryMatch.triggerSoundFx("soundCardFlip");
         }
 
         card.showMatchCounter = function (showFlag) {
@@ -4677,7 +4709,7 @@ var MemoryMatch = {
         card.showCard = function (cardToShow) {
             var cardBackSprite = cardToShow.actor.getChildAt(card.SPRITEINDEX.SPRITE_CARDBACK);
 
-            createjs.Sound.play("soundCardDeal");
+            MemoryMatch.triggerSoundFx("soundCardDeal");
             cardBackSprite.visible = true;
             cardToShow.actor.showMatchCounter(cardToShow.actor.matchCounter > 0);
             cardToShow.actor.regX = MemoryMatch.cardWidth * 0.5;

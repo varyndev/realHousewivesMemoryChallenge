@@ -199,7 +199,7 @@ MemoryMatch.GameResults = {
     onClickNext: function (event) {
         // begin animation, then wait for user event to end this state and alert callback
         if (MemoryMatch.GameResults.isEnabled) {
-            createjs.Sound.play("soundTap");
+            MemoryMatch.triggerSoundFx("soundTap");
             MemoryMatch.GameResults.closeEventType = "next";
             MemoryMatch.GameResults.close();
         }
@@ -208,7 +208,7 @@ MemoryMatch.GameResults = {
     onClickReplay: function (event) {
         // begin animation, then wait for user event to end this state and alert callback
         if (MemoryMatch.GameResults.isEnabled) {
-            createjs.Sound.play("soundTap");
+            MemoryMatch.triggerSoundFx("soundTap");
             MemoryMatch.GameResults.closeEventType = "replay";
             MemoryMatch.GameResults.close();
         }
@@ -217,7 +217,7 @@ MemoryMatch.GameResults = {
     onClickHome: function (event) {
         // begin animation, then wait for user event to end this state and alert callback
         if (MemoryMatch.GameResults.isEnabled) {
-            createjs.Sound.play("soundTap");
+            MemoryMatch.triggerSoundFx("soundTap");
             MemoryMatch.GameResults.closeEventType = "home";
             MemoryMatch.GameResults.close();
         }
@@ -330,7 +330,7 @@ MemoryMatch.GameResults = {
         }
         MemoryMatch.AnimationHandler.startSplatterParticles(numberOfParticles, globalStarPoint.x + starHalfWidth, globalStarPoint.y + starHalfWidth);
         this.groupDisplayObject.updateCache();
-        createjs.Sound.play("soundBump");
+        MemoryMatch.triggerSoundFx("soundBump");
         if (MemoryMatch.isChallengeGame) {
             this.isEnabled = true;
         }
@@ -343,7 +343,7 @@ MemoryMatch.GameResults = {
             animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.holdThirdStar, delay, 0, false, null, this.showStar.bind(this));
             animator.showAtBegin = true;
             this.holdThirdStar = null;
-            createjs.Sound.play("soundBonus", {delay: delay});
+            MemoryMatch.triggerSoundFx("soundBonus", {delay: delay});
         }
     },
 

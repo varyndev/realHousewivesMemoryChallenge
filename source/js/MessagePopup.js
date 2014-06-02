@@ -128,14 +128,14 @@ MemoryMatch.MessagePopup = {
 
     onClickClose: function (event) {
         if (this.isEnabled) {
-            createjs.Sound.play("soundTap");
+            MemoryMatch.triggerSoundFx("soundTap");
             this.closePopup("close");
         }
     },
 
     onClickContinue: function (event) {
         if (this.isEnabled) {
-            createjs.Sound.play("soundTap");
+            MemoryMatch.triggerSoundFx("soundTap");
             this.closePopup("continue");
         }
     },

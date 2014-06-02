@@ -80,14 +80,14 @@ MemoryMatch.ChallengeIntroduction = {
     },
 
     onClickHome: function (event) {
-        createjs.Sound.play("soundTap");
+        MemoryMatch.triggerSoundFx("soundTap");
         if (MemoryMatch.ChallengeIntroduction.isEnabled) {
             MemoryMatch.ChallengeIntroduction.closePopup("home");
         }
     },
 
     onClickContinue: function (event) {
-        createjs.Sound.play("soundTap");
+        MemoryMatch.triggerSoundFx("soundTap");
         if (MemoryMatch.ChallengeIntroduction.isEnabled) {
             MemoryMatch.ChallengeIntroduction.closePopup("continue");
         }

@@ -281,7 +281,7 @@ MemoryMatch.MainMenu = {
 
     refreshButtons: function () {
 
-        // Update the state of all level buttons
+        // Update the state of all level buttons and the Award
 
         var levelData = MemoryMatch.GameSetup.levels,
             landIndex,
@@ -361,6 +361,7 @@ MemoryMatch.MainMenu = {
             }
             levelIndexLandOffset += levelData[landIndex].gameCount + 1;
         }
+        this.showAwardedGems();
         this.groupDisplayObject.updateCache();
     },
 

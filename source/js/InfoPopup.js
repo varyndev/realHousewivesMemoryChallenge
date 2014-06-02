@@ -133,7 +133,7 @@ MemoryMatch = MemoryMatch || {};
         // begin animation, then wait for user event to end this state and alert callback
         this.closeStartAnimation();
         if (this.sound != null) {
-            createjs.Sound.play(this.sound, {delay: 0});
+            MemoryMatch.triggerSoundFx(this.sound, {delay: 0});
         }
     };
 

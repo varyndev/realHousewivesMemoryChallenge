@@ -300,7 +300,7 @@ MemoryMatch.GUIButton = function (parameters) {
         if (event != null && event.target != null) {
             var that = event.target.parent;
             if (that.callback != null) {
-                createjs.Sound.play("soundTap");
+                MemoryMatch.triggerSoundFx("soundTap");
                 that.callback(that.name); // fire the callback function and let them know who was clicked
             }
         }

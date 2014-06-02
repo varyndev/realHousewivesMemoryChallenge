@@ -254,6 +254,11 @@ MemoryMatch.UserData = {
         return this.currentUser.userAchievements;
     },
 
+    clearAllUserAchievements: function () {
+        this.currentUser.userAchievements = [];
+        return this.currentUser.userAchievements;
+    },
+
     sync: function () {
         // synchronize the data with the local storage and the server if connected
         var gameSaveJson;

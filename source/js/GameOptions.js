@@ -151,35 +151,35 @@ MemoryMatch.GameOptions = {
 
     onClickClose: function (event) {
         if (MemoryMatch.GameOptions.isEnabled) {
-            createjs.Sound.play("soundTap");
+            MemoryMatch.triggerSoundFx("soundTap");
             MemoryMatch.GameOptions.closePopup("close");
         }
     },
 
     onClickHome: function (event) {
         if (MemoryMatch.GameOptions.isEnabled) {
-            createjs.Sound.play("soundTap");
+            MemoryMatch.triggerSoundFx("soundTap");
             MemoryMatch.GameOptions.closePopup("home");
         }
     },
 
     onClickRestart: function (event) {
         if (MemoryMatch.GameOptions.isEnabled) {
-            createjs.Sound.play("soundTap");
+            MemoryMatch.triggerSoundFx("soundTap");
             MemoryMatch.GameOptions.closePopup("restart");
         }
     },
 
     onClickContinue: function (event) {
         if (MemoryMatch.GameOptions.isEnabled) {
-            createjs.Sound.play("soundTap");
+            MemoryMatch.triggerSoundFx("soundTap");
             MemoryMatch.GameOptions.closePopup("continue");
         }
     },
 
     onClickCredits: function (event) {
         if (this.isEnabled) {
-            createjs.Sound.play("soundTap");
+            MemoryMatch.triggerSoundFx("soundTap");
             MemoryMatch.unlockAllLevelsCounter ++;
             MemoryMatch.CreditsPopup.setup(MemoryMatch.stage, this.closePopupFromPopup.bind(this));
             MemoryMatch.CreditsPopup.buildScreen(true);
@@ -190,7 +190,7 @@ MemoryMatch.GameOptions = {
         if (MemoryMatch.GameOptions.isEnabled) {
             var muteFlag = ! createjs.Sound.getMute();
             createjs.Sound.setMute(muteFlag);
-            createjs.Sound.play("soundTap");
+            MemoryMatch.triggerSoundFx("soundTap");
             MemoryMatch.GameOptions.audioOnButtonInstance.visible = ! muteFlag;
             MemoryMatch.GameOptions.audioOnButtonInstance.setEnabled( ! muteFlag);
             MemoryMatch.GameOptions.audioOffButtonInstance.visible = muteFlag;
@@ -202,7 +202,7 @@ MemoryMatch.GameOptions = {
 
     onClickHelp: function (event) {
         if (MemoryMatch.GameOptions.isEnabled) {
-            createjs.Sound.play("soundTap");
+            MemoryMatch.triggerSoundFx("soundTap");
             MemoryMatch.MessagePopup.setup(MemoryMatch.stage, {domElement: "helpArea", title: "Help!", message: "", callback: MemoryMatch.GameOptions.onMessagePopupCallback.bind(MemoryMatch.GameOptions), closeButton: true, continueButton: false});
             MemoryMatch.MessagePopup.buildScreen(true);
         }
@@ -210,7 +210,7 @@ MemoryMatch.GameOptions = {
 
     onClickViewStats: function (event) {
         if (MemoryMatch.GameOptions.isEnabled) {
-            createjs.Sound.play("soundTap");
+            MemoryMatch.triggerSoundFx("soundTap");
             MemoryMatch.unlockAllLevelsCounter ++;
             MemoryMatch.AwardsPopup.setup(MemoryMatch.stage, MemoryMatch.GameOptions.onMessagePopupCallback.bind(MemoryMatch.GameOptions));
             MemoryMatch.AwardsPopup.buildScreen();
@@ -220,7 +220,7 @@ MemoryMatch.GameOptions = {
     onClickClearStats: function (event) {
         var objectToDisplay;
         if (MemoryMatch.GameOptions.isEnabled) {
-            createjs.Sound.play("soundTap");
+            MemoryMatch.triggerSoundFx("soundTap");
             if (MemoryMatch.unlockAllLevelsCounter > 2) {
                 MemoryMatch.unlockAllLevels();
                 objectToDisplay = new MemoryMatch.InfoPopup(MemoryMatch.stage, true, {title: "UNLOCKED", message: 'You have unlocked all levels.', sound: 'soundCorrect'});

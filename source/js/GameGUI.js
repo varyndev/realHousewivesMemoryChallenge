@@ -183,9 +183,9 @@ MemoryMatch.GameGUI = {
             this.matchCountField.color = '#FF0000';
             if (valueChanged) {
                 if (newValue > 0) {
-                    createjs.Sound.play("soundMovesLast");
+                    MemoryMatch.triggerSoundFx("soundMovesLast");
                 } else {
-                    createjs.Sound.play("soundMovesLow");
+                    MemoryMatch.triggerSoundFx("soundMovesLow");
                 }
             }
             if ( ! this.matchCountFieldFlash) {
@@ -604,12 +604,12 @@ MemoryMatch.GameGUI = {
     },
 
     onPauseGame: function (event) {
-        createjs.Sound.play("soundTap");
+        MemoryMatch.triggerSoundFx("soundTap");
         MemoryMatch.beginNewGame(1);
     },
 
     onOptions: function (eventType) {
-        createjs.Sound.play("soundTap");
+        MemoryMatch.triggerSoundFx("soundTap");
         MemoryMatch.GameGUI.optionsButton.gotoAndStop("optionsDown");
 
         // Show the Options popup
@@ -623,7 +623,7 @@ MemoryMatch.GameGUI = {
     },
 
     onHome: function (eventType) {
-        createjs.Sound.play("soundTap");
+        MemoryMatch.triggerSoundFx("soundTap");
         if (MemoryMatch.GameOptions.isEnabled) {
             MemoryMatch.GameOptions.closePopup("home");
         } else {
@@ -634,7 +634,7 @@ MemoryMatch.GameGUI = {
     },
 
     onGameOptions: function (eventType) {
-        createjs.Sound.play("soundTap");
+        MemoryMatch.triggerSoundFx("soundTap");
         MemoryMatch.GameGUI.optionsButton.gotoAndStop("optionsDown");
 
         // Show the Game Paused popup

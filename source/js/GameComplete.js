@@ -75,7 +75,7 @@ MemoryMatch.GameComplete = {
     },
 
     onClickHome: function (event) {
-        createjs.Sound.play("soundTap");
+        MemoryMatch.triggerSoundFx("soundTap");
         if (MemoryMatch.GameComplete.isEnabled) {
             MemoryMatch.GameComplete.closePopup("home");
         }

@@ -322,7 +322,7 @@ MemoryMatch.LevelButton = function (parameters) {
         if (event != null && event.target != null) {
             var that = event.target.parent;
             if (that.callback != null) {
-                createjs.Sound.play("soundTap");
+                MemoryMatch.triggerSoundFx("soundTap");
                 that.callback(that.gameNumber);
             }
         }
@@ -385,6 +385,12 @@ MemoryMatch.LevelButton = function (parameters) {
             this.isLocked = false;
         }
         this.removeEventListener("click", this.onLevelSelect);
+        if (this.isChallengeGame) {
+            gemIcon = this.getChildByName("award");
+            if (gemIcon != null) {
+                gemIcon.visible = false;
+            }
+        }
         if (this.isLocked) {
             lockIcon.visible = true;
             bestScoreField.visible = false;
@@ -395,7 +401,6 @@ MemoryMatch.LevelButton = function (parameters) {
             lockIcon.visible = false;
             if (this.wasPlayed) {
                 if (this.isChallengeGame && this.userBeatChallenge) { // challenge game and user passed challenge
-                    gemIcon = this.getChildByName("award");
                     if (gemIcon != null) {
                         gemIcon.visible = true;
                         gameNumberText.visible = false;

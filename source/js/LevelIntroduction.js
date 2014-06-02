@@ -64,7 +64,7 @@ MemoryMatch.LevelIntroduction = {
 
     onContinue: function (gameNumber) {
         // begin animation, then wait for user event to end this state and alert callback
-        createjs.Sound.play("soundTap");
+        MemoryMatch.triggerSoundFx("soundTap");
         if (MemoryMatch.LevelIntroduction.stateCompleteCallback != null) {
             MemoryMatch.LevelIntroduction.stateCompleteCallback(gameNumber);
         }
@@ -73,7 +73,7 @@ MemoryMatch.LevelIntroduction = {
 
     onClickChallenge: function (event) {
         // begin animation, then wait for user event to end this state and alert callback
-        createjs.Sound.play("soundTap");
+        MemoryMatch.triggerSoundFx("soundTap");
         if (MemoryMatch.LevelIntroduction.stateCompleteCallback != null) {
             MemoryMatch.LevelIntroduction.stateCompleteCallback(99);
         }

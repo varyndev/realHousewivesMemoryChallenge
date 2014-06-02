@@ -234,7 +234,7 @@ MemoryMatch = MemoryMatch || {};
 
     p.playSound = function () {
         if (this.sound != null) {
-            createjs.Sound.play(this.sound, {delay: 0});
+            MemoryMatch.triggerSoundFx(this.sound, {delay: 0});
         }
     };
 
