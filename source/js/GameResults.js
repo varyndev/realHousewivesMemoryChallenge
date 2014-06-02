@@ -752,8 +752,10 @@ MemoryMatch.GameResults = {
             if (this.playerScore >= this.playerBestScore && this.playerScore != 0) {
                 this.playerBestScore = this.playerScore;
                 this.bestScoreTextField.text = MemoryMatch.formatNumber("###,###.", this.playerBestScore);
-                globalTextPoint = this.groupDisplayObject.localToGlobal(this.bestScoreTextField.x, this.bestScoreTextField.y);
-                MemoryMatch.AnimationHandler.startSplatterParticles(Math.random() * 100 + 30, globalTextPoint.x, globalTextPoint.y);
+                if (MemoryMatch.levelComplete) {
+                    globalTextPoint = this.groupDisplayObject.localToGlobal(this.bestScoreTextField.x, this.bestScoreTextField.y);
+                    MemoryMatch.AnimationHandler.startSplatterParticles(Math.random() * 100 + 30, globalTextPoint.x, globalTextPoint.y);
+                }
                 this.bestScoreTextField.font = fontSizeBoldBig;
                 this.groupDisplayObject.updateCache();
             }
