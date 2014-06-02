@@ -584,10 +584,8 @@ var MemoryMatch = {
                     MemoryMatch.levelTolerance = gameProgressionData.tolerance;
                     if (gameProgressionData.matchCount != null) {
                         MemoryMatch.gameMatchCount = gameProgressionData.matchCount;
-                        guiFlashThreshold = MemoryMatch.gameMatchCount > 2 ? 2 : 1;
-                    } else {
-                        guiFlashThreshold = MemoryMatch.levelTolerance > 2 ? 2 : 1;
                     }
+                    guiFlashThreshold = MemoryMatch.moveCountDown > 2 ? 2 : 1;
                 }
             }
             if (thisGameData.removeMatches != null) {
