@@ -279,51 +279,9 @@ MemoryMatch.MainMenu = {
         }
     },
 
-    connectPath: function (firstPoint, secondPoint) {
-        var lineShape,
-            strokeColor;
-
-        if (firstPoint != null && secondPoint != null && firstPoint.x != null && secondPoint.x != null) {
-            lineShape = new createjs.Shape();
-            strokeColor = MemoryMatch.GameSetup.mapPathColor;
-            if (strokeColor == null || strokeColor == '') {
-                strokeColor = 'rgba(102,102,102,0.5)';
-            }
-            lineShape.graphics.beginStroke(strokeColor).setStrokeStyle(12 * MemoryMatch.stageScaleFactor);
-            lineShape.graphics.moveTo(firstPoint.x + (firstPoint.width * 0.5), firstPoint.y + (firstPoint.height * 0.5));
-            lineShape.graphics.lineTo(secondPoint.x + (secondPoint.width * 0.5), secondPoint.y + (secondPoint.height * 0.5));
-            lineShape.graphics.endStroke();
-            this.groupDisplayObject.addChildAt(lineShape, this.groupDisplayObject.getChildIndex(firstPoint));
-        }
-    },
-
-    showSpecialCrap: function () {
-        // some levels/maps will require placing special markers and eye candy on the map, do that one-off crap here
-        // markerData format is an array of objects {x, y, icon}
-
-        var specialMarkers = MemoryMatch.GameSetup.mapSpecialMarkers,
-            markerData,
-            markerSprite,
-            spriteWidth,
-            spriteHeight,
-            i;
-
-        if (specialMarkers != null) {
-            for (i = 0; i < specialMarkers.length; i ++) {
-                markerData = specialMarkers[i];
-                if (markerData.icon != null) {
-                    markerSprite = new createjs.Sprite(this.spriteData, markerData.icon);
-                    spriteWidth = MemoryMatch.GameSetup.mapSpritesheetFrames.frames[MemoryMatch.GameSetup.mapSpritesheetFrames.animations[markerData.icon][0]][2];
-                    spriteHeight = MemoryMatch.GameSetup.mapSpritesheetFrames.frames[MemoryMatch.GameSetup.mapSpritesheetFrames.animations[markerData.icon][0]][3];
-                    markerSprite.setTransform(markerData.x * MemoryMatch.stageScaleFactor, markerData.y * MemoryMatch.stageScaleFactor, 1, 1, 0, 0, 0, spriteWidth * 0.5, spriteHeight * 0.5);
-                    this.groupDisplayObject.addChild(markerSprite);
-                }
-            }
-        }
-    },
-
     refreshButtons: function () {
-        // TODO: Update the state of all level buttons
+
+        // Update the state of all level buttons
 
         var levelData = MemoryMatch.GameSetup.levels,
             landIndex,
@@ -342,7 +300,7 @@ MemoryMatch.MainMenu = {
             totalGamesPlayed,
             gamesUnlocked;
 
-        if (levelData == null) {
+        if (levelData == null || ! this.isShowing()) {
             return;
         }
         levelIndexLandOffset = 0;
@@ -402,6 +360,50 @@ MemoryMatch.MainMenu = {
                 levelButton.refreshButton({starsEarned: starsEarned, bestScore: bestScore, wasPlayed: wasPlayed, isLocked: isLocked});
             }
             levelIndexLandOffset += levelData[landIndex].gameCount + 1;
+        }
+        this.groupDisplayObject.updateCache();
+    },
+
+    connectPath: function (firstPoint, secondPoint) {
+        var lineShape,
+            strokeColor;
+
+        if (firstPoint != null && secondPoint != null && firstPoint.x != null && secondPoint.x != null) {
+            lineShape = new createjs.Shape();
+            strokeColor = MemoryMatch.GameSetup.mapPathColor;
+            if (strokeColor == null || strokeColor == '') {
+                strokeColor = 'rgba(102,102,102,0.5)';
+            }
+            lineShape.graphics.beginStroke(strokeColor).setStrokeStyle(12 * MemoryMatch.stageScaleFactor);
+            lineShape.graphics.moveTo(firstPoint.x + (firstPoint.width * 0.5), firstPoint.y + (firstPoint.height * 0.5));
+            lineShape.graphics.lineTo(secondPoint.x + (secondPoint.width * 0.5), secondPoint.y + (secondPoint.height * 0.5));
+            lineShape.graphics.endStroke();
+            this.groupDisplayObject.addChildAt(lineShape, this.groupDisplayObject.getChildIndex(firstPoint));
+        }
+    },
+
+    showSpecialCrap: function () {
+        // some levels/maps will require placing special markers and eye candy on the map, do that one-off crap here
+        // markerData format is an array of objects {x, y, icon}
+
+        var specialMarkers = MemoryMatch.GameSetup.mapSpecialMarkers,
+            markerData,
+            markerSprite,
+            spriteWidth,
+            spriteHeight,
+            i;
+
+        if (specialMarkers != null) {
+            for (i = 0; i < specialMarkers.length; i ++) {
+                markerData = specialMarkers[i];
+                if (markerData.icon != null) {
+                    markerSprite = new createjs.Sprite(this.spriteData, markerData.icon);
+                    spriteWidth = MemoryMatch.GameSetup.mapSpritesheetFrames.frames[MemoryMatch.GameSetup.mapSpritesheetFrames.animations[markerData.icon][0]][2];
+                    spriteHeight = MemoryMatch.GameSetup.mapSpritesheetFrames.frames[MemoryMatch.GameSetup.mapSpritesheetFrames.animations[markerData.icon][0]][3];
+                    markerSprite.setTransform(markerData.x * MemoryMatch.stageScaleFactor, markerData.y * MemoryMatch.stageScaleFactor, 1, 1, 0, 0, 0, spriteWidth * 0.5, spriteHeight * 0.5);
+                    this.groupDisplayObject.addChild(markerSprite);
+                }
+            }
         }
     },
 

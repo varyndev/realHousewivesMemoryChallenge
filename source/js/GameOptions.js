@@ -229,7 +229,7 @@ MemoryMatch.GameOptions = {
                 objectToDisplay = new MemoryMatch.InfoPopup(MemoryMatch.stage, true, {title: "CLEARED", message: 'You have reset all levels.', sound: 'soundCorrect'});
             }
             MemoryMatch.unlockAllLevelsCounter = 0;
-            if (MemoryMatch.MainMenu != null && MemoryMatch.MainMenu.isShowing()) {
+            if (MemoryMatch.MainMenu != null) {
                 MemoryMatch.MainMenu.refreshButtons();
             }
             objectToDisplay = null;

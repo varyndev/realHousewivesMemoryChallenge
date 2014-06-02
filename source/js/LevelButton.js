@@ -384,12 +384,12 @@ MemoryMatch.LevelButton = function (parameters) {
         if (this.gameNumber == 1 || this.wasPlayed) {
             this.isLocked = false;
         }
+        this.removeEventListener("click", this.onLevelSelect);
         if (this.isLocked) {
             lockIcon.visible = true;
             bestScoreField.visible = false;
             gameNumberText.visible = false;
             buttonRing.visible = false;
-            this.removeEventListener("click", this.onLevelSelect);
         } else {
             this.addEventListener("click", this.onLevelSelect);
             lockIcon.visible = false;
@@ -421,7 +421,7 @@ MemoryMatch.LevelButton = function (parameters) {
         if (showStarsFlag) {
             this.setStarsEarned(this.starsEarned);
         }
-        this.setBestScore(this.bestScore);
+        this.bestScore = this.bestScore;
         this.updateCache();
     };
 
