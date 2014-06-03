@@ -22,6 +22,7 @@ MemoryMatch.AwardsPopup = {
     marginX: 0,
     lineHeight: 0,
     isEnabled: false,
+    animate: false,
     title: null,
     message: null,
     closeButton: true,
@@ -44,7 +45,7 @@ MemoryMatch.AwardsPopup = {
         this.stateCompleteCallback = callback;
     },
 
-    buildScreen: function () {
+    buildScreen: function (autoStart, animate) {
         if (this.groupDisplayObject !== null) {
             return;
         }
@@ -63,10 +64,47 @@ MemoryMatch.AwardsPopup = {
         this.setupAchievements();
         this.setupButtons();
         this.parentDisplayObject.addChild(this.groupDisplayObject);
-        this.groupDisplayObject.setTransform(this.parentDisplayObject.canvas.width * 0.5, this.parentDisplayObject.canvas.height * 0.5, 1, 1, 0, 0, 0, this.backgroundWidth * 0.5, this.backgroundHeight * 0.5);
         this.contentDisplayObject.setTransform(0, this.backgroundHeight * 0.05);
         this.groupDisplayObject.addChild(this.contentDisplayObject);
         this.scrollLimitMin = this.contentDisplayObject.y;
+        if (autoStart === null) {
+            autoStart = false;
+        }
+        if (animate === null) {
+            animate = true;
+        }
+        this.animate = animate;
+        if (autoStart) {
+            this.start();
+        }
+    },
+
+    start: function () {
+        var duration,
+            animator;
+
+        if (this.animate) {
+            this.groupDisplayObject.setTransform(this.parentDisplayObject.canvas.width * 0.5, this.parentDisplayObject.canvas.height * 0.5, 0, 0, 0, 0, 0, this.backgroundWidth * 0.5, this.backgroundHeight * 0.5);
+            // begin animation, then wait for user event to end this state and alert callback
+            duration = 0.3; // seconds of animation
+            animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.groupDisplayObject, 0, duration * 1000, false, null, this.startAnimationPhaseTwo.bind(this));
+            animator.endYScale = animator.endXScale = 1.08;
+            animator.vYScale = animator.vXScale = animator.endXScale / (duration * MemoryMatch.fps);
+        } else {
+            this.isEnabled = true;
+            this.groupDisplayObject.setTransform(this.parentDisplayObject.canvas.width * 0.5, this.parentDisplayObject.canvas.height * 0.5, 1, 1, 0, 0, 0, this.backgroundWidth * 0.5, this.backgroundHeight * 0.5);
+        }
+    },
+
+    startAnimationPhaseTwo: function (sprite) {
+        var duration = 0.1, // seconds of animation
+            animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.groupDisplayObject, 0, duration * 1000, false, null, this.startAnimationComplete.bind(this));
+
+        animator.endYScale = animator.endXScale = 1.0;
+        animator.vYScale = animator.vXScale = -1 * (animator.endXScale / (duration * MemoryMatch.fps));
+    },
+
+    startAnimationComplete: function (sprite) {
         this.isEnabled = true;
     },
 

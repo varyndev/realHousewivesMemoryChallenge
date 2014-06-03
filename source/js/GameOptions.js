@@ -213,7 +213,7 @@ MemoryMatch.GameOptions = {
             MemoryMatch.triggerSoundFx("soundTap");
             MemoryMatch.unlockAllLevelsCounter ++;
             MemoryMatch.AwardsPopup.setup(MemoryMatch.stage, MemoryMatch.GameOptions.onMessagePopupCallback.bind(MemoryMatch.GameOptions));
-            MemoryMatch.AwardsPopup.buildScreen();
+            MemoryMatch.AwardsPopup.buildScreen(true, false);
         }
     },
 

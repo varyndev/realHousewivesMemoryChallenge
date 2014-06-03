@@ -71,7 +71,7 @@ MemoryMatch.MainMenu = {
     onClickedAward: function (event) {
         MemoryMatch.triggerSoundFx("soundTap");
         MemoryMatch.AwardsPopup.setup(MemoryMatch.stage, null);
-        MemoryMatch.AwardsPopup.buildScreen();
+        MemoryMatch.AwardsPopup.buildScreen(true, true);
     },
 
     setupBackgroundAndGameLogo: function () {
