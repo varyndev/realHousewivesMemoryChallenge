@@ -162,7 +162,7 @@ MemoryMatch.GameSetup = {
             cardHeight: 510,
             numCards: 20,
             levelName:"A Race Against Wine",
-            levelIntro: "Nemesis - make matches to stop your nemesis from progressing.",
+            levelIntro: "Make matches to stop your nemesis from drinking all your wine!",
             progression: [{tolerance: 5, columns:4, rows:2}, {tolerance: 5, columns:4, rows:2}, {tolerance: 9, columns:4, rows:3}, {tolerance: 9, columns:4, rows:3}, {tolerance: 8, columns:4, rows:3}, {tolerance: 8, columns:4, rows:3}]
         },
         {gameId: 8, gameType: 8, games:6, tolerance: 1, columns:5, rows:1,

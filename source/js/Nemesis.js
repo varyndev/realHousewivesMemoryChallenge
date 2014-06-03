@@ -23,18 +23,18 @@ MemoryMatch.Nemesis = {
     bottleSectionEmptyEmpty: "nemesis3Empty2",
     bottleBottomFilled: "nemesis4",
     bottleBottomEmpty: "nemesis4Empty",
+    maxNumberOfPieces: 0, // Total bottle size in pieces
 
     layoutNemesisPath: function () {
 
         // function to call to initialize and layout the Nemesis tiles and setup the character
 
         var spriteData,
-            numberOfPieces = MemoryMatch.levelTolerance, // how many misses allowed == # of pieces
+            missCounter,
             topPieceSize,
             middlePieceSize,
             tileSize,
             nextY,
-            missCounter,
             i,
             bottleTopSprite,
             bottleNeckSprite,
@@ -43,8 +43,26 @@ MemoryMatch.Nemesis = {
             bottleBottomSprite,
             numberOfMiddlePieces,
             groupWidth,
-            groupCenterX;
+            groupCenterX,
+            thisGameData,
+            gameProgressionData;
 
+        // find the highest tolerance, make the wine bottle that big
+        thisGameData = MemoryMatch.getGameData(MemoryMatch.isChallengeGame);
+        if (thisGameData.progression != null && thisGameData.progression.length >= MemoryMatch.gameNumber) {
+            this.maxNumberOfPieces = 0;
+            gameProgressionData = thisGameData.progression;
+            for (i = 0; i < gameProgressionData.length; i ++) {
+                if (this.maxNumberOfPieces < gameProgressionData[i].tolerance) {
+                    this.maxNumberOfPieces = gameProgressionData[i].tolerance;
+                }
+            }
+        } else {
+            this.maxNumberOfPieces = thisGameData.tolerance;
+        }
+        if (this.maxNumberOfPieces == null || this.maxNumberOfPieces < 3) {
+            this.maxNumberOfPieces = 3;
+        }
         this.spriteFrameData = MemoryMatch.GameSetup.guiSpritesheet2Frames;
         spriteData = new createjs.SpriteSheet(this.spriteFrameData);
 
@@ -54,8 +72,7 @@ MemoryMatch.Nemesis = {
         } else {
             this.nemesisGroupDisplayObject.removeAllChildren();
         }
-
-        numberOfMiddlePieces = numberOfPieces - 3;
+        numberOfMiddlePieces = this.maxNumberOfPieces - 3;
         nextY = 0;
         missCounter = 1;
         bottleTopSprite = new createjs.Sprite(spriteData, this.bottleTopFilled);
@@ -108,6 +125,7 @@ MemoryMatch.Nemesis = {
         this.nemesisGroupDisplayObject.addChild(bottleBottomSprite);
 
         this.nemesisGroupDisplayObject.setTransform(MemoryMatch.stageWidth - tileSize.width - (tileSize.width * 0.14), (MemoryMatch.stageHeight - nextY) * 0.5, 1, 1, 0, 0, 0, 0, 0);
+        this.moveNemesisCharacter();
         MemoryMatch.stageUpdated = true;
     },
 
@@ -117,27 +135,26 @@ MemoryMatch.Nemesis = {
         // Based on number of misses update all the sections.
 
         var spritePiece,
-            numberOfPieces = MemoryMatch.levelTolerance,
-            numberOfMisses = MemoryMatch.missCount,
+            emptyPieces = this.maxNumberOfPieces - MemoryMatch.levelTolerance + MemoryMatch.missCount,
             nextFrame,
             i;
 
-        for (i = 1; i <= numberOfPieces; i ++) {
+        for (i = 1; i <= this.maxNumberOfPieces; i ++) {
             spritePiece = this.nemesisGroupDisplayObject.getChildByName('miss' + i.toString());
             if (spritePiece != null) {
-                if (i <= numberOfMisses) { // set to empty
+                if (i <= emptyPieces) { // set to empty
                     if (i == 1) { // top
                         nextFrame = this.bottleTopEmpty;
                     } else if (i == 2) { // neck
-                        if (numberOfMisses > i) {
+                        if (emptyPieces > i) {
                             nextFrame = this.bottleNeckEmptyEmpty;
                         } else {
                             nextFrame = this.bottleNeckEmpty;
                         }
-                    } else if (i == numberOfPieces) { // bottom
+                    } else if (i == this.maxNumberOfPieces) { // bottom
                         nextFrame = this.bottleBottomEmpty;
                     } else { // middle
-                        if (numberOfMisses > i) {
+                        if (emptyPieces > i) {
                             nextFrame = this.bottleSectionEmptyEmpty;
                         } else {
                             nextFrame = this.bottleSectionEmpty;
@@ -148,7 +165,7 @@ MemoryMatch.Nemesis = {
                         nextFrame = this.bottleTopFilled;
                     } else if (i == 2) { // neck
                         nextFrame = this.bottleNeckFilled;
-                    } else if (i == numberOfPieces) { // bottom
+                    } else if (i == this.maxNumberOfPieces) { // bottom
                         nextFrame = this.bottleBottomFilled;
                     } else { // middle
                         nextFrame = this.bottleSectionFilled;
