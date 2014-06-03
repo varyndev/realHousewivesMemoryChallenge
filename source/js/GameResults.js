@@ -100,6 +100,8 @@ MemoryMatch.GameResults = {
     },
 
     buildScreen: function (autoStart) {
+        var hiFiveWord;
+
         if (this.groupDisplayObject !== null) {
             return;
         }
@@ -113,6 +115,11 @@ MemoryMatch.GameResults = {
         this.setupTitleText(this.groupDisplayObject);
         if (MemoryMatch.isChallengeGame) {
             this.setupAward(this.groupDisplayObject);
+
+            hiFiveWord = MemoryMatch.hiFiveEarnedInCurrentGame();
+            if (hiFiveWord != null && hiFiveWord.length > 0) {
+                MemoryMatch.showMessageBalloon(null, hiFiveWord + '!', 0, this.backgroundWidth * 0.5, this.backgroundHeight * 0.2);
+            }
         } else {
             this.setupStars(this.groupDisplayObject);
         }
@@ -361,7 +368,6 @@ MemoryMatch.GameResults = {
             gemPosition,
             gemName,
             landNumber,
-            hiFiveWord,
             numberOfLevels = MemoryMatch.GameSetup.levels.length;
 
         position = {x: this.backgroundWidth * 0.5, y: this.backgroundHeight * 0.22};
@@ -382,11 +388,6 @@ MemoryMatch.GameResults = {
             imageSprite.name = gemName;
             imageSprite.visible = MemoryMatch.didUserBeatChallenge(landNumber);
             this.groupDisplayObject.addChild(imageSprite);
-        }
-
-        hiFiveWord = MemoryMatch.hiFiveEarnedInCurrentGame();
-        if (hiFiveWord != null && hiFiveWord.length > 0) {
-            MemoryMatch.showMessageBalloon(null, hiFiveWord + '!', 0, imageSprite.x, imageSprite.y);
         }
     },
 

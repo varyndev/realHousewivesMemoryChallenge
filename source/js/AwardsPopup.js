@@ -60,6 +60,8 @@ MemoryMatch.AwardsPopup = {
         this.contentDisplayObject = new createjs.Container();
         this.setupMask();
         this.setupTitleText();
+        this.startYAchievements = Math.floor(this.backgroundHeight * 0.12);
+        this.startYAchievements += this.setupAward(0.5, this.startYAchievements);
         this.setupInfoText();
         this.setupAchievements();
         this.setupButtons();
@@ -264,7 +266,9 @@ MemoryMatch.AwardsPopup = {
         } else {
             timePlayed = MemoryMatch.formatTimeAsString(totalTimePlayed, true, false);
         }
-        Y = Math.floor(this.backgroundHeight * 0.16);
+
+        // first column
+        Y = this.startYAchievements;
         titleTextField = new createjs.Text("Games:", fontSizeBold, fontColor);
         titleTextField.textAlign = "left";
         titleTextField.x = leftX;
@@ -306,9 +310,10 @@ MemoryMatch.AwardsPopup = {
         titleTextField.maxWidth = fieldWidth;
         this.contentDisplayObject.addChild(titleTextField);
 
+        // Second column
         leftX = this.backgroundWidth * 0.55;
         rightX = this.backgroundWidth * 0.88;
-        Y = Math.floor(this.backgroundHeight * 0.16);
+        Y = this.startYAchievements;
         titleTextField = new createjs.Text("Combos:", fontSizeBold, fontColor);
         titleTextField.textAlign = "left";
         titleTextField.x = leftX;
@@ -351,6 +356,43 @@ MemoryMatch.AwardsPopup = {
         this.contentDisplayObject.addChild(titleTextField);
 
         this.startYAchievements = Y + (lineHeight * 1.5);
+    },
+
+    setupAward: function (scaleFactor, startY) {
+        var awardDisplayObject = new createjs.Container(),
+            spriteFrame = 'mapTrophy',
+            spriteFrames = MemoryMatch.GameSetup.mapSpritesheetFrames,
+            spriteData = new createjs.SpriteSheet(spriteFrames),
+            imageSprite = new createjs.Sprite(spriteData, spriteFrame),
+            spriteSize = MemoryMatch.getSpriteFrameSize(spriteFrames, spriteFrame),
+            position,
+            i,
+            gemPosition,
+            gemName,
+            landNumber,
+            numberOfLevels = MemoryMatch.GameSetup.levels.length;
+
+        imageSprite.setTransform(spriteSize.width * 0.5, spriteSize.height * 0.5, 1, 1, 0, 0, 0, spriteSize.width * 0.5, spriteSize.height * 0.5);
+        imageSprite.framerate = 0;
+        awardDisplayObject.addChild(imageSprite);
+        awardDisplayObject.setBounds(0, 0, spriteSize.width, spriteSize.height);
+
+        // position gems relative to award position, accounting for the center registration of the award sprite
+        spriteFrame = 'mapAwardLand';
+        position = {x: 0, y: 0};
+        for (i = 0; i < numberOfLevels; i ++) {
+            landNumber = i + 1;
+            gemName = spriteFrame + landNumber.toString();
+            imageSprite = new createjs.Sprite(spriteData, gemName);
+            gemPosition = MemoryMatch.GameSetup.levels[i].gemPosition;
+            imageSprite.setTransform(position.x + (gemPosition.x * MemoryMatch.stageScaleFactor), position.y + (gemPosition.y * MemoryMatch.stageScaleFactor), 1, 1);
+            imageSprite.name = gemName;
+            imageSprite.visible = MemoryMatch.didUserBeatChallenge(landNumber);
+            awardDisplayObject.addChild(imageSprite);
+        }
+        this.contentDisplayObject.addChild(awardDisplayObject);
+        awardDisplayObject.setTransform((this.backgroundWidth - (spriteSize.width * scaleFactor)) * 0.5, startY, scaleFactor, scaleFactor, 0, 0, 0, 0, 0);
+        return startY + (spriteSize.height * scaleFactor * 0.5);
     },
 
     setupAchievements: function () {
