@@ -3058,9 +3058,9 @@ var MemoryMatch = {
             spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.guiSpritesheet1Frames);
             iconSize = MemoryMatch.getSpriteFrameSize(MemoryMatch.GameSetup.guiSpritesheet1Frames, iconId);
             width = (iconSize.width * iconScale) + (20 * MemoryMatch.stageScaleFactor);
-            height = iconSize.height * iconScale;
+            height = iconSize.height;
             iconSprite = new createjs.Sprite(spriteData, iconId);
-            iconSprite.setTransform(0, 0, iconScale, iconScale);
+            iconSprite.setTransform(0, height * 0.5, iconScale, iconScale, 0, 0, 0, 0, iconSize.height * 0.5);
             iconSprite.framerate = 1;
             iconSprite.name = "icon";
             groupDisplayObject.addChild(iconSprite);
