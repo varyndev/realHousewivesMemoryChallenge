@@ -658,7 +658,9 @@ MemoryMatch.GameGUI = {
             case "continue":
             case "close":    // unpause the game
             default:
-                MemoryMatch.resumePausedGame();
+                if (MemoryMatch.gameState != MemoryMatch.GAMESTATE.MENU) {
+                    MemoryMatch.resumePausedGame();
+                }
                 break;
         }
     },

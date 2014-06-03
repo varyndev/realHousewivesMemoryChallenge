@@ -490,6 +490,9 @@ var MemoryMatch = {
 
     startGameWithNumber: function (gameNumber) {
         var levelData = MemoryMatch.getLevelData(MemoryMatch.gameLevel);
+        
+        MemoryMatch.changeGameState(MemoryMatch.GAMESTATE.PLAY);
+        MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.GET_READY;
         MemoryMatch.gameId = levelData.gameId;
         MemoryMatch.challengeGameId = levelData.challengeGameId;
         MemoryMatch.challengeAdvanceStreak = levelData.challengeAdvanceStreak;
