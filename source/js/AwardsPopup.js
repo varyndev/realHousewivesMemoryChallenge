@@ -359,17 +359,17 @@ MemoryMatch.AwardsPopup = {
             achievementItem = null,
             earned = false,
             i,
-            width = this.backgroundWidth * 0.4,
-            height = width * 0.3,
+            width = this.backgroundWidth * 0.41,
+            height = width * 0.33,
             margin = width * 0.01,
             Y = this.startYAchievements + (height * 0.5),
-            X = (this.backgroundWidth - width) * 0.5,
+            X = (this.backgroundWidth - width) * 0.51,
             x2Column = X + margin;
 
         for (i = 0; i < allAchievements.length; i ++ ) {
             achievementInfo = allAchievements[i];
             earned = MemoryMatch.didUserEarnAchievement(achievementInfo.id);
-            achievementItem = new MemoryMatch.AchievementItem(this.contentDisplayObject, {achievementId: achievementInfo.id, x: x2Column, y: Y, width: width, height: height, autoClose: false, icon: 'awardsCardIcon', earned: earned, callback: null});
+            achievementItem = new MemoryMatch.AchievementItem(this.contentDisplayObject, {achievementId: achievementInfo.id, x: x2Column, y: Y, width: width, height: height, autoClose: false, icon: 'metal', earned: earned, callback: null});
             if (i % 2 == 0) {
                 x2Column = X + achievementItem.getBounds().width + margin + margin;
             } else {

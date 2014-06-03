@@ -239,7 +239,7 @@ MemoryMatch.GameSetup = {
         {id: 4, name: "Quad-bo", value: 250, icon: "quadbo", description: "Make four combos without a miss."},
         {id: 5, name: "Five Combos", value: 100, icon: "5combo", description: "Make five combos in one game."},
         {id: 6, name: "Fifty Combos", value: 250, icon: "50combo", description: "Make fifty combos."},
-        {id: 7, name: "Twenty Five Combos", value: 100, icon: "25combo", description: "Make twenty five combos."},
+        {id: 7, name: "25 Combos", value: 100, icon: "25combo", description: "Make twenty five combos."},
         {id: 8, name: "50 Matches", value: 50, icon: "50match", description: "Make 50 matches."},
         {id: 9, name: "100 Matches", value: 150, icon: "100match", description: "Make 100 matches."},
         {id: 10, name: "250 Matches", value: 250, icon: "250match", description: "Make 250 matches."},

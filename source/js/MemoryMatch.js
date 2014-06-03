@@ -3990,14 +3990,14 @@ var MemoryMatch = {
                 id = MemoryMatch.achievementDisplayQueue.splice(0, 1)[0];
                 objectType = Object.prototype.toString.call(id); // is it an Array or is it a Number?
                 if (objectType.indexOf('Number') >= 0) { // just Achievement Id, make a AchievementItem and show it
-//                    objectToDisplay = new MemoryMatch.AchievementItem(MemoryMatch.stage, {achievementId: id, autoClose: true, icon: 'iconCards', sound: 'soundBonus', callback: null});
+//                    objectToDisplay = new MemoryMatch.AchievementItem(MemoryMatch.stage, {achievementId: id, autoClose: true, icon: 'metal', sound: 'soundBonus', callback: null});
 //                    if (objectToDisplay != null) {
 //                        objectToDisplay.playSound();
 //                    }
                     // get title
                     achievementInfo = MemoryMatch.getAchievementInfo(id);
                     if (achievementInfo != null) {
-                        MemoryMatch.showMessageBalloon("awardsCardIcon", achievementInfo.name, null, MemoryMatch.stageWidth * 0.5, MemoryMatch.stageHeight * 0.96);
+                        MemoryMatch.showMessageBalloon("metal", achievementInfo.name, null, MemoryMatch.stageWidth * 0.5, MemoryMatch.stageHeight * 0.96);
                         MemoryMatch.triggerSoundFx('soundAchievement', {delay: 350});
                     }
                 } else { // Just show the message at location indicated

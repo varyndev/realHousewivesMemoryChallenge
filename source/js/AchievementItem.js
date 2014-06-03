@@ -62,12 +62,12 @@ MemoryMatch = MemoryMatch || {};
             if (parameters.width != null) {
                 this.width = parameters.width;
             } else if (this.width < 1) {
-                this.width = 900 * MemoryMatch.stageScaleFactor;
+                this.width = 920 * MemoryMatch.stageScaleFactor;
             }
             if (parameters.height != null) {
                 this.height = parameters.height;
             } else if (this.height < 1) {
-                this.height = 270 * MemoryMatch.stageScaleFactor;
+                this.height = 290 * MemoryMatch.stageScaleFactor;
             }
             if (parameters.x != null) {
                 this.x = parameters.x;
@@ -165,13 +165,13 @@ MemoryMatch = MemoryMatch || {};
             spriteData,
             iconSize,
             iconSprite,
-            iconScale = 1.0;
+            iconScale = 0.5;
 
         if (this.icon != null) {
             spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.guiSpritesheet1Frames);
             iconSize = MemoryMatch.getSpriteFrameSize(MemoryMatch.GameSetup.guiSpritesheet1Frames, this.icon);
             iconSprite = new createjs.Sprite(spriteData, this.icon);
-            iconSprite.setTransform(this.width * 0.005, this.height * 0.01, iconScale, iconScale);
+            iconSprite.setTransform(this.width * 0.005, this.height * 0.5, iconScale, iconScale, 0, 0, 0, 0, iconSize.height * 0.5);
             iconSprite.framerate = 1;
             iconSprite.name = "icon";
             if ( ! this.earned) {
@@ -205,11 +205,11 @@ MemoryMatch = MemoryMatch || {};
             message = '???';
         }
         titleTextField = new createjs.Text(message, MemoryMatch.getScaledFontSize(36) + " " + MemoryMatch.GameSetup.guiMediumFontName, (this.earned ? this.fontColorEarned : this.fontColorUnearned));
-        titleTextField.textAlign = "center";
-        titleTextField.x = this.width * 0.5;
-        titleTextField.y = this.height * 0.4;
-        titleTextField.lineWidth = this.width * 0.8;
-        titleTextField.maxWidth = this.width * 0.8;
+        titleTextField.textAlign = "left";
+        titleTextField.x = this.width * 0.28;
+        titleTextField.y = this.height * 0.36;
+        titleTextField.lineWidth = this.width * 0.72;
+        titleTextField.maxWidth = this.width * 0.72;
         titleTextField.name = "description";
         this.groupDisplayObject.addChild(titleTextField);
     };
