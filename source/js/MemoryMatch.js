@@ -1227,6 +1227,7 @@ var MemoryMatch = {
             // Player Wins (special case for EYESPY after we showed all possible boards). Instead of showing a new board, show the Game Results popup
             MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.WIN;
             MemoryMatch.levelCleanUp();
+            MemoryMatch.gameCompleteUpdateUserStats();
             MemoryMatch.levelResults();
         } else {
             spriteData = new createjs.SpriteSheet({
@@ -2842,23 +2843,15 @@ var MemoryMatch = {
 
     gameCompleteNextGameOrLevel: function () {
         var canUserAdvance = false,
-            gameNumber,
             showLevelResults = true,
-            finalScore = 0,
-            longestStreak,
-            starsEarned = 0,
-            gameTime,
+            finalScore,
             earnedAchievement = false,
             updateUserStats = false;
 
         if (MemoryMatch.isChallengeGame) {
             canUserAdvance = true;
-            gameNumber = 99;
-            longestStreak = MemoryMatch.gameNumber - 1;
         } else {
             canUserAdvance = MemoryMatch.canUserAdvance();
-            gameNumber = MemoryMatch.gameNumber;
-            longestStreak = 0;
             updateUserStats = true;
         }
         if (canUserAdvance) {
@@ -2887,31 +2880,58 @@ var MemoryMatch = {
             MemoryMatch.levelCleanUp();
         }
         if (updateUserStats) {
-            gameTime = MemoryMatch.gameEndTime - MemoryMatch.gameStartTime;
-            if (gameTime <= 5999) { // finished game in 5 seconds or less
-                earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.QUICKDRAW) | earnedAchievement;
-            }
+            earnedAchievement = MemoryMatch.gameCompleteUpdateUserStats();
             finalScore = MemoryMatch.gameCompleteTallyFinalScore();
-            starsEarned = MemoryMatch.getGameStarsEarned();
-            if (MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.CHAINS) {
-                if (MemoryMatch.missCount == 0) {
-                    MemoryMatch.chainsStreakCount ++;
-                    if (MemoryMatch.gameNumber >= MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].length) { // is this the last chains game?
-                        earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.CHAINTASTIC) | earnedAchievement;
-                    }
-                } else {
-                    MemoryMatch.chainsStreakCount = 0;
+        } else {
+            finalScore = MemoryMatch.gameScore;
+        }
+        if (showLevelResults) {
+            MemoryMatch.levelResults();
+        }
+        MemoryMatch.gameScore = finalScore; // update game score with bonus earned, but after we showed level results (because we do it there too)
+        return earnedAchievement;
+    },
+
+    gameCompleteUpdateUserStats: function () {
+        var earnedAchievement = false,
+            starsEarned,
+            finalScore,
+            gameNumber,
+            longestStreak,
+            gameTime;
+
+        if (MemoryMatch.isChallengeGame) {
+            gameNumber = 99;
+            longestStreak = MemoryMatch.gameNumber - 1;
+        } else {
+            gameNumber = MemoryMatch.gameNumber;
+            longestStreak = 0;
+        }
+        gameTime = MemoryMatch.gameEndTime - MemoryMatch.gameStartTime;
+        if (gameTime <= 5999) { // finished game in 5 seconds or less
+            earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.QUICKDRAW) | earnedAchievement;
+        }
+        finalScore = MemoryMatch.gameCompleteTallyFinalScore();
+        starsEarned = MemoryMatch.getGameStarsEarned();
+        if (MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.CHAINS) {
+            if (MemoryMatch.missCount == 0) {
+                MemoryMatch.chainsStreakCount ++;
+                if (MemoryMatch.gameNumber >= MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].length) { // is this the last chains game?
+                    earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.CHAINTASTIC) | earnedAchievement;
                 }
-                if (MemoryMatch.chainsStreakCount > 1) { // two chains in a row without a miss?
-                    earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.CHAINGANG) | earnedAchievement;
-                }
+            } else {
+                MemoryMatch.chainsStreakCount = 0;
             }
-            MemoryMatch.updateUserDataStatsForCompletedGamePlay(finalScore, MemoryMatch.matchCount, MemoryMatch.numberOfCombos, gameTime, MemoryMatch.luckyGuessCount);
-            MemoryMatch.setGameUserData(MemoryMatch.gameLevel, gameNumber, finalScore, starsEarned, MemoryMatch.gameEndTime, longestStreak);
-            if (starsEarned == 3 && MemoryMatch.userEarnedAllStars()) {
-                earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.THREESTAR) | earnedAchievement;
+            if (MemoryMatch.chainsStreakCount > 1) { // two chains in a row without a miss?
+                earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.CHAINGANG) | earnedAchievement;
             }
-            if (MemoryMatch.isChallengeGame) {
+        }
+        MemoryMatch.updateUserDataStatsForCompletedGamePlay(finalScore, MemoryMatch.matchCount, MemoryMatch.numberOfCombos, gameTime, MemoryMatch.luckyGuessCount);
+        MemoryMatch.setGameUserData(MemoryMatch.gameLevel, gameNumber, finalScore, starsEarned, MemoryMatch.gameEndTime, longestStreak);
+        if (starsEarned == 3 && MemoryMatch.userEarnedAllStars()) {
+            earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.THREESTAR) | earnedAchievement;
+        }
+        if (MemoryMatch.isChallengeGame) {
 
 
 
@@ -2921,24 +2941,17 @@ var MemoryMatch = {
 
 
 
-                if (MemoryMatch.challengePassed()) {
-                    MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.WIN;
-                    if ( ! MemoryMatch.userBeatAllChallenges) {
-                        MemoryMatch.userBeatAllChallenges = MemoryMatch.didUserBeatAllChallenges();
-                        if (MemoryMatch.userBeatAllChallenges) {
-                            MemoryMatch.userBeatAllChallengesFirstTime = true;
-                            earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.ACONTENDER) | earnedAchievement;
-                        }
+            if (MemoryMatch.challengePassed()) {
+                MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.WIN;
+                if ( ! MemoryMatch.userBeatAllChallenges) {
+                    MemoryMatch.userBeatAllChallenges = MemoryMatch.didUserBeatAllChallenges();
+                    if (MemoryMatch.userBeatAllChallenges) {
+                        MemoryMatch.userBeatAllChallengesFirstTime = true;
+                        earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.ACONTENDER) | earnedAchievement;
                     }
                 }
             }
-        } else {
-            finalScore = MemoryMatch.gameScore;
         }
-        if (showLevelResults) {
-            MemoryMatch.levelResults();
-        }
-        MemoryMatch.gameScore = finalScore; // update game score with bonus earned, but after we showed level results (because we do it there too)
         return earnedAchievement;
     },
 
@@ -3052,7 +3065,7 @@ var MemoryMatch = {
             groupDisplayObject = new createjs.Container(),
             iconSprite,
             iconSize,
-            iconScale = 0.6666,
+            iconScale = 0.25,
             spriteData,
             messageText,
             pointsText;
@@ -3060,8 +3073,8 @@ var MemoryMatch = {
         if (iconId != null && iconId.length > 0) {
             spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.guiSpritesheet1Frames);
             iconSize = MemoryMatch.getSpriteFrameSize(MemoryMatch.GameSetup.guiSpritesheet1Frames, iconId);
-            width = (iconSize.width * iconScale) + (20 * MemoryMatch.stageScaleFactor);
-            height = iconSize.height;
+            width = (iconSize.width * iconScale) + (16 * MemoryMatch.stageScaleFactor);
+            height = iconSize.height * iconScale;
             iconSprite = new createjs.Sprite(spriteData, iconId);
             iconSprite.setTransform(0, height * 0.5, iconScale, iconScale, 0, 0, 0, 0, iconSize.height * 0.5);
             iconSprite.framerate = 1;
@@ -3073,7 +3086,11 @@ var MemoryMatch = {
         }
         messageText = new createjs.Text(message, MemoryMatch.getScaledFontSize(64) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColor);
         messageText.textAlign = "left";
+        if (height > 0) {
+            messageText.textBaseline = "middle";
+        }
         messageText.x = width;
+        messageText.y = height * 0.5;
         bounds = messageText.getBounds();
         width += bounds.width;
         if (bounds.height > height) {

@@ -207,7 +207,7 @@ MemoryMatch.MessagePopup = {
 
     setupMessageText: function () {
         var titleTextField;
-        titleTextField = new createjs.Text(this.message, MemoryMatch.getScaledFontSize(44) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
+        titleTextField = new createjs.Text(this.message, MemoryMatch.getScaledFontSize(48) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         titleTextField.textAlign = "left";
         titleTextField.x = this.marginLeft;
         titleTextField.y = this.backgroundHeight * 0.4;

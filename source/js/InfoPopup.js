@@ -35,6 +35,7 @@ MemoryMatch = MemoryMatch || {};
     p.message = null;
     p.icon = null;
     p.sound = null;
+    p.displayDuration = 2.5;
     p.borderColor = '#d640d6';
     p.backgroundColor = '#521852';
 
@@ -138,10 +139,9 @@ MemoryMatch = MemoryMatch || {};
     };
 
     p.closeStartAnimation = function () {
-        var duration = 1.8; // seconds of animation
-        var animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.groupDisplayObject, 250, duration * 1000, true, null, this.closeComplete.bind(this));
+        var animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.groupDisplayObject, 0, this.displayDuration * 1000, true, null, this.closeComplete.bind(this));
         animator.showAtBegin = true;
-        animator.vAlpha = -1 / (duration * MemoryMatch.fps);
+        animator.vAlpha = -1 / (this.displayDuration * MemoryMatch.fps);
         animator.endAlpha = 0;
     };
 
@@ -167,7 +167,7 @@ MemoryMatch = MemoryMatch || {};
 
     p.setupTitleText = function () {
         var titleTextField;
-        titleTextField = new createjs.Text(this.title, MemoryMatch.getScaledFontSize(42) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColor);
+        titleTextField = new createjs.Text(this.title, MemoryMatch.getScaledFontSize(56) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColor);
         titleTextField.textAlign = "center";
         titleTextField.x = this.width * 0.5;
         titleTextField.y = this.height * 0.1;
@@ -179,7 +179,7 @@ MemoryMatch = MemoryMatch || {};
 
     p.setupMessageText = function () {
         var titleTextField;
-        titleTextField = new createjs.Text(this.message, MemoryMatch.getScaledFontSize(32) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
+        titleTextField = new createjs.Text(this.message, MemoryMatch.getScaledFontSize(42) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         titleTextField.textAlign = "center";
         titleTextField.x = this.width * 0.5;
         titleTextField.y = this.height * 0.4;
