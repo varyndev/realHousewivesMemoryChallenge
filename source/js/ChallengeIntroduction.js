@@ -148,14 +148,14 @@ MemoryMatch.ChallengeIntroduction = {
         this.groupDisplayObject.addChild(titleTextField);
         yOffset = titleTextField.y + titleTextField.getMeasuredHeight();
 
-        titleTextField = new createjs.Text(gameData.levelName, MemoryMatch.getScaledFontSize(72) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColor);
-        titleTextField.textAlign = "center";
-        titleTextField.x = this.backgroundWidth * 0.5;
-        titleTextField.y = yOffset;
-        titleTextField.lineWidth = this.backgroundWidth - (this.marginLeft * 2);
-        titleTextField.maxWidth = this.backgroundWidth - (this.marginLeft * 2);
-        this.groupDisplayObject.addChild(titleTextField);
-        yOffset += titleTextField.getMeasuredHeight();
+//        titleTextField = new createjs.Text(gameData.levelName, MemoryMatch.getScaledFontSize(72) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColor);
+//        titleTextField.textAlign = "center";
+//        titleTextField.x = this.backgroundWidth * 0.5;
+//        titleTextField.y = yOffset;
+//        titleTextField.lineWidth = this.backgroundWidth - (this.marginLeft * 2);
+//        titleTextField.maxWidth = this.backgroundWidth - (this.marginLeft * 2);
+//        this.groupDisplayObject.addChild(titleTextField);
+//        yOffset += titleTextField.getMeasuredHeight();
 
         titleTextField = new createjs.Text(gameData.levelIntro, MemoryMatch.getScaledFontSize(48) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         titleTextField.textAlign = "center";
