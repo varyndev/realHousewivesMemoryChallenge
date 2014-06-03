@@ -719,7 +719,11 @@ var MemoryMatch = {
         MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.LEVEL_UP;
         MemoryMatch.gameLevel = MemoryMatch.getNextGameLevel();
         MemoryMatch.gameNumber = 1;
-        MemoryMatch.startLevel(MemoryMatch.gameLevel);
+        if (MemoryMatch.gameLevel == 1) {
+            MemoryMatch.goToHomeScreen();
+        } else {
+            MemoryMatch.startLevel(MemoryMatch.gameLevel);
+        }
     },
 
     replayLastGame: function () {
@@ -4401,6 +4405,7 @@ var MemoryMatch = {
             cardMatchCounter,
             cardMatchCounterBg,
             cardMatchCounterBgSize,
+            cardMatchColor,
             guiSpriteFrames = MemoryMatch.GameSetup.guiSpritesheet1Frames,
             guiSpriteData = new createjs.SpriteSheet(guiSpriteFrames),
             cardBorderWidth = MemoryMatch.cardMargin * 2.0,
@@ -4430,11 +4435,17 @@ var MemoryMatch = {
         // layer 2 & 3 is the card match counter
         cardMatchCounterBg = new createjs.Sprite(guiSpriteData, 'cardCounter');
         card.addChild(cardMatchCounterBg);
-//        cardMatchCounterBg.gotoAndStop('cardCounter');
         cardMatchCounterBg.visible = false;
         cardMatchCounterBgSize = MemoryMatch.getSpriteFrameSize(guiSpriteFrames, 'cardCounter');
 
-        cardMatchCounter = new createjs.Text("", MemoryMatch.getScaledFontSize(MemoryMatch.GameSetup.cardMatchCounterSize) + " " + MemoryMatch.GameSetup.cardMatchCounterFont, MemoryMatch.GameSetup.cardMatchCounterColor);
+        cardMatchColor = MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].primaryColor;
+        if (cardMatchColor == null) {
+            cardMatchColor = MemoryMatch.GameSetup.cardMatchCounterColor;
+        }
+        if (cardMatchColor == null) {
+            cardMatchColor = '#00FF00';
+        }
+        cardMatchCounter = new createjs.Text("", MemoryMatch.getScaledFontSize(MemoryMatch.GameSetup.cardMatchCounterSize) + " " + MemoryMatch.GameSetup.cardMatchCounterFont, cardMatchColor);
         cardMatchCounter.textAlign = 'center';
         if (cardMatchCounterPositionIndex === null) {
             cardMatchCounterPositionIndex = 4;
