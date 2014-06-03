@@ -111,6 +111,7 @@ MemoryMatch.GameGUI = {
         if (showFlag) {
             if (this.showingGameLevel != MemoryMatch.gameLevel) {
                 this.setColorFilters();
+                this.showingGameLevel = MemoryMatch.gameLevel
             }
             finalY = 0;
             distance = 0 - this.groupDisplayObject.y;
