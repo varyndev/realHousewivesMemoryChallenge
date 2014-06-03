@@ -157,7 +157,7 @@ MemoryMatch.ChallengeIntroduction = {
 //        this.groupDisplayObject.addChild(titleTextField);
 //        yOffset += titleTextField.getMeasuredHeight();
 
-        titleTextField = new createjs.Text(gameData.levelIntro, MemoryMatch.getScaledFontSize(48) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
+        titleTextField = new createjs.Text(gameData.levelIntro, MemoryMatch.getScaledFontSize(52) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         titleTextField.textAlign = "center";
         titleTextField.x = this.backgroundWidth * 0.5;
         titleTextField.y = yOffset;

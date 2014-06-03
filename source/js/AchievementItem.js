@@ -204,7 +204,7 @@ MemoryMatch = MemoryMatch || {};
         } else {
             message = '???';
         }
-        titleTextField = new createjs.Text(message, MemoryMatch.getScaledFontSize(32) + " " + MemoryMatch.GameSetup.guiMediumFontName, (this.earned ? this.fontColorEarned : this.fontColorUnearned));
+        titleTextField = new createjs.Text(message, MemoryMatch.getScaledFontSize(36) + " " + MemoryMatch.GameSetup.guiMediumFontName, (this.earned ? this.fontColorEarned : this.fontColorUnearned));
         titleTextField.textAlign = "center";
         titleTextField.x = this.width * 0.5;
         titleTextField.y = this.height * 0.4;
@@ -217,7 +217,7 @@ MemoryMatch = MemoryMatch || {};
     p.setupValueText = function () {
         var valueTextField;
         if (this.value != null) {
-            valueTextField = new createjs.Text(this.value.toString(), MemoryMatch.getScaledFontSize(52) + " " + MemoryMatch.GameSetup.guiMediumFontName, (this.earned ? this.fontColorEarned : this.fontColorUnearned));
+            valueTextField = new createjs.Text(this.value.toString(), MemoryMatch.getScaledFontSize(56) + " " + MemoryMatch.GameSetup.guiMediumFontName, (this.earned ? this.fontColorEarned : this.fontColorUnearned));
             valueTextField.textAlign = "right";
             valueTextField.x = this.width * 0.96;
             valueTextField.y = this.height * 0.6;

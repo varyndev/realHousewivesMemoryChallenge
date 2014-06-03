@@ -1,10 +1,10 @@
 @font-face {
-    font-family: 'ambleregular';
-    src: url('Amble-Regular-webfont.eot');
-    src: url('Amble-Regular-webfont.eot?#iefix') format('embedded-opentype'),
-    url('Amble-Regular-webfont.woff') format('woff'),
-    url('Amble-Regular-webfont.ttf') format('truetype'),
-    url('Amble-Regular-webfont.svg#ambleregular') format('svg');
+    font-family: 'open_sanscondensed_light';
+    src: url('OpenSans-CondLight-webfont.eot');
+    src: url('OpenSans-CondLight-webfont.eot?#iefix') format('embedded-opentype'),
+    url('OpenSans-CondLight-webfont.woff') format('woff'),
+    url('OpenSans-CondLight-webfont.ttf') format('truetype'),
+    url('OpenSans-CondLight-webfont.svg#open_sanscondensed_light') format('svg');
     font-weight: normal;
     font-style: normal;
 }
@@ -25,7 +25,7 @@ body {
     -webkit-tap-highlight-color: transparent;
     -moz-tap-highlight-color: transparent;
     -ms-touch-action: none;
-    font-family:'ambleregular', 'HelveticaNeue', Helvetica, Arial, sans-serif;
+    font-family:'open_sanscondensed_light', 'HelveticaNeue', Helvetica, Arial, sans-serif;
     font-size:12px;
 }
 

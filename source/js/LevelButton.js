@@ -121,7 +121,7 @@ MemoryMatch.LevelButton = function (parameters) {
             bestScoreText.shadow = levelButton.shadowSource.clone();
         }
         this.addChild(bestScoreText);
-        this.height = bestScoreText.y + bestScoreText.getMeasuredLineHeight();
+        this.height = bestScoreText.y + (bestScoreText.getMeasuredLineHeight() * 2);
     };
 
     levelButton.createLockIcon = function () {

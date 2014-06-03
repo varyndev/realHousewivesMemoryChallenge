@@ -142,20 +142,22 @@ MemoryMatch.GameComplete = {
         this.groupDisplayObject.addChild(titleTextField);
         yOffset = titleTextField.y + titleTextField.getMeasuredHeight();
 
-        titleTextField = new createjs.Text(subtitle, MemoryMatch.getScaledFontSize(42) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
+        titleTextField = new createjs.Text(subtitle, MemoryMatch.getScaledFontSize(48) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         titleTextField.textAlign = "center";
         titleTextField.x = this.backgroundWidth * 0.5;
         titleTextField.y = yOffset;
         titleTextField.lineWidth = this.backgroundWidth - (this.marginLeft * 2);
+        titleTextField.lineHeight = titleTextField.getMeasuredLineHeight() * 1.5;
         titleTextField.maxWidth = this.backgroundWidth - (this.marginLeft * 2);
         this.groupDisplayObject.addChild(titleTextField);
         yOffset += titleTextField.getMeasuredHeight() + (42 * MemoryMatch.stageScaleFactor);
 
-        titleTextField = new createjs.Text(info, MemoryMatch.getScaledFontSize(36) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
+        titleTextField = new createjs.Text(info, MemoryMatch.getScaledFontSize(38) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         titleTextField.textAlign = "center";
         titleTextField.x = this.backgroundWidth * 0.5;
         titleTextField.y = yOffset;
         titleTextField.lineWidth = this.backgroundWidth - (this.marginLeft * 2);
+        titleTextField.lineHeight = titleTextField.getMeasuredLineHeight() * 1.5;
         titleTextField.maxWidth = this.backgroundWidth - (this.marginLeft * 2);
         this.groupDisplayObject.addChild(titleTextField);
     },

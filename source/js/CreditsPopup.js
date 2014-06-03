@@ -158,7 +158,7 @@ MemoryMatch.CreditsPopup = {
         var titleTextField,
             text = 'This game was made by JumpyDot using the EaselJS HTML5 framework.';
 
-        titleTextField = new createjs.Text(text, MemoryMatch.getScaledFontSize(44) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
+        titleTextField = new createjs.Text(text, MemoryMatch.getScaledFontSize(52) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         titleTextField.textAlign = "left";
         titleTextField.x = this.marginLeft;
         titleTextField.y = this.backgroundHeight * 0.24;
@@ -166,8 +166,8 @@ MemoryMatch.CreditsPopup = {
         titleTextField.maxWidth = this.backgroundWidth - (this.marginLeft * 2);
         this.groupDisplayObject.addChild(titleTextField);
 
-        text = 'Julia Deter-Keren: Game Design & Art Direction\n\nJohn Foster:     Programming & Audio\n\nDan Hart:  Game Design & Product Management';
-        titleTextField = new createjs.Text(text, MemoryMatch.getScaledFontSize(48) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
+        text = 'Julia Deter-Keren: Game Design & Art Direction\n\nJohn Foster:     Programming & Audio\n\nDan Hart:  Game Design & Product Management\n\nRobert Prescott:     Quality Assurance';
+        titleTextField = new createjs.Text(text, MemoryMatch.getScaledFontSize(56) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         titleTextField.textAlign = "center";
         titleTextField.x = this.backgroundWidth * 0.5;
         titleTextField.y = this.backgroundHeight * 0.4;
@@ -191,7 +191,7 @@ MemoryMatch.CreditsPopup = {
 
     setupCopyrightText: function () {
         var info = 'Copyright 2014 JumpyDot. All rights reserved.',
-            infoTextField = new createjs.Text(info, MemoryMatch.getScaledFontSize(20) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiInfoColor);
+            infoTextField = new createjs.Text(info, MemoryMatch.getScaledFontSize(36) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiInfoColor);
 
         infoTextField.textAlign = "center";
         infoTextField.x = this.backgroundWidth * 0.5;

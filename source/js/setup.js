@@ -16,7 +16,7 @@ MemoryMatch.GameSetup = {
     guiSprites: ["guiSpriteSheet1.png", "guiSpriteSheet2.png", "mapSpriteSheet.png", "credits.png"],
     particleSprite: "sparkle_21x23.png",
     guiBoldFontName: "SohoStd-BoldItalic",
-    guiMediumFontName: "ambleregular",
+    guiMediumFontName: "open_sanscondensed_light",
     guiFontColor: "#FFFFFF",
     guiFontColorBonus: "#30BED2",
     guiInfoColor: "#FFFFFF",
