@@ -68,6 +68,12 @@ MemoryMatch.MainMenu = {
         MemoryMatch.MainMenu.killScreen();
     },
 
+    onClickedAward: function (event) {
+        MemoryMatch.triggerSoundFx("soundTap");
+        MemoryMatch.AwardsPopup.setup(MemoryMatch.stage, null);
+        MemoryMatch.AwardsPopup.buildScreen();
+    },
+
     setupBackgroundAndGameLogo: function () {
         // Show Hero image
         var spriteFrame = 'gameLogo',
@@ -129,6 +135,8 @@ MemoryMatch.MainMenu = {
         }
         imageSprite.setTransform(position.x, position.y, 1, 1, 0, 0, 0, spriteSize.width * 0.5, spriteSize.height * 0.5);
         imageSprite.framerate = 0;
+        imageSprite.cursor = 'pointer';
+        imageSprite.addEventListener('click', this.onClickedAward.bind(this));
         this.groupDisplayObject.addChild(imageSprite);
         this.awardSprite = imageSprite;
 
