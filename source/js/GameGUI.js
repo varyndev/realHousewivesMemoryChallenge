@@ -503,7 +503,7 @@ MemoryMatch.GameGUI = {
         matchCountLabel.textAlign = "right";
         matchCountLabel.textBaseline = "middle";
         matchCountHeight = matchCountLabel.getMeasuredLineHeight();
-        matchCountLabel.setTransform(this.width * 0.5, this.hudHeight * 0.5);
+        matchCountLabel.setTransform(this.width * 0.5, this.hudHeight * 0.44);
         matchCountLabel.maxWidth = this.width * 0.06;
         this.matchCountLabel = matchCountLabel;
         this.groupDisplayObject.addChild(matchCountLabel);
@@ -511,7 +511,6 @@ MemoryMatch.GameGUI = {
         matchCountField = new createjs.Text("0", MemoryMatch.getScaledFontSize(72) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColor);
         matchCountField.textAlign = "left";
         matchCountField.textBaseline = "middle";
-        matchCountHeight = matchCountField.getMeasuredLineHeight();
         matchCountField.setTransform(this.width * 0.51, this.hudHeight * 0.5);
         matchCountField.maxWidth = this.width * 0.03;
         this.matchCountField = matchCountField;
