@@ -491,20 +491,24 @@ var MemoryMatch = {
     startGameWithNumber: function (gameNumber) {
         var levelData = MemoryMatch.getLevelData(MemoryMatch.gameLevel);
 
-        MemoryMatch.changeGameState(MemoryMatch.GAMESTATE.PLAY);
-        MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.GET_READY;
-        MemoryMatch.gameId = levelData.gameId;
-        MemoryMatch.challengeGameId = levelData.challengeGameId;
-        MemoryMatch.challengeAdvanceStreak = levelData.challengeAdvanceStreak;
-        if (gameNumber == 99) {
-            MemoryMatch.isChallengeGame = true;
-            MemoryMatch.gameNumber = 1;
-            MemoryMatch.startLevelChallenge();
+        if (MemoryMatch.shouldShowLevelIntroduction(MemoryMatch.gameLevel, gameNumber)) {
+            MemoryMatch.showLevelIntroduction(gameNumber);
         } else {
-            gameNumber = Math.min(gameNumber || 1, MemoryMatch.numberOfGamesInLevel); // make sure it is in the supported range 1..N
-            MemoryMatch.isChallengeGame = false;
-            MemoryMatch.gameNumber = gameNumber;
-            MemoryMatch.startNextGame();
+            MemoryMatch.changeGameState(MemoryMatch.GAMESTATE.PLAY);
+            MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.GET_READY;
+            MemoryMatch.gameId = levelData.gameId;
+            MemoryMatch.challengeGameId = levelData.challengeGameId;
+            MemoryMatch.challengeAdvanceStreak = levelData.challengeAdvanceStreak;
+            if (gameNumber == 99) {
+                MemoryMatch.isChallengeGame = true;
+                MemoryMatch.gameNumber = 1;
+                MemoryMatch.startLevelChallenge();
+            } else {
+                gameNumber = Math.min(gameNumber || 1, MemoryMatch.numberOfGamesInLevel); // make sure it is in the supported range 1..N
+                MemoryMatch.isChallengeGame = false;
+                MemoryMatch.gameNumber = gameNumber;
+                MemoryMatch.startNextGame();
+            }
         }
     },
 
@@ -701,6 +705,28 @@ var MemoryMatch = {
                 MemoryMatch.goToHomeScreen();
             }
         }
+    },
+
+    levelIntroductionClosed: function (nextRequest, level, gameNumber) {
+        if (nextRequest == 'home') {
+            MemoryMatch.goToHomeScreen();
+        } else { // "continue"
+            MemoryMatch.startGameWithNumber(gameNumber);
+        }
+    },
+
+    showLevelIntroduction: function (gameNumber) {
+        MemoryMatch.LevelIntroduction.setup(MemoryMatch.stage, MemoryMatch.levelIntroductionClosed.bind(MemoryMatch), MemoryMatch.gameLevel, gameNumber);
+        MemoryMatch.LevelIntroduction.buildScreen(true);
+        MemoryMatch.UserData.setUserTipSeen(MemoryMatch.gameLevel);
+        MemoryMatch.UserData.flush();
+    },
+
+    shouldShowLevelIntroduction: function (gameLevel, gameNumber) {
+        var userNotHasSeenLevelIntro = false;
+
+        userNotHasSeenLevelIntro = ! MemoryMatch.UserData.isUserTipSeen(gameLevel);
+        return userNotHasSeenLevelIntro;
     },
 
     getNextGameLevel: function () {
@@ -5164,6 +5190,22 @@ function runTests() {
     ri = MemoryMatch.convertLevelNumberToLevelAndGameNumber(78);
     MemoryMatch.debugLog("Test " + testNum + " Expect: " + '{levelNumber:4,gameNumber:99}');
     MemoryMatch.debugLog("Test " + testNum + " Result: " + JSON.stringify(ri));
+
+    testNum ++;
+    a = MemoryMatch.UserData.setUserTipSeen(3);
+    ri = MemoryMatch.UserData.getUserTips();
+    MemoryMatch.debugLog("Test " + testNum + " Expect: " + '[false,false,true]');
+    MemoryMatch.debugLog("Test " + testNum + " Result: " + JSON.stringify(ri));
+    a = MemoryMatch.UserData.isUserTipSeen(3);
+    MemoryMatch.debugLog("Test " + testNum + " Expect: " + 'true');
+    MemoryMatch.debugLog("Test " + testNum + " Result: " + JSON.stringify(a));
+    a = MemoryMatch.UserData.isUserTipSeen(2);
+    MemoryMatch.debugLog("Test " + testNum + " Expect: " + 'false');
+    MemoryMatch.debugLog("Test " + testNum + " Result: " + JSON.stringify(a));
+    a = MemoryMatch.UserData.isUserTipSeen(1);
+    MemoryMatch.debugLog("Test " + testNum + " Expect: " + 'false');
+    MemoryMatch.debugLog("Test " + testNum + " Result: " + JSON.stringify(a));
+
 };
 
 //====================================================================================
@@ -5262,5 +5304,5 @@ function initApp() {
     assetLoader.addEventListener("progress", MemoryMatch.assetLoadProgress);
     assetLoader.addEventListener("error", MemoryMatch.assetLoadError);
     assetLoader.loadManifest(assetManifest);
-    // runTests(); // run unit tests
+//    runTests(); // run unit tests
 }

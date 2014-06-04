@@ -1,45 +1,56 @@
 /**
  * LevelIntroduction.js
  *
- * Introduce a new level. This object just layouts out the screen, animates the pieces,
+ * Introduce a new level. Designed to tell the user how to play the level.
+ * This object just layouts out the screen, animates the pieces,
  * and waits for the user to indicate they are ready to play.
  *
  */
 
 MemoryMatch.LevelIntroduction = {
     stateCompleteCallback: null,
-    levelData: null,
-    gameData: null,
     parentDisplayObject: null,
     groupDisplayObject: null,
-    buttonHelperInstances: null,
+    spriteData: null,
     backgroundWidth: 0,
     backgroundHeight: 0,
+    isEnabled: false,
     marginTop: 0,
     marginLeft: 0,
-    titleFontHeight: 0,
+    buttonInstances: null,
+    closeEventType: null,
+    primaryColorFilter: null,
+    secondaryColorFilter: null,
+    primaryColorValue: null,
+    secondaryColorValue: null,
+    level: 0,
+    gameNumber: 0,
 
-    setup: function (displayObject, levelData, gameData, stateCompleteCallbackFunction) {
-        // use the level data to do any level-specific setup
-        this.levelData = levelData;
-        this.gameData = gameData;
+
+    setup: function (displayObject, stateCompleteCallbackFunction, level, gameNumber) {
         this.stateCompleteCallback = stateCompleteCallbackFunction;
         this.parentDisplayObject = displayObject;
-        this.buttonHelperInstances = [];
+        this.buttonInstances = [];
+        this.isEnabled = false;
+        this.level = level;
+        this.gameNumber = gameNumber;
     },
 
     buildScreen: function (autoStart) {
+        if (this.groupDisplayObject !== null) {
+            return;
+        }
         // layout the screen
         this.groupDisplayObject = new createjs.Container();
         this.parentDisplayObject.addChild(this.groupDisplayObject);
-        this.marginTop = 130 * MemoryMatch.stageScaleFactor;
-        this.marginLeft = 80 * MemoryMatch.stageScaleFactor;
-        this.backgroundWidth = this.parentDisplayObject.canvas.width;
-        this.backgroundHeight = this.parentDisplayObject.canvas.height;
-        this.setupTitleText(this.groupDisplayObject);
-        this.setupLevelText(this.groupDisplayObject);
+        this.spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.guiSpritesheet1Frames);
+        this.setColorFilters();
+        this.showBackgroundImage(this.parentDisplayObject.canvas);
+        this.marginTop = this.backgroundHeight * 0.05;
+        this.marginLeft = this.backgroundWidth * 0.09;
+        this.setupTitleText();
         this.setupButtons();
-        this.groupDisplayObject.setTransform((this.parentDisplayObject.canvas.width * 0.5) - (this.backgroundWidth * 0.5), (this.parentDisplayObject.canvas.height * 0.5) - (this.backgroundHeight * 0.5), 1, 1);
+        this.groupDisplayObject.setTransform(this.parentDisplayObject.canvas.width * 0.5, this.parentDisplayObject.canvas.height * 0.5, 0, 0, 0, 0, 0, this.backgroundWidth * 0.5, this.backgroundHeight * 0.5);
         this.groupDisplayObject.cache(0, 0, this.backgroundWidth, this.backgroundHeight);
         if (autoStart == null) {
             autoStart = false;
@@ -51,41 +62,84 @@ MemoryMatch.LevelIntroduction = {
 
     start: function () {
         // begin animation, then wait for user event to end this state and alert callback
-        if (this.stateCompleteCallback != null) {
-            // stateCompleteCallback();
+        var duration = 0.3, // seconds of animation
+            animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.groupDisplayObject, 0, duration * 1000, false, null, this.startAnimationPhaseTwo.bind(this));
+
+        animator.endYScale = animator.endXScale = 1.08;
+        animator.vYScale = animator.vXScale = animator.endXScale / (duration * MemoryMatch.fps);
+    },
+
+    startAnimationPhaseTwo: function (sprite) {
+        var duration = 0.1, // seconds of animation
+            animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.groupDisplayObject, 0, duration * 1000, false, null, this.startAnimationComplete.bind(this));
+
+        animator.endYScale = animator.endXScale = 1.0;
+        animator.vYScale = animator.vXScale = -1 * (animator.endXScale / (duration * MemoryMatch.fps));
+    },
+
+    startAnimationComplete: function (sprite) {
+         this.isEnabled = true;
+    },
+
+    closeStartAnimation: function () {
+        var duration = 0.1, // seconds of animation
+            animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.groupDisplayObject, 0, duration * 1000, false, null, this.closeShrink.bind(this));
+
+        animator.endYScale = animator.endXScale = 1.08;
+        animator.vYScale = animator.vXScale = animator.endXScale / (duration * MemoryMatch.fps);
+        if (this.backgroundSoundInstance != null) {
+            this.backgroundSoundInstance.stop();
+            this.backgroundSoundInstance = null;
         }
+    },
+
+    closeShrink: function () {
+        var duration = 0.3, // seconds of animation
+            animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.groupDisplayObject, 0, duration * 1000, false, null, this.closeComplete.bind(this));
+
+        animator.endYScale = animator.endXScale = 0;
+        animator.vYScale = animator.vXScale = (-1 * this.groupDisplayObject.scaleX) / (duration * MemoryMatch.fps);
+    },
+
+    closeComplete: function () {
+        if (this.stateCompleteCallback !== null) {
+            this.stateCompleteCallback(this.closeEventType, this.level, this.gameNumber);
+        }
+        this.killScreen();
     },
 
     close: function () {
-        if (MemoryMatch.LevelIntroduction.isShowing()) {
-            MemoryMatch.LevelIntroduction.killScreen();
+        this.isEnabled = false;
+        if (this.isShowing()) {
+            this.closeStartAnimation();
         }
     },
 
-    onContinue: function (gameNumber) {
-        // begin animation, then wait for user event to end this state and alert callback
-        MemoryMatch.triggerSoundFx("soundTap");
-        if (MemoryMatch.LevelIntroduction.stateCompleteCallback != null) {
-            MemoryMatch.LevelIntroduction.stateCompleteCallback(gameNumber);
+    onClickHome: function (event) {
+        if (MemoryMatch.LevelIntroduction.isEnabled) {
+            this.closeEventType = 'home';
+            this.close();
         }
-        MemoryMatch.LevelIntroduction.killScreen();
     },
 
-    onClickChallenge: function (event) {
-        // begin animation, then wait for user event to end this state and alert callback
-        MemoryMatch.triggerSoundFx("soundTap");
-        if (MemoryMatch.LevelIntroduction.stateCompleteCallback != null) {
-            MemoryMatch.LevelIntroduction.stateCompleteCallback(99);
+    onClickContinue: function (event) {
+        if (MemoryMatch.LevelIntroduction.isEnabled) {
+            this.closeEventType = 'continue';
+            this.close();
         }
-        MemoryMatch.LevelIntroduction.killScreen();
     },
 
-    showBackgroundImage: function (canvas, groupDisplayObject) {
-        // This method will scale the background image to fit the current stage.
+    onClickBackground: function (event) {
+        // this just eats the click so anything under the popup is not activated
+    },
+
+    showBackgroundImage: function (canvas) {
+        // This method will scale the background image to fit the current stage if it is too big.
         var popupImageAsset = assetLoader.getResult("popup-bg"),
             bgImage = new createjs.Bitmap(popupImageAsset),
             xScale,
-            yScale;
+            yScale,
+            backgroundCover;
 
         if (popupImageAsset.width > canvas.width) {
             xScale = canvas.width / popupImageAsset.width;
@@ -100,187 +154,121 @@ MemoryMatch.LevelIntroduction = {
         bgImage.alpha = 1;
         bgImage.scaleX = xScale;
         bgImage.scaleY = yScale;
-        groupDisplayObject.addChild(bgImage);
+
+        backgroundCover = new createjs.Shape();
+        backgroundCover.graphics.beginFill("#CCCCCC").drawRect((canvas.width - popupImageAsset.width) * -0.5, (canvas.height - popupImageAsset.height) * -0.5, canvas.width, canvas.height);
+        backgroundCover.alpha = 0.1;
+        backgroundCover.addEventListener("click", this.onClickBackground);
+
+        this.groupDisplayObject.addChild(backgroundCover);
+        this.groupDisplayObject.addChild(bgImage);
         this.backgroundWidth = popupImageAsset.width * xScale;
         this.backgroundHeight = popupImageAsset.height * yScale;
+        if (this.primaryColorFilter != null) {
+            bgImage.filters = [this.primaryColorFilter];
+            bgImage.cache(0, 0, this.backgroundWidth, this.backgroundHeight);
+        }
     },
 
-    setupTitleText: function (groupDisplayObject) {
-        // Show the icon representing the level
-        var iconScale = 0.6,
-            titleTextFontSize = 56,
-            spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.guiSpritesheet1Frames),
-            icon = MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].iconPopup,
-            iconSprite = new createjs.Sprite(spriteData, icon),
-            spriteSize = MemoryMatch.getSpriteFrameSize(MemoryMatch.GameSetup.guiSpritesheet1Frames, icon);
+    setupTitleText: function () {
 
-        iconSprite.setTransform((this.backgroundWidth - (spriteSize.width * iconScale)) * 0.5, (this.marginTop - (spriteSize.height * iconScale)) * 0.5, iconScale, iconScale);
+        // Show the icon representing the level and the popup title and subtitle
+
+        var titleTextField,
+            gameData = MemoryMatch.getGameData(false),
+            iconScale = 1,
+            icon = MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].iconPopup,
+            iconSprite = new createjs.Sprite(this.spriteData, icon),
+            spriteSize = MemoryMatch.getSpriteFrameSize(MemoryMatch.GameSetup.guiSpritesheet1Frames, icon),
+            nextY;
+
+        iconSprite.setTransform(this.marginLeft - (spriteSize.width * 0.25), this.marginTop - (spriteSize.height * 0.25), iconScale, iconScale);
         iconSprite.framerate = 1;
         iconSprite.name = "icon";
-        groupDisplayObject.addChild(iconSprite);
+        this.groupDisplayObject.addChild(iconSprite);
 
-        var titleTextField = new createjs.Text(this.gameData.levelName, MemoryMatch.getScaledFontSize(titleTextFontSize) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColor);
+        titleTextField = new createjs.Text(gameData.levelName, MemoryMatch.getScaledFontSize(58) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColor);
         titleTextField.textAlign = "center";
         titleTextField.x = this.backgroundWidth * 0.5;
         titleTextField.y = this.marginTop;
         titleTextField.lineWidth = this.backgroundWidth - (this.marginLeft * 2);
         titleTextField.maxWidth = this.backgroundWidth - (this.marginLeft * 2);
-        groupDisplayObject.addChild(titleTextField);
-        this.titleFontHeight = titleTextField.y + (titleTextFontSize * MemoryMatch.stageScaleFactor);
-    },
+        this.groupDisplayObject.addChild(titleTextField);
+        nextY = titleTextField.y + (titleTextField.getMeasuredLineHeight() * 2);
 
-    setupLevelText: function (groupDisplayObject) {
-        var fontHeight = 40 * MemoryMatch.stageScaleFactor,
-            levelTextField = new createjs.Text(this.gameData.levelIntro, MemoryMatch.getScaledFontSize(48) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
-
-        levelTextField.textAlign = "left";
-        levelTextField.x = this.marginLeft * 2;
-        levelTextField.y = this.titleFontHeight * 1.1;
-        levelTextField.lineWidth = this.backgroundWidth - (this.marginLeft * 4);
-        levelTextField.maxWidth = this.backgroundWidth - (this.marginLeft * 3);
-        levelTextField.lineHeight = fontHeight;
-        groupDisplayObject.addChild(levelTextField);
+        titleTextField = new createjs.Text(gameData.levelIntro, MemoryMatch.getScaledFontSize(46) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
+        titleTextField.textAlign = "center";
+        titleTextField.x = this.backgroundWidth * 0.5;
+        titleTextField.y = nextY;
+        titleTextField.lineWidth = this.backgroundWidth - (this.marginLeft * 2);
+        titleTextField.maxWidth = this.backgroundWidth - (this.marginLeft * 2);
+        titleTextField.lineHeight = titleTextField.getMeasuredLineHeight() * 1.5;
+        this.groupDisplayObject.addChild(titleTextField);
     },
 
     setupButtons: function () {
-        // Use this function to create and initialize all the buttons for this screen
 
-        var spriteFrame = "levelUnlockedUp",
+        // 2 buttons centered horizontal at bottom of popup
+
+        var spriteFrame = "gameOverButtonBase",
             buttonScale = 1.0,
-            buttonWidth = MemoryMatch.GameSetup.guiSpritesheet1Frames.frames[MemoryMatch.GameSetup.guiSpritesheet1Frames.animations[spriteFrame][0]][2] * buttonScale,
-            buttonHeight = MemoryMatch.GameSetup.guiSpritesheet1Frames.frames[MemoryMatch.GameSetup.guiSpritesheet1Frames.animations[spriteFrame][0]][3] * buttonScale,
-            numberOfButtons = this.levelData.gameCount,
+            buttonWidth = MemoryMatch.getSpriteFrameWidth(MemoryMatch.GameSetup.guiSpritesheet1Frames, spriteFrame) * buttonScale,
             gameButton,
-            i,
-            gameScoresCollection = MemoryMatch.UserData.getLevelDataItem(MemoryMatch.gameLevel, "levelScoreCollection"),
-            gameScoreData,
-            gameNumber,
-            gamesUnlocked = gameScoresCollection.length,
-            wasPlayed = false,
-            totalGamesPlayed = 0,
-            isLocked = true,
-            starsEarned = 0,
-            levelStarsEarned = 0,
-            bestScore = 0,
-            buttonMargin = 0, // 8 * MemoryMatch.stageScaleFactor;
-            totalWidth = (3 * (buttonWidth + buttonMargin)) - buttonMargin,
-            totalHeight = (2 * (buttonHeight + buttonMargin)) - buttonMargin,
+            buttonBaseColor = MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].liteColor,
+            buttonMargin = 0,
+            buttonTagCounter = 0,
+            totalWidth = (2 * (buttonWidth + buttonMargin)) - buttonMargin,
             xOffset = (this.backgroundWidth - totalWidth) * 0.5,
-            yOffset = (this.backgroundHeight - totalHeight) * 0.5;
+            yOffset = this.backgroundHeight * 0.75;
 
-        for (i = 0; i < numberOfButtons; i ++) {
-            if (i % 3 == 0) {
-                xOffset = (this.backgroundWidth - totalWidth) * 0.5;
-            } else {
-                xOffset += buttonWidth + buttonMargin;
-            }
-            gameNumber = i + 1;
-            gameScoreData = MemoryMatch.getPriorScoreDataForGameNumber(gameNumber, gameScoresCollection);
-            if (gameScoreData != null && gameScoreData.playCount > 0) {
-                wasPlayed = true;
-                totalGamesPlayed ++;
-                isLocked = false;
-                bestScore = gameScoreData.bestScore;
-                starsEarned = gameScoreData.starsEarned;
-                levelStarsEarned += starsEarned;
-            } else if (gameNumber == gamesUnlocked) {
-                wasPlayed = false;
-                isLocked = false;
-                bestScore = 0;
-                starsEarned = 0;
-            } else {
-                wasPlayed = false;
-                isLocked = true;
-                bestScore = 0;
-                starsEarned = 0;
-            }
-            gameButton = MemoryMatch.LevelButton({gameNumber: gameNumber, starsEarned: starsEarned, bestScore: bestScore, wasPlayed: wasPlayed, isLocked: isLocked, scale: buttonScale, callback:this.onContinue});
-            gameButton.x = xOffset;
-            gameButton.y = yOffset;
-            gameButton.name = "game" + gameNumber.toString();
-            this.groupDisplayObject.addChild(gameButton);
-            if ((i + 1) % 3 == 0) {
-                yOffset += buttonHeight + buttonMargin;
-            }
-        }
-        xOffset = (this.backgroundWidth - totalWidth) * 0.5;
-        this.createChallengeButton(xOffset, yOffset);
-    },
-
-    createChallengeButton: function (xOffset, yOffset) {
-        var newButtonInstance,
-            buttonScale = 1.0,
-            isLocked = ! MemoryMatch.isChallengeGameUnlocked(MemoryMatch.gameLevel),
-            spriteFrame = "challengeModeLockUp",
-            spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.guiSpritesheet1Frames),
-            gameButton = new createjs.Sprite(spriteData, spriteFrame);
-
+        gameButton = MemoryMatch.GUIButton({name: "home", tag: ++ buttonTagCounter, disabled: false, callback: this.onClickHome.bind(this), baseUp: spriteFrame, buttonBaseColor: buttonBaseColor, iconUp: "gameOverMenuIcon", iconOver: "gameOverMenuDownIcon", iconDown: "gameOverMenuDownIcon"});
         gameButton.setTransform(xOffset, yOffset, buttonScale, buttonScale);
-        gameButton.framerate = 1;
-        gameButton.gameNumber = 99;
-        gameButton.isLocked = isLocked;
-        gameButton.name = "challengebutton";
-
-        if (isLocked) {
-            newButtonInstance = new createjs.ButtonHelper(gameButton, "challengeModeLockUp", "challengeModeLockUp", "challengeModeLockUp", false);
-        } else {
-            newButtonInstance = new createjs.ButtonHelper(gameButton, "challengeModeUp", "challengeModeOver", "challengeModeDown", false);
-            gameButton.addEventListener("click", this.onClickChallenge);
-        }
         this.groupDisplayObject.addChild(gameButton);
-        this.buttonHelperInstances.push(newButtonInstance);
-    },
+        this.buttonInstances.push(gameButton);
 
-    refreshButtons: function () {
-        // Use this function when the buttons already exist but we should refresh their state
-
-        var numberOfButtons = this.levelData.gameCount,
-            gameButton,
-            i,
-            gameNumber;
-
-        for (i = 0; i < numberOfButtons; i ++) {
-            gameNumber = i + 1;
-            gameButton = this.groupDisplayObject.getChildByName("game" + gameNumber.toString());
-            if (gameButton != null) {
-                gameButton.kill();
-                this.groupDisplayObject.removeChild(gameButton);
-            }
-        }
-        gameButton = this.groupDisplayObject.getChildByName("challengebutton");
-        if (gameButton != null) {
-            gameButton.removeEventListener("click", this.onClickChallenge);
-            this.groupDisplayObject.removeChild(gameButton);
-        }
-        this.setupButtons();
-        this.groupDisplayObject.updateCache();
+        xOffset += buttonWidth + buttonMargin;
+        gameButton = MemoryMatch.GUIButton({name: "continue", tag: ++ buttonTagCounter, disabled: false, callback: this.onClickContinue.bind(this), baseUp: spriteFrame, buttonBaseColor: buttonBaseColor, iconUp: "gameOverNextIcon", iconOver: "gameOverNextDownIcon", iconDown: "gameOverNextDownIcon"});
+        gameButton.setTransform(xOffset, yOffset, buttonScale, buttonScale);
+        this.groupDisplayObject.addChild(gameButton);
+        this.buttonInstances.push(gameButton);
     },
 
     isShowing: function () {
         return this.groupDisplayObject != null && this.groupDisplayObject.visible;
     },
 
-    killScreen: function () {
-        // remove all display objects and object references.
-        var numberOfButtons = this.levelData.gameCount,
-            gameNumber,
-            gameButton,
-            i;
+    setColorFilters: function () {
+        var primaryColor,
+            secondaryColor;
 
-        for (i = 0; i < numberOfButtons; i ++) {
-            gameNumber = i + 1;
-            gameButton = this.groupDisplayObject.getChildByName("game" + gameNumber.toString());
-            if (gameButton != null) {
-                gameButton.kill();
-            }
+        this.primaryColorValue = MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].primaryColor;
+        this.secondaryColorValue = MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].primaryColor;
+        if (this.primaryColorValue != null) {
+            primaryColor = MemoryMatch.htmlColorStringToColorArray(this.primaryColorValue);
+            this.primaryColorFilter = new createjs.ColorFilter(0, 0, 0, 1, primaryColor[0], primaryColor[1], primaryColor[2], 0);
+        } else {
+            this.primaryColorFilter = null;
         }
-        this.buttonHelperInstances = null;
-        if (this.groupDisplayObject != null) {
-            this.parentDisplayObject.removeChild(this.groupDisplayObject);
+        if (this.secondaryColorValue != null) {
+            secondaryColor = MemoryMatch.htmlColorStringToColorArray(this.secondaryColorValue);
+            this.secondaryColorFilter = new createjs.ColorFilter(0, 0, 0, 1, secondaryColor[0], secondaryColor[1], secondaryColor[2], 0);
+        } else {
+            this.secondaryColorFilter = null;
         }
+    },
+
+    killScreen: function () {
+        var i;
+
+        this.primaryColorFilter = null;
+        this.secondaryColorFilter = null;
+        for (i = 0; i < this.buttonInstances.length; i ++) {
+            this.buttonInstances[i].kill();
+        }
+        this.buttonInstances = null;
+        this.parentDisplayObject.removeChild(this.groupDisplayObject);
         this.stateCompleteCallback = null;
-        this.levelData = null;
-        this.gameData = null;
+        this.spriteData = null;
         this.parentDisplayObject = null;
         this.groupDisplayObject = null;
     }

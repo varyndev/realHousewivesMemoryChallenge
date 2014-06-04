@@ -14,8 +14,6 @@ MemoryMatch.ChallengeIntroduction = {
     backgroundHeight: 0,
     marginTop: 0,
     marginLeft: 0,
-    centerX: 0,
-    marginX: 0,
     lineHeight: 0,
     isEnabled: false,
     backgroundSoundInstance: null,
@@ -42,8 +40,6 @@ MemoryMatch.ChallengeIntroduction = {
         this.showBackgroundImage(this.parentDisplayObject.canvas);
         this.marginTop = this.backgroundHeight * 0.05;
         this.marginLeft = this.backgroundWidth * 0.09;
-        this.centerX = this.backgroundWidth * 0.5;
-        this.marginX = 12 * MemoryMatch.stageScaleFactor;
         this.setupTitleAndMessageText();
         this.setupAward();
         this.setupButtons();
@@ -99,11 +95,11 @@ MemoryMatch.ChallengeIntroduction = {
 
     showBackgroundImage: function (canvas) {
         // This method will scale the background image to fit the current stage if it is too big.
-        var popupImageAsset = assetLoader.getResult("popup-bg");
-        var bgImage = new createjs.Bitmap(popupImageAsset);
-        var xScale;
-        var yScale;
-        var backgroundCover;
+        var popupImageAsset = assetLoader.getResult("popup-bg"),
+            bgImage = new createjs.Bitmap(popupImageAsset),
+            xScale,
+            yScale,
+            backgroundCover;
 
         if (popupImageAsset.width > canvas.width) {
             xScale = canvas.width / popupImageAsset.width;

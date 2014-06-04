@@ -7,8 +7,9 @@
  *
  * Features:
  *   userDataObject: an object of key/value pairs held on behalf of the userId.
- *   levelDataArray: an array of level data, the index being the level number (-1) the data being an object.
- *   userAchievements: an array or earned achievements
+ *   levelDataArray: an array of level data, the index being the level number (- 1, e.g. level 1 is index 0) the data being an object.
+ *   userAchievements: an array of earned achievements
+ *   userTips: an array of seen/unseen tips, each item is a flag (true=seen, false=unseen) indexed by tipId - 1 (e.g. tip # 1 is index 0)
  */
 
 MemoryMatch.UserData = {
@@ -26,7 +27,7 @@ MemoryMatch.UserData = {
         }
         userDataObject = this.getById(userId);
         if (userDataObject == null) {
-            userDataObject = {userId: userId, userName: userName, password: password, email: email, ageCheck: ageCheck, userDataObject: {}, levelDataArray: [], userAchievements: []};
+            userDataObject = {userId: userId, userName: userName, password: password, email: email, ageCheck: ageCheck, userDataObject: {}, levelDataArray: [], userAchievements: [], userTips: []};
             this.userDataCollection.push(userDataObject);
             this.dataUpdatedFlag = true;
         } else {
@@ -152,6 +153,7 @@ MemoryMatch.UserData = {
             } else if (userDataObject.userAchievements !== null && ! Array.isArray(userDataObject.userAchievements)) {
                 // Deal with legacy setting this to an object instead of an array
                 userDataObject.userAchievements = [];
+                userDataObject.userTips = [];
             }
         }
         return userDataObject;
@@ -257,6 +259,63 @@ MemoryMatch.UserData = {
     clearAllUserAchievements: function () {
         this.currentUser.userAchievements = [];
         return this.currentUser.userAchievements;
+    },
+
+    setUserTipSeen: function (tipId) {
+        var wasSet = false,
+            tipIndex = tipId - 1,
+            i,
+            userTipsArray;
+
+        if (tipIndex < 0) {
+            tipIndex = 0;
+        }
+        if (this.currentUser !== null && this.currentUser.userTips !== null) {
+            if (this.currentUser.userTips !== null && ! Array.isArray(this.currentUser.userTips)) {
+                this.currentUser.userTips = [];
+            }
+            userTipsArray = this.currentUser.userTips;
+            userTipsArray[tipIndex] = true;
+            // Here we make sure there are no gaps in the array
+            for (i = 0; i < userTipsArray.length; i ++) {
+                if (userTipsArray[i] === undefined) {
+                    userTipsArray[i] = false;
+                }
+            }
+            wasSet = true;
+            this.dataUpdatedFlag = true;
+        }
+        return wasSet;
+    },
+
+    isUserTipSeen: function (tipId) {
+        var wasSeen = false,
+            tipIndex = tipId - 1,
+            i,
+            userTipsArray;
+
+        if (this.currentUser !== null && this.currentUser.userTips !== null) {
+            if (this.currentUser.userTips !== null && ! Array.isArray(this.currentUser.userTips)) {
+                this.currentUser.userTips = [];
+            }
+            wasSeen = this.currentUser.userTips[tipIndex];
+            if (wasSeen === undefined) {
+                wasSeen = false;
+            }
+        }
+        return wasSeen;
+    },
+
+    getUserTips: function () {
+        if (this.currentUser.userTips !== null && ! Array.isArray(this.currentUser.userTips)) {
+            this.currentUser.userTips = [];
+        }
+        return this.currentUser.userTips;
+    },
+
+    clearAllUserTips: function () {
+        this.currentUser.userTips = [];
+        return this.currentUser.userTips;
     },
 
     sync: function () {
