@@ -3,7 +3,7 @@
  *
  * Handle all the logic to control the Nemesis Character and tile layout.
  * Use this object in the following interface:
- * 1. layoutNemesisPath will place all Nemesis sprites on the stage
+ * 1. layoutNemesisPath will place all Nemesis sprites on the display object
  * 2. moveNemesisCharacter will update the state of the sprites based on number of misses. Typically called when player misses.
  * 3. awakeNemesisCharacter will show an animation when player makes a match or on idle.
  * 4. removeNemesisCharacter when Nemesis games is over and remove sprites from stage
@@ -12,6 +12,7 @@
 
 MemoryMatch.Nemesis = {
     nemesisGroupDisplayObject: null,
+    parentDisplayObject: null,
     spriteFrameData: null,
     bottleTopFilled: "nemesis1",
     bottleTopEmpty: "nemesis1Empty",
@@ -25,7 +26,7 @@ MemoryMatch.Nemesis = {
     bottleBottomEmpty: "nemesis4Empty",
     maxNumberOfPieces: 0, // Total bottle size in pieces
 
-    layoutNemesisPath: function () {
+    layoutNemesisPath: function (parentDisplayObject) {
 
         // function to call to initialize and layout the Nemesis tiles and setup the character
 
@@ -47,6 +48,7 @@ MemoryMatch.Nemesis = {
             thisGameData,
             gameProgressionData;
 
+        this.parentDisplayObject = parentDisplayObject;
         // find the highest tolerance, make the wine bottle that big
         thisGameData = MemoryMatch.getGameData(MemoryMatch.isChallengeGame);
         if (thisGameData.progression != null && thisGameData.progression.length >= MemoryMatch.gameNumber) {
@@ -68,7 +70,7 @@ MemoryMatch.Nemesis = {
 
         if (this.nemesisGroupDisplayObject == null) {
             this.nemesisGroupDisplayObject = new createjs.Container();
-            MemoryMatch.stage.addChild(this.nemesisGroupDisplayObject);
+            parentDisplayObject.addChild(this.nemesisGroupDisplayObject);
         } else {
             this.nemesisGroupDisplayObject.removeAllChildren();
         }
@@ -184,12 +186,12 @@ MemoryMatch.Nemesis = {
 
     removeNemesisCharacter: function () {
 
-        // funciton to call to remove the Nemesis from the stage.
+        // function to call to remove the Nemesis from the stage.
 
         if (this.nemesisGroupDisplayObject != null) {
             this.spriteFrameData = null;
             this.nemesisGroupDisplayObject.removeAllChildren();
-            MemoryMatch.stage.removeChild(this.nemesisGroupDisplayObject);
+            this.parentDisplayObject.removeChild(this.nemesisGroupDisplayObject);
             this.nemesisCharacterSprite = null;
             this.nemesisGroupDisplayObject = null;
             MemoryMatch.stageUpdated = true;
@@ -200,6 +202,13 @@ MemoryMatch.Nemesis = {
         if (this.nemesisCharacterSprite != null) {
             this.nemesisCharacterSprite.gotoAndStop("stand");
             MemoryMatch.stageUpdated = true;
+        }
+    },
+
+    scale: function(scaleFactor) {
+        if (scaleFactor >= 0 && scaleFactor <= 1 && this.nemesisGroupDisplayObject != null) {
+            this.nemesisGroupDisplayObject.scaleX = scaleFactor;
+            this.nemesisGroupDisplayObject.scaleY = scaleFactor;
         }
     }
 };

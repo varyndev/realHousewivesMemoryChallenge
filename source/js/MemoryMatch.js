@@ -1320,7 +1320,7 @@ var MemoryMatch = {
                     cardAnimator.showAtBegin = true;
                     break;
                 case MemoryMatch.GAMEPLAYTYPE.NEMESIS:
-                    MemoryMatch.Nemesis.layoutNemesisPath();
+                    MemoryMatch.Nemesis.layoutNemesisPath(MemoryMatch.stage);
                     break;
                 case MemoryMatch.GAMEPLAYTYPE.CHAINS:
                     MemoryMatch.chainCount = [0];
