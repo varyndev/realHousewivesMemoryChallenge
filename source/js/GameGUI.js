@@ -252,6 +252,7 @@ MemoryMatch.GameGUI = {
 
     updateGameTimerDisplay: function (newValue) {
         var timeToShow;
+
         if (newValue == null) {
             timeToShow = '';
         } else if (newValue == 0) {

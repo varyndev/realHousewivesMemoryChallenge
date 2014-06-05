@@ -1861,6 +1861,9 @@ var MemoryMatch = {
         var cardSelected = evt.target.parent;
 
         if (cardSelected != null) {
+            if ( ! cardSelected.isEnabled) {
+                return;
+            }
             if (cardSelected.cardSelectedHandler != null) {
                 cardSelected.cardSelectedHandler();
             }
@@ -4536,6 +4539,7 @@ var MemoryMatch = {
         card.name = "Card" + cardValue;
         card.value = cardValue;
         card.isSelected = false;
+        card.isEnabled = true;    // Allow cards to be non-interactive
         card.seenCount = 0;
         card.restoreFlag = false; // indicates a card flip state was saved to be later restored
         card.isPattern = false;  // for Pattern Match game
@@ -4587,7 +4591,7 @@ var MemoryMatch = {
         card.highlight = function () {
             var cardHighlight;
 
-            if ( ! this.isSelected) {
+            if (this.isEnabled &&  ! this.isSelected) {
                 cardHighlight = this.getChildAt(this.SPRITEINDEX.SPRITE_HIGHLIGHT);
                 cardHighlight.alpha = 0.5;
                 this.updateCache();
@@ -4597,7 +4601,7 @@ var MemoryMatch = {
         card.unhighlight = function () {
             var cardHighlight;
 
-            if ( ! this.isSelected) {
+            if (this.isEnabled && ! this.isSelected) {
                 cardHighlight = this.getChildAt(this.SPRITEINDEX.SPRITE_HIGHLIGHT);
                 cardHighlight.alpha = 0.0;
                 this.updateCache();
@@ -4774,6 +4778,17 @@ var MemoryMatch = {
             cardToShow.actor.state = MemoryMatch.CARDSTATE.DOWN;
             MemoryMatch.checkBoardIsReadyForPlay();
             cardToShow.actor.updateCache();
+        }
+
+        card.showCardDemo = function () {
+            var cardBackSprite = this.getChildAt(card.SPRITEINDEX.SPRITE_CARDBACK);
+
+            cardBackSprite.visible = true;
+            this.showMatchCounter(this.matchCounter > 0);
+            this.regX = MemoryMatch.cardWidth * 0.5;
+            this.regY = MemoryMatch.cardHeight * 0.5;
+            this.state = MemoryMatch.CARDSTATE.DOWN;
+            this.updateCache();
         }
 
         card.removeCard = function (callMeWhenComplete) {

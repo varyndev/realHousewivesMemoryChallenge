@@ -19,6 +19,7 @@ MemoryMatch.MainMenu = {
     backgroundHeight: 0,
     width: 0,
     height: 0,
+    animate: true,
     connectorShape: null,
 
     setup: function (displayObject, nextLevelData, stateCompleteCallbackFunction) {
@@ -50,11 +51,25 @@ MemoryMatch.MainMenu = {
         }
         // The entire Map is cached, so any updates will require a call to updateCache()
         this.groupDisplayObject.setTransform(0, 0, 1, 1);
+        if (this.animate) {
+            this.groupDisplayObject.alpha = 0;
+        }
         this.groupDisplayObject.cache(0, 0, this.width, this.height);
     },
 
     start: function () {
+
         // begin animation, then wait for user event to end this state and alert callback
+
+        var duration,
+            animator;
+
+        if (this.animate) {
+            duration = 1; // seconds of animation
+            animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.groupDisplayObject, 0, duration * 1000, false, null, null);
+            animator.endAlpha = 1;
+            animator.vAlpha = duration / MemoryMatch.fps;
+        }
         if (this.stateCompleteCallback != null) {
             // stateCompleteCallback();
         }

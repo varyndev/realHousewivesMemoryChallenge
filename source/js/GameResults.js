@@ -206,7 +206,6 @@ MemoryMatch.GameResults = {
     onClickNext: function (event) {
         // begin animation, then wait for user event to end this state and alert callback
         if (MemoryMatch.GameResults.isEnabled) {
-            MemoryMatch.triggerSoundFx("soundTap");
             MemoryMatch.GameResults.closeEventType = "next";
             MemoryMatch.GameResults.close();
         }
@@ -215,7 +214,6 @@ MemoryMatch.GameResults = {
     onClickReplay: function (event) {
         // begin animation, then wait for user event to end this state and alert callback
         if (MemoryMatch.GameResults.isEnabled) {
-            MemoryMatch.triggerSoundFx("soundTap");
             MemoryMatch.GameResults.closeEventType = "replay";
             MemoryMatch.GameResults.close();
         }
@@ -224,7 +222,6 @@ MemoryMatch.GameResults = {
     onClickHome: function (event) {
         // begin animation, then wait for user event to end this state and alert callback
         if (MemoryMatch.GameResults.isEnabled) {
-            MemoryMatch.triggerSoundFx("soundTap");
             MemoryMatch.GameResults.closeEventType = "home";
             MemoryMatch.GameResults.close();
         }

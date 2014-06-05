@@ -96,7 +96,6 @@ MemoryMatch.CreditsPopup = {
 
     onClickClose: function (event) {
         if (this.isEnabled) {
-            MemoryMatch.triggerSoundFx("soundTap");
             this.closePopup("close");
         }
     },
