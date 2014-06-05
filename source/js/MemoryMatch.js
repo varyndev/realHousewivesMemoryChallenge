@@ -439,6 +439,7 @@ var MemoryMatch = {
             // app went from inactive to active. if we are on the home screen then restart the music
             if ( ! MemoryMatch.gameInProgress) {
                 MemoryMatch.restartBackgroundMusic();
+                MemoryMatch.GameGUI.resume(null);
             }
         }
     },
