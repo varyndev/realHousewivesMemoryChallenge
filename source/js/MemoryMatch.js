@@ -1124,7 +1124,7 @@ var MemoryMatch = {
         // Determine the board layout.
         var distanceBetweenCards = MemoryMatch.cardMargin * 2.0,
             centerOfBoardX = MemoryMatch.playAreaWidth * 0.5,
-            centerOfBoardY = MemoryMatch.playAreaWidth * 0.5,
+            centerOfBoardY = MemoryMatch.playAreaHeight * 0.648, // account for GUI
             halfCardWidth = MemoryMatch.cardWidth * 0.5,
             totalWidthNeeded = ((MemoryMatch.cardWidth + distanceBetweenCards) * MemoryMatch.columns),
             totalHeightNeeded = ((MemoryMatch.cardHeight + distanceBetweenCards) * MemoryMatch.rows),
@@ -1280,7 +1280,7 @@ var MemoryMatch = {
             } else if (MemoryMatch.rows > 3 || MemoryMatch.columns > 6) {
                 boardScale = 0.66 - boardScaleSmallReduction;
             } else if (MemoryMatch.rows > 2 || MemoryMatch.columns > 4) {
-                boardScale = 0.84 - boardScaleSmallReduction;
+                boardScale = 0.82 - boardScaleSmallReduction;
             } else {
                 boardScale = 1.0;
             }

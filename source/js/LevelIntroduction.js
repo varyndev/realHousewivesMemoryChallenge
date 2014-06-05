@@ -74,6 +74,7 @@ MemoryMatch.LevelIntroduction = {
         var duration = 0.3, // seconds of animation
             animator;
 
+        this.demoAnimationState = 1;
         if (this.animate) {
             this.groupDisplayObject.setTransform(this.parentDisplayObject.canvas.width * 0.5, this.parentDisplayObject.canvas.height * 0.5, 0, 0, 0, 0, 0, this.backgroundWidth * 0.5, this.backgroundHeight * 0.5);
             animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.groupDisplayObject, 0, duration * 1000, false, null, this.startAnimationPhaseTwo.bind(this));
