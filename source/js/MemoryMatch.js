@@ -212,15 +212,9 @@ var MemoryMatch = {
         if (loaderObject != null) {
             this.GameSetup.mapSpritesheetFrames = loaderObject;
         }
-        loaderObject = assetLoader.getResult("guiSprites4json");
-        if (loaderObject != null) {
-            this.GameSetup.creditsFrames = loaderObject;
-        }
-
         this.GameSetup.guiSpritesheet1Frames.images = [assetLoader.getResult("guiSprites1")];
         this.GameSetup.guiSpritesheet2Frames.images = [assetLoader.getResult("guiSprites2")];
         this.GameSetup.mapSpritesheetFrames.images = [assetLoader.getResult("guiSprites3")];
-        this.GameSetup.creditsFrames.images = [assetLoader.getResult("guiSprites4")];
 
         MemoryMatch.backgroundImage = assetLoader.getResult("background");
         MemoryMatch.cardMargin = 2;
@@ -1061,9 +1055,6 @@ var MemoryMatch = {
                         case "guiSprites3json":
                             MemoryMatch.GameSetup.mapSpritesheetFrames = jsonObject;
                             break;
-                        case "guiSprites4json":
-                            MemoryMatch.GameSetup.creditsFrames = jsonObject;
-                            break;
                         default:
                             break;
                     }
@@ -1597,7 +1588,6 @@ var MemoryMatch = {
             tileFrame = "chainCardSlot1",
             tileSize = MemoryMatch.getSpriteFrameSize(spriteFrames, tileFrame),
             tileGap = 0,
-            yGap = [24, 16, 4, 4, 4, 4, 4, 4, 4, 4],
             tileHeight,
             tileSpriteSource = new createjs.Sprite(spriteData, tileFrame),
             tileNumberSource = new createjs.Text("1", MemoryMatch.getScaledFontSize(64) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColor),
@@ -1617,6 +1607,7 @@ var MemoryMatch = {
         tileNumberSource.textAlign = 'center';
         tileNumberSource.textBaseline = 'middle';
         tileHeight = tileSize.height; // the first tile is the tallest, use that for reference since all the other tiles are different heights!
+        tileGap = tileHeight * 0.25;
         for (i = 0; i < numberOfTiles; i ++) {
             tileSprite = tileSpriteSource.clone();
             tileText = tileNumberSource.clone();
@@ -1634,12 +1625,12 @@ var MemoryMatch = {
             tileSprite.gotoAndStop(tileFrame);
             tileSprite.name = "chainstile" + i;
             tileSize = MemoryMatch.getSpriteFrameSize(spriteFrames, tileFrame);
-            tileSprite.setTransform(tileSize.width * -0.5, (tileHeight * i) + tileGap, 1, 1, 0, 0, 0, 0, 0);
+            tileSprite.setTransform(tileSize.width * -0.5, (tileHeight + tileGap) * i, 1, 1, 0, 0, 0, 0, 0);
             tileSprite.width = tileSize.width;
             tileSprite.height = tileSize.height;
             tileText.name = "chainstext" + i;
             tileText.text = (i + 1).toString();
-            tileText.setTransform(0, tileSprite.y + (yGap[i] * MemoryMatch.stageScaleFactor) + (tileSize.height * 0.5), 1, 1, 0, 0, 0, 0, 0);
+            tileText.setTransform(0, tileSprite.y + (tileSize.height * 0.5), 1, 1, 0, 0, 0, 0, 0);
             MemoryMatch.chainsGroupDisplayObject.addChild(tileSprite);
             MemoryMatch.chainsGroupDisplayObject.addChild(tileText);
         }
@@ -1671,8 +1662,6 @@ var MemoryMatch = {
             x = 0,
             y = 0,
             offset = 0,
-            xGap = [4, 4, 4, 4, 4, 4, 4, 4, 4, 4], // these are fudge to get the cards to align, for some reason there is extra alpha gaps in the sprites
-            yGap = [24, 16, 4, 4, 4, 4, 4, 4, 4, 4],
             matchCount,
             spriteData = new createjs.SpriteSheet(spriteFrames),
             cardFrame = "chainCard",
@@ -1692,8 +1681,8 @@ var MemoryMatch = {
                 offset = 0;
                 tileSprite = MemoryMatch.chainsGroupDisplayObject.getChildByName("chainstile" + i);
                 if (tileSprite != null) {
-                    x = tileSprite.x + (xGap[i] * MemoryMatch.stageScaleFactor) + (tileSprite.width - cardSize.width) * 0.5;
-                    y = tileSprite.y + (yGap[i] * MemoryMatch.stageScaleFactor) + (tileSprite.height - cardSize.height) * 0.5;
+                    x = tileSprite.x + (tileSprite.width - cardSize.width) * 0.5;
+                    y = tileSprite.y + (tileSprite.height - cardSize.height) * 0.5;
                     for (m = 0; m < matchCount; m ++) {
                         totalMatchCounter ++;
                         cardSpriteName = "chaincard" + totalMatchCounter;

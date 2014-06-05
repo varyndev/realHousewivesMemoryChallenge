@@ -329,6 +329,7 @@ MemoryMatch.LevelIntroduction = {
         groupDisplayObject.addChild(captionText);
 
         // 3. setup 2 chains slots
+        this.showChainsPath(groupDisplayObject, this.backgroundWidth * 0.75, middleY, 0.5);
 
         // setup caption
         caption = 'Find the pairs but you have only a few misses!'
@@ -535,6 +536,138 @@ MemoryMatch.LevelIntroduction = {
         groupDisplayObject.addChild(timerCountdownGroup);
     },
 
+    showChainsPath: function (groupDisplayObject, x, y, scale) {
+        var spriteFrames = MemoryMatch.GameSetup.guiSpritesheet2Frames,
+            spriteData = new createjs.SpriteSheet(spriteFrames),
+            numberOfTiles = 2,
+            chainsGroup = new createjs.Container(),
+            secondaryColor,
+            tileColorFilter,
+            tileFrame = "chainCardSlot1",
+            tileSize = MemoryMatch.getSpriteFrameSize(spriteFrames, tileFrame),
+            tileGap = 0,
+            tileHeight,
+            tileSpriteSource = new createjs.Sprite(spriteData, tileFrame),
+            tileNumberSource = new createjs.Text("1", MemoryMatch.getScaledFontSize(64) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColor),
+            i,
+            tileSprite,
+            tileText,
+            totalHeightRequired = numberOfTiles * (tileSize.height + tileGap);
+
+        tileSpriteSource.framerate = 1;
+        tileNumberSource.textAlign = 'center';
+        tileNumberSource.textBaseline = 'middle';
+        tileHeight = tileSize.height; // the first tile is the tallest, use that for reference since all the other tiles are different heights!
+        tileGap = tileHeight * 0.25;
+        if (this.secondaryColorValue != null) {
+            secondaryColor = MemoryMatch.htmlColorStringToColorArray(this.secondaryColorValue);
+            tileColorFilter = new createjs.ColorFilter(0.5, 0.5, 0.5, 1, secondaryColor[0], secondaryColor[1], secondaryColor[2], 0);
+        }
+        for (i = 0; i < numberOfTiles; i ++) {
+            tileSprite = tileSpriteSource.clone();
+            tileText = tileNumberSource.clone();
+            switch (i) {
+                case 0:
+                    tileFrame = "chainCardSlot1";
+                    break;
+                case 1:
+                    tileFrame = "chainCardSlot2";
+                    break;
+                default:
+                    tileFrame = "chainCardSlot3";
+                    break;
+            }
+            tileSprite.gotoAndStop(tileFrame);
+            tileSprite.name = "chainstile" + i;
+            tileSize = MemoryMatch.getSpriteFrameSize(spriteFrames, tileFrame);
+            tileSprite.setTransform(tileSize.width * -0.5, (tileHeight + tileGap) * i, 1, 1, 0, 0, 0, 0, 0);
+            tileSprite.width = tileSize.width;
+            tileSprite.height = tileSize.height;
+            if (tileColorFilter != null) {
+                tileSprite.filters = [tileColorFilter];
+                tileSprite.cache(0, 0, tileSprite.width, tileSprite.height);
+            }
+            tileText.name = "chainstext" + i;
+            tileText.text = (i + 1).toString();
+            tileText.setTransform(0, tileSprite.y + (tileSize.height * 0.5), 1, 1, 0, 0, 0, 0, 0);
+            chainsGroup.addChild(tileSprite);
+            chainsGroup.addChild(tileText);
+        }
+        chainsGroup.setTransform(x, y - (totalHeightRequired * 0.2), scale, scale, 0, 0, 0, 0, 0);
+        groupDisplayObject.addChild(chainsGroup);
+        chainsGroup.name = 'chainsGroup';
+    },
+
+    showChainsMatches: function (groupDisplayObject, matchesToShow) {
+
+        // display a demo match summary
+
+        var spriteFrames = MemoryMatch.GameSetup.guiSpritesheet2Frames,
+            m,
+            x = 0,
+            y = 0,
+            offset,
+            spriteData = new createjs.SpriteSheet(spriteFrames),
+            cardFrame = "chainCard",
+            cardSize = MemoryMatch.getSpriteFrameSize(spriteFrames, cardFrame),
+            cardSpriteName,
+            cardSprite,
+            tileSprite,
+            chainsGroup,
+            totalMatchCounter = 0,
+            cardSpriteSource = new createjs.Sprite(spriteData, cardFrame),
+            animator,
+            startAnimationDelay = 250,
+            animationDelay;
+
+        chainsGroup = groupDisplayObject.getChildByName('chainsGroup');
+        if (chainsGroup == null) {
+            return;
+        }
+        tileSprite = chainsGroup.getChildByName("chainstile0");
+        if (tileSprite != null) {
+            offset = 0;
+            x = tileSprite.x + (tileSprite.width - cardSize.width) * 0.5;
+            y = tileSprite.y + (tileSprite.height - cardSize.height) * 0.5;
+            for (m = 0; m < matchesToShow; m ++) {
+                totalMatchCounter ++;
+                cardSpriteName = "chaincard" + totalMatchCounter;
+                cardSprite = chainsGroup.getChildByName(cardSpriteName);
+                if (cardSprite == null) {
+                    cardSprite = cardSpriteSource.clone();
+                    cardSprite.name = cardSpriteName;
+                    chainsGroup.addChild(cardSprite);
+                    cardSprite.visible = false;
+                    animationDelay = startAnimationDelay + (100 * m);
+                    animator = MemoryMatch.AnimationHandler.addToAnimationQueue(cardSprite, startAnimationDelay + (100 * m), 0, false, null, null);
+                    animator.showAtBegin = true;
+                } else {
+                    cardSprite.visible = true;
+                }
+                cardSprite.setTransform(x + offset, y - offset);
+                offset += 4 * MemoryMatch.stageScaleFactor;
+            }
+        }
+    },
+
+    clearChainsMatches: function (groupDisplayObject, matchesToShow) {
+        var cardSprite,
+            chainsGroup;
+
+        chainsGroup = groupDisplayObject.getChildByName('chainsGroup');
+        if (chainsGroup == null) {
+            return;
+        }
+        while (matchesToShow > 0) {
+            cardSprite = chainsGroup.getChildByName("chaincard" + matchesToShow);
+            if (cardSprite != null) {
+                chainsGroup.removeChild(cardSprite);
+            }
+            matchesToShow --;
+        }
+    },
+
+
     setupButtons: function () {
 
         // 2 buttons centered horizontal at bottom of popup
@@ -720,6 +853,7 @@ MemoryMatch.LevelIntroduction = {
                 if (timerTextField != null) {
                     timerTextField.alpha = 1;
                 }
+                this.showChainsMatches(this.groupDisplayObject, 3);
                 break;
             case 5: // flash misses
                 timerTextField = this.groupDisplayObject.getChildByName('matchCounter');
@@ -732,6 +866,9 @@ MemoryMatch.LevelIntroduction = {
                 if (timerTextField != null) {
                     timerTextField.alpha = 1;
                 }
+                break;
+            case 7:
+                this.clearChainsMatches(this.groupDisplayObject, 3);
                 break;
             default: // wait
                 this.demoAnimationState = 0;

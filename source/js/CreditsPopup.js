@@ -175,7 +175,7 @@ MemoryMatch.CreditsPopup = {
         this.groupDisplayObject.addChild(titleTextField);
 
         // Show the JumpyDot logo
-        var spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.creditsFrames);
+        var spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.guiSpritesheet2Frames);
         var iconSprite = new createjs.Sprite(spriteData, "JumpyDotLogo");
         iconSprite.setTransform(this.backgroundWidth * 0.15, this.backgroundHeight * 0.70);
         iconSprite.framerate = 1;

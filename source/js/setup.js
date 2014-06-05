@@ -13,7 +13,7 @@ MemoryMatch.GameSetup = {
     assetsFolder: "assets",
     backgroundImage: "background.jpg",
     popupBackground: "gamePopup.png",
-    guiSprites: ["guiSpriteSheet1.png", "guiSpriteSheet2.png", "mapSpriteSheet.png", "credits.png"],
+    guiSprites: ["guiSpriteSheet1.png", "guiSpriteSheet2.png", "mapSpriteSheet.png"],
     particleSprite: "sparkle_21x23.png",
     guiBoldFontName: "SohoStd-BoldItalic",
     guiMediumFontName: "open_sanscondensed_light",
