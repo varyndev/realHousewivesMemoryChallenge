@@ -97,6 +97,7 @@ MemoryMatch.GameGUI = {
 
     pause: function (event) {
         // show the paused state
+        this.hideTimerCountdown();
     },
 
     resume: function (event) {

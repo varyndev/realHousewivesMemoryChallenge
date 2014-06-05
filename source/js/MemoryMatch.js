@@ -455,6 +455,7 @@ var MemoryMatch = {
             }
             MemoryMatch.saveGame();
             MemoryMatch.turnBackAllCards();
+            MemoryMatch.GameGUI.pause(null);
         }
     },
 
