@@ -30,7 +30,7 @@ MemoryMatch.LevelIntroduction = {
     captionTextFontSize: 42,
     timerId: null,
     demoTimer: 0,
-    demoAnimationState: 0,
+    demoAnimationState: 1,
 
 
     setup: function (displayObject, stateCompleteCallbackFunction, level, gameNumber) {
@@ -695,6 +695,12 @@ MemoryMatch.LevelIntroduction = {
         this.buttonInstances.push(gameButton);
     },
 
+    flashContinueButton: function () {
+        if (this.buttonInstances.length > 1) {
+            this.buttonInstances[1].setFlashing(true);
+        }
+    },
+
     buildDemoBoard: function (groupDisplayObject, x, y) {
 
         // Layout 4 demo cards in a 2x2 pattern
@@ -811,6 +817,7 @@ MemoryMatch.LevelIntroduction = {
                 break;
             default: // wait
                 this.demoAnimationState = 0;
+                this.flashContinueButton();
                 break;
         }
         timerTextField = this.groupDisplayObject.getChildByName('gameTimer');
@@ -872,6 +879,7 @@ MemoryMatch.LevelIntroduction = {
                 break;
             default: // wait
                 this.demoAnimationState = 0;
+                this.flashContinueButton();
                 break;
         }
         timerTextField = this.groupDisplayObject.getChildByName('studyGroup');
@@ -950,6 +958,7 @@ MemoryMatch.LevelIntroduction = {
                 break;
             default: // wait
                 this.demoAnimationState = 0;
+                this.flashContinueButton();
                 break;
         }
         this.demoAnimationState ++;
@@ -999,6 +1008,7 @@ MemoryMatch.LevelIntroduction = {
                 break;
             default: // wait
                 this.demoAnimationState = 0;
+                this.flashContinueButton();
                 break;
         }
         timerTextField = this.groupDisplayObject.getChildByName('studyGroup');

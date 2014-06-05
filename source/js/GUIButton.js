@@ -38,6 +38,7 @@ MemoryMatch.GUIButton = function (parameters) {
     guiButton.disabled = false;
     guiButton._isPressed = false;
     guiButton._isOver = false;
+    guiButton._isFlashing = false;
     guiButton.spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.guiSpritesheet1Frames);
     guiButton.shadowSource = null;
     guiButton.buttonFaceActive = null;
@@ -52,6 +53,9 @@ MemoryMatch.GUIButton = function (parameters) {
     guiButton.spriteSheet = guiButton.spriteData;
     guiButton.buttonColorFilter = null;
     guiButton.refreshParent = null;
+    guiButton.flashingTimerId = null;
+    guiButton.flashingCounter = null;
+    guiButton.flashingInterval = 500;
 
     guiButton.setParameters = function (parameters) {
         if (parameters != null) {
@@ -148,6 +152,7 @@ MemoryMatch.GUIButton = function (parameters) {
         this.width = buttonSize.width * this.buttonScale;
         this.height = buttonSize.height * this.buttonScale;
         this.buttonSprite.hitArea = new createjs.Shape(new createjs.Graphics().beginFill('909090').drawRect(0, 0, this.width, this.height));
+        this.flashingCounter = 0;
         this.setTransform(0, 0, this.buttonScale, this.buttonScale);
         this.createButtonIcon();
         this.createButtonText();
@@ -202,6 +207,10 @@ MemoryMatch.GUIButton = function (parameters) {
         }
     };
 
+    guiButton.setText = function (text) {
+        this.setButtonText(text);
+    };
+
     guiButton.createButtonIcon = function () {
         var icon,
             spriteSize,
@@ -237,7 +246,7 @@ MemoryMatch.GUIButton = function (parameters) {
         return {width: this.width, height: this.height};
     };
 
-    guiButton.handleEvent = function(event) {
+    guiButton.handleEvent = function (event) {
         var spriteFrameBase,
             spriteFrameIcon,
             eventType = event.type,
@@ -329,7 +338,7 @@ MemoryMatch.GUIButton = function (parameters) {
         }
     };
 
-    guiButton.setEnabled = function(enableFlag) {
+    guiButton.setEnabled = function (enableFlag) {
         if (enableFlag) {
             this.disabled = false;
             this.cursor = "pointer";
@@ -349,11 +358,36 @@ MemoryMatch.GUIButton = function (parameters) {
         }
     };
 
-    guiButton.setText = function (text) {
-        var buttonTextField = this.getChildByName("buttonText");
-        this.text = text;
-        if (buttonTextField != null) {
-            buttonTextField.text = text;
+    guiButton.setFlashing = function (flashingFlag) {
+        this._isFlashing = flashingFlag;
+        if (this._isFlashing && this.flashingTimerId == null) {
+            this.flashingCounter = 1;
+            this.updateFlashing();
+        } else if ( ! this._isFlashing) {
+            this.flashingCounter = 0;
+            if (this.flashingTimerId != null) {
+                window.clearTimeout(this.flashingTimerId);
+                this.flashingTimerId = null;
+            }
+        }
+    };
+
+    guiButton.updateFlashing = function () {
+        var buttonText = this.getChildByName("buttonText"),
+            alpha;
+
+        if (this._isFlashing) {
+            this.flashingCounter ++;
+            alpha = this.flashingCounter % 2 == 0 ? 0.3 : 1.0;
+            this.flashingTimerId = window.setTimeout(this.updateFlashing.bind(this), this.flashingInterval);
+        } else {
+            alpha = 1;
+        }
+        if (this.iconSprite != null) {
+            this.iconSprite.alpha = alpha;
+        }
+        if (buttonText != null) {
+            buttonText.alpha = alpha;
         }
     };
 
@@ -362,6 +396,10 @@ MemoryMatch.GUIButton = function (parameters) {
     };
 
     guiButton.kill = function () {
+        if (this.flashingTimerId != null) {
+            window.clearTimeout(this.flashingTimerId);
+            this.flashingTimerId = null;
+        }
         this.buttonColorFilter = null;
         this.removeAllEventListeners();
         this.removeAllChildren();

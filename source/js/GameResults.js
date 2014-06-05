@@ -48,6 +48,7 @@ MemoryMatch.GameResults = {
     secondaryColorFilter: null,
     primaryColorValue: null,
     secondaryColorValue: null,
+    refreshTimerId: null,
 
 
     setup: function (displayObject, nextLevelData, stateCompleteCallbackFunction) {
@@ -163,6 +164,7 @@ MemoryMatch.GameResults = {
     startAnimationComplete: function (sprite) {
         if (MemoryMatch.isChallengeGame) {
             this.isEnabled = true;
+            this.flashNextButton();
         }
         if (this.stateCompleteCallback !== null) {
             // stateCompleteCallback();
@@ -229,6 +231,13 @@ MemoryMatch.GameResults = {
 
     refreshCache: function () {
         this.groupDisplayObject.updateCache();
+    },
+
+    flashNextButton: function () {
+        if (this.buttonInstances.length > 2) {
+            this.buttonInstances[2].setFlashing(true);
+            this.startRefreshInterval();
+        }
     },
 
     showBackgroundImage: function (canvas) {
@@ -337,6 +346,7 @@ MemoryMatch.GameResults = {
         MemoryMatch.triggerSoundFx("soundBump");
         if (MemoryMatch.isChallengeGame) {
             this.isEnabled = true;
+            this.flashNextButton();
         }
     },
 
@@ -733,6 +743,7 @@ MemoryMatch.GameResults = {
         this.showBestScoreBurstIfBeatBestScore();
         this.showThirdStar(250);
         this.isEnabled = true;
+        this.flashNextButton();
         this.groupDisplayObject.updateCache();
     },
 
@@ -847,10 +858,23 @@ MemoryMatch.GameResults = {
         return tip;
     },
 
+    startRefreshInterval: function () {
+        this.refreshTimerId = window.setTimeout(this.refreshInterval.bind(this), 500);
+    },
+
+    refreshInterval: function () {
+        this.refreshCache();
+        this.startRefreshInterval();
+    },
+
     killScreen: function () {
         // remove all display objects and object references:
         var i;
 
+        if (this.refreshTimerId != null) {
+            window.clearTimeout(this.refreshTimerId);
+            this.refreshTimerId = null;
+        }
         this.spriteData = null;
         this.primaryColorFilter = null;
         this.secondaryColorFilter = null;
