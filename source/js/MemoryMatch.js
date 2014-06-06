@@ -712,6 +712,22 @@ var MemoryMatch = {
     },
 
     showLevelIntroduction: function (gameNumber) {
+        var thisGameData,
+            cardSize,
+            cardAssetId;
+
+        if (MemoryMatch.imageSheetImage == null) {
+            thisGameData = MemoryMatch.getGameData(MemoryMatch.isChallengeGame);
+            MemoryMatch.gameNumber = gameNumber;
+            MemoryMatch.gameId = thisGameData.gameId;
+            cardSize = MemoryMatch.getCardSize(thisGameData);
+            if (thisGameData.cardSprites != null) {
+                cardAssetId = MemoryMatch.getSpriteAssetId(0);
+            } else {
+                cardAssetId = "cards1";
+            }
+            MemoryMatch.setImageSheet(cardAssetId, cardSize.width, cardSize.height);
+        }
         MemoryMatch.LevelIntroduction.setup(MemoryMatch.stage, MemoryMatch.levelIntroductionClosed.bind(MemoryMatch), MemoryMatch.gameLevel, gameNumber);
         MemoryMatch.LevelIntroduction.buildScreen(true);
         MemoryMatch.UserData.setUserTipSeen(MemoryMatch.gameLevel);
