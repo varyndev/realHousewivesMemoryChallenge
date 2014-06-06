@@ -3713,7 +3713,7 @@ var MemoryMatch = {
     },
 
     challengePassed: function () {
-        return MemoryMatch.isChallengeGame && MemoryMatch.gameNumber >= MemoryMatch.challengeAdvanceStreak;
+        return MemoryMatch.isChallengeGame && (MemoryMatch.gameNumber - 1) >= MemoryMatch.challengeAdvanceStreak;
     },
 
     didUserBeatChallenge: function (landNumber) {

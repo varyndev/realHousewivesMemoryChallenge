@@ -13,6 +13,8 @@ MemoryMatch.GameResults = {
     groupDisplayObject: null,
     buttonInstances: null,
     spriteData: null,
+    gemSprite: null,
+    gemSpriteFinalPosition: null,
     matchBonusText: null,
     comboBonusText: null,
     currentScoreTextField: null,
@@ -395,6 +397,14 @@ MemoryMatch.GameResults = {
             imageSprite.name = gemName;
             imageSprite.visible = MemoryMatch.didUserBeatChallenge(landNumber);
             this.groupDisplayObject.addChild(imageSprite);
+            if (MemoryMatch.levelComplete && imageSprite.visible && landNumber == MemoryMatch.gameLevel) {
+                spriteSize = MemoryMatch.getSpriteFrameSize(spriteFrames, gemName);
+                this.gemSprite = imageSprite.clone();
+                this.gemSprite.width = spriteSize.width;
+                this.gemSprite.height = spriteSize.height;
+                this.gemSpriteFinalPosition = {x: imageSprite.x + spriteSize.width * 0.5, y: imageSprite.y + spriteSize.height * 0.5};
+                this.animateGemToAward();
+            }
         }
     },
 
@@ -703,7 +713,12 @@ MemoryMatch.GameResults = {
     },
 
     animateText: function (textSprite) {
-        this.groupDisplayObject.updateCache();
+        if (this.groupDisplayObject != null) {
+            this.groupDisplayObject.updateCache();
+            return true;
+        } else {
+            return false;
+        }
     },
 
     animateTextMisses: function (textSprite) {
@@ -865,6 +880,62 @@ MemoryMatch.GameResults = {
     refreshInterval: function () {
         this.refreshCache();
         this.startRefreshInterval();
+    },
+
+    animateGemToAward: function () {
+        // gem animation:
+        // 1. gem sprite starts centered in popup very large scale
+        // 2. gem scales to size and position moves to award
+        // 3. done, cleanup
+
+        var animator,
+            startAlpha = 0.4,
+            startScale = 14,
+            endScale = 0.75,
+            duration = 0.8,
+            steps;
+
+        if (this.gemSprite != null) {
+            this.gemSprite.setTransform(this.backgroundWidth * 0.5, this.backgroundHeight * 0.5, startScale, startScale, 0, 0, 0, this.gemSprite.width * 0.5, this.gemSprite.height * 0.5);
+            this.gemSprite.alpha = startAlpha;
+            this.groupDisplayObject.addChild(this.gemSprite);
+            steps = MemoryMatch.fps * duration;
+            animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.gemSprite, 300, 0, false, null, this.gemAnimationComplete.bind(this));
+            animator.vX = (this.gemSpriteFinalPosition.x - this.gemSprite.x) / steps;
+            animator.endX = this.gemSpriteFinalPosition.x;
+            animator.vY = (this.gemSpriteFinalPosition.y - this.gemSprite.y) / steps;
+            animator.endY = this.gemSpriteFinalPosition.y;
+            animator.vAlpha = (1 - startAlpha) / steps;
+            animator.endAlpha = 1;
+            animator.vXScale = -1 * (startScale - endScale) / steps;
+            animator.endXScale = 0.75;
+            animator.vYScale = animator.vXScale;
+            animator.endYScale = animator.endXScale;
+            animator.tickFunction = this.gemAnimationUpdate.bind(this);
+        }
+    },
+
+    gemAnimationUpdate: function (animator) {
+        var stillAnimating = false,
+            endScale = 0.75;
+
+        if (this.groupDisplayObject != null) {
+            this.groupDisplayObject.updateCache();
+            if (animator.actor.alpha != 1 || animator.actor.scaleX != endScale) {
+                stillAnimating = true;
+            }
+        }
+        return stillAnimating;
+    },
+
+    gemAnimationComplete: function (actor) {
+        var globalCardPoint = this.groupDisplayObject.localToGlobal(this.gemSprite.x, this.gemSprite.y);
+        MemoryMatch.AnimationHandler.startSplatterStars(Math.random() * 120 + 100, globalCardPoint.x, globalCardPoint.y);
+        MemoryMatch.triggerSoundFx("soundBump");
+        this.groupDisplayObject.removeChild(this.gemSprite);
+        this.gemSprite = null;
+        this.gemSpriteFinalPosition = null;
+        this.groupDisplayObject.updateCache();
     },
 
     killScreen: function () {

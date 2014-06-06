@@ -159,6 +159,7 @@ MemoryMatch.ChallengeIntroduction = {
         titleTextField.y = yOffset;
         titleTextField.lineWidth = this.backgroundWidth - (this.marginLeft * 2);
         titleTextField.maxWidth = this.backgroundWidth - (this.marginLeft * 2);
+        titleTextField.lineHeight = titleTextField.getMeasuredLineHeight() * 1.5;
         this.groupDisplayObject.addChild(titleTextField);
     },
 
