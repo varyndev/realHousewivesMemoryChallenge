@@ -25,6 +25,7 @@ MemoryMatch.LevelIntroduction = {
     secondaryColorFilter: null,
     primaryColorValue: null,
     secondaryColorValue: null,
+    gameId: 0,
     level: 0,
     gameNumber: 0,
     captionTextFontSize: 42,
@@ -33,12 +34,13 @@ MemoryMatch.LevelIntroduction = {
     demoAnimationState: 1,
 
 
-    setup: function (displayObject, stateCompleteCallbackFunction, level, gameNumber) {
+    setup: function (displayObject, stateCompleteCallbackFunction, gameId, gameLevel, gameNumber) {
         this.stateCompleteCallback = stateCompleteCallbackFunction;
         this.parentDisplayObject = displayObject;
         this.buttonInstances = [];
         this.isEnabled = false;
-        this.level = level;
+        this.gameId = gameId;
+        this.level = gameLevel;
         this.gameNumber = gameNumber;
     },
 
@@ -55,7 +57,7 @@ MemoryMatch.LevelIntroduction = {
         this.marginTop = this.backgroundHeight * 0.05;
         this.marginLeft = this.backgroundWidth * 0.09;
         this.setupTitleText();
-        this.setupLayoutForTip(this.level);
+        this.setupLayoutForGameId(this.gameId);
         this.setupButtons();
         if (autoStart == undefined) {
             autoStart = false;
@@ -226,9 +228,14 @@ MemoryMatch.LevelIntroduction = {
         this.groupDisplayObject.addChild(titleTextField);
     },
 
-    setupLayoutForTip: function (tipNumber) {
-        var groupDisplayObject = this.groupDisplayObject;
-        switch (tipNumber) {
+    setupLayoutForGameId: function (gameId) {
+        var groupDisplayObject = this.groupDisplayObject,
+            levelData = MemoryMatch.GameSetup.levels[this.level - 1],
+            tipId;
+
+        // convert game id into a tip id
+        tipId = levelData.tipId;
+        switch (tipId) {
             case 1:
                 this.setupLayoutForConcentration(groupDisplayObject);
                 break;
@@ -746,18 +753,18 @@ MemoryMatch.LevelIntroduction = {
     },
 
     demoAnimationStep: function () {
-        switch (this.level) {
-            case 1:
-                this.demoAnimationStepForConcentration();
-                break;
+        switch (this.gameId) {
             case 2:
-                this.demoAnimationStepForChains();
-                break;
-            case 3:
-                this.demoAnimationStepForNemesis();
+                this.demoAnimationStepForHaystack();
                 break;
             case 4:
-                this.demoAnimationStepForHaystack();
+                this.demoAnimationStepForConcentration();
+                break;
+            case 5:
+                this.demoAnimationStepForChains();
+                break;
+            case 7:
+                this.demoAnimationStepForNemesis();
                 break;
             default:
                 break;

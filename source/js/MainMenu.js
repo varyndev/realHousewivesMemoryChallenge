@@ -66,7 +66,7 @@ MemoryMatch.MainMenu = {
 
         if (this.animate) {
             duration = 1; // seconds of animation
-            animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.groupDisplayObject, 0, duration * 1000, false, null, null);
+            animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.groupDisplayObject, 0, 0, false, null, null);
             animator.endAlpha = 1;
             animator.vAlpha = duration / MemoryMatch.fps;
         }

@@ -197,7 +197,7 @@ MemoryMatch.GameOptions = {
     onClickHelp: function (event) {
         if (MemoryMatch.GameOptions.isEnabled) {
             if (MemoryMatch.GameOptions.isGameOptions) {
-                MemoryMatch.LevelIntroduction.setup(MemoryMatch.stage, MemoryMatch.GameOptions.onHelpCallback.bind(MemoryMatch.GameOptions), MemoryMatch.gameLevel, MemoryMatch.gameNumber);
+                MemoryMatch.LevelIntroduction.setup(MemoryMatch.stage, MemoryMatch.GameOptions.onHelpCallback.bind(MemoryMatch.GameOptions), MemoryMatch.gameId, MemoryMatch.gameLevel, MemoryMatch.gameNumber);
                 MemoryMatch.LevelIntroduction.buildScreen(true, false);
             } else {
                 MemoryMatch.MessagePopup.setup(MemoryMatch.stage, {domElement: "helpArea", title: "Help!", message: "", callback: MemoryMatch.GameOptions.onMessagePopupCallback.bind(MemoryMatch.GameOptions), closeButton: true, continueButton: false});

@@ -487,7 +487,7 @@ var MemoryMatch = {
     startGameWithNumber: function (gameNumber) {
         var levelData = MemoryMatch.getLevelData(MemoryMatch.gameLevel);
 
-        if (MemoryMatch.shouldShowLevelIntroduction(MemoryMatch.gameLevel, gameNumber)) {
+        if (MemoryMatch.shouldShowLevelIntroduction(MemoryMatch.gameLevel)) {
             MemoryMatch.showLevelIntroduction(gameNumber);
         } else {
             MemoryMatch.changeGameState(MemoryMatch.GAMESTATE.PLAY);
@@ -681,7 +681,11 @@ var MemoryMatch = {
         MemoryMatch.gameEndTime = 0;
         MemoryMatch.levelComplete = false; // TODO: this should come from prior user data
         MemoryMatch.levelMatchCounter = 0;
-        MemoryMatch.startNextGame();
+        if (MemoryMatch.shouldShowLevelIntroduction(MemoryMatch.gameLevel)) {
+            MemoryMatch.showLevelIntroduction(MemoryMatch.gameNumber);
+        } else {
+            MemoryMatch.startNextGame();
+        }
     },
 
     startLevelChallenge: function () {
@@ -728,16 +732,17 @@ var MemoryMatch = {
             }
             MemoryMatch.setImageSheet(cardAssetId, cardSize.width, cardSize.height);
         }
-        MemoryMatch.LevelIntroduction.setup(MemoryMatch.stage, MemoryMatch.levelIntroductionClosed.bind(MemoryMatch), MemoryMatch.gameLevel, gameNumber);
+        MemoryMatch.LevelIntroduction.setup(MemoryMatch.stage, MemoryMatch.levelIntroductionClosed.bind(MemoryMatch), MemoryMatch.gameId, MemoryMatch.gameLevel, gameNumber);
         MemoryMatch.LevelIntroduction.buildScreen(true);
         MemoryMatch.UserData.setUserTipSeen(MemoryMatch.gameLevel);
         MemoryMatch.UserData.flush();
     },
 
-    shouldShowLevelIntroduction: function (gameLevel, gameNumber) {
-        var userNotHasSeenLevelIntro = false;
+    shouldShowLevelIntroduction: function (gameLevel) {
+        var userNotHasSeenLevelIntro = false,
+            gameTipId = MemoryMatch.GameSetup.levels[gameLevel - 1].tipId;
 
-        userNotHasSeenLevelIntro = ! MemoryMatch.UserData.isUserTipSeen(gameLevel);
+        userNotHasSeenLevelIntro = ! MemoryMatch.UserData.isUserTipSeen(gameTipId);
         return userNotHasSeenLevelIntro;
     },
 
@@ -818,7 +823,11 @@ var MemoryMatch = {
                 } else {
                     MemoryMatch.gameNumber ++;
                     MemoryMatch.unlockNextGameForLevel(MemoryMatch.gameLevel, MemoryMatch.gameNumber);
-                    MemoryMatch.startNextGame();
+                    if (MemoryMatch.shouldShowLevelIntroduction(MemoryMatch.gameLevel)) {
+                        MemoryMatch.showLevelIntroduction(MemoryMatch.gameNumber);
+                    } else {
+                        MemoryMatch.startNextGame();
+                    }
                 }
             } else {
                 MemoryMatch.startNextLevel();
