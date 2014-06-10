@@ -2246,7 +2246,7 @@ var MemoryMatch = {
             userDataObject,
             earnedAchievement = false;
 
-        if (matchTime - MemoryMatch.lastMatchTime < 1600) {
+        if (matchTime - MemoryMatch.lastMatchTime < 1600 && MemoryMatch.gameType != MemoryMatch.GAMEPLAYTYPE.PATTERN) {
             earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.FASTMATCH);
         }
         MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.CARDS_MATCH;
@@ -2254,7 +2254,7 @@ var MemoryMatch = {
         MemoryMatch.matchCount ++;
         MemoryMatch.levelMatchCounter ++;
         MemoryMatch.consecutiveMatchCount ++;
-        if ( ! MemoryMatch.isChallengeGame) {
+        if ( ! MemoryMatch.isChallengeGame && MemoryMatch.gameType != MemoryMatch.GAMEPLAYTYPE.CHAINS && MemoryMatch.gameType != MemoryMatch.GAMEPLAYTYPE.HAYSTACK) {
             if (MemoryMatch.consecutiveMatchCount > 1) {
                 MemoryMatch.numberOfCombos ++;
                 if (MemoryMatch.consecutiveMatchCount == 3) {
@@ -2286,7 +2286,7 @@ var MemoryMatch = {
         // Each time a match is made determine if certain achievements based on card matching have been attained
 
         userDataObject = this.UserData.getUserDataObject();
-        if (userDataObject != null) {
+        if (userDataObject != null && MemoryMatch.gameType != MemoryMatch.GAMEPLAYTYPE.PATTERN) {
             totalMatchesEver = (userDataObject['totalMatchCount'] | 0) + MemoryMatch.matchCount;
             totalCombosEver = (userDataObject['totalCombos'] | 0) + MemoryMatch.numberOfCombos;
             if (totalMatchesEver == 50) {
@@ -2296,14 +2296,15 @@ var MemoryMatch = {
             } else if (totalMatchesEver == 250) {
                 earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.TWOFIFTYMATCHES) | earnedAchievement;
             }
-            if (totalCombosEver == 25) {
-                earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.TWENTYFIVECOMBOS) | earnedAchievement;
-            } else if (totalCombosEver == 50) {
-                earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.FIFTYCOMBOS) | earnedAchievement;
+            if (MemoryMatch.gameType != MemoryMatch.GAMEPLAYTYPE.CHAINS) {
+                if (totalCombosEver == 25) {
+                    earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.TWENTYFIVECOMBOS) | earnedAchievement;
+                } else if (totalCombosEver == 50) {
+                    earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.FIFTYCOMBOS) | earnedAchievement;
+                }
             }
         }
         switch (MemoryMatch.gameType) {
-
             case MemoryMatch.GAMEPLAYTYPE.CONCENTRATION:
             case MemoryMatch.GAMEPLAYTYPE.NEMESIS:
                 if (MemoryMatch.gameMatchCount - MemoryMatch.matchCount > 0) { // not valid for the last match
@@ -2977,7 +2978,7 @@ var MemoryMatch = {
             longestStreak = 0;
         }
         gameTime = MemoryMatch.gameEndTime - MemoryMatch.gameStartTime;
-        if (gameTime <= 5999) { // finished game in 5 seconds or less
+        if (gameTime <= 5999 && ! MemoryMatch.isChallengeGame) { // finished game in 5 seconds or less
             earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.QUICKDRAW) | earnedAchievement;
         }
         finalScore = MemoryMatch.gameCompleteTallyFinalScore();
