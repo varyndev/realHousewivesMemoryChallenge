@@ -305,6 +305,7 @@ MemoryMatch.GameGUI = {
     },
 
     showTimerCountdown: function (message, startSeconds) {
+
         // display a count down timer with title message and seconds to count down
 
         var containerGroup,
@@ -453,7 +454,9 @@ MemoryMatch.GameGUI = {
     },
 
     setupLevelTextField: function () {
+
         // add the icon on top of the button frame
+
         var iconScale = 1,
             icon = MemoryMatch.GameSetup.levels[this.levelNumber - 1].iconHUD,
             iconSprite = new createjs.Sprite(this.spriteData, icon),
@@ -464,11 +467,11 @@ MemoryMatch.GameGUI = {
         iconSprite.framerate = 1;
         iconSprite.name = "icon";
 
-        levelField = new createjs.Text("", MemoryMatch.getScaledFontSize(56) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColor);
+        levelField = new createjs.Text("", MemoryMatch.getScaledFontSize(64) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         levelField.textAlign = "left";
         levelField.textBaseline = "middle";
         levelField.setTransform(this.width * 0.09, this.hudHeight * 0.5);
-        levelField.maxWidth = 7 * 22 * MemoryMatch.stageScaleFactor;
+        levelField.maxWidth = 120 * MemoryMatch.stageScaleFactor; // space for 3 chars
 
         this.groupDisplayObject.addChild(iconSprite);
         this.levelIcon = iconSprite;
@@ -477,7 +480,7 @@ MemoryMatch.GameGUI = {
     },
 
     setupScoreTextField: function () {
-        var scoreField = new createjs.Text("0", MemoryMatch.getScaledFontSize(64) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColor);
+        var scoreField = new createjs.Text("0", MemoryMatch.getScaledFontSize(72) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         scoreField.textAlign = "center";
         scoreField.textBaseline = "middle";
         scoreField.setTransform(this.width * 0.25, this.hudHeight * 0.5);
@@ -501,19 +504,18 @@ MemoryMatch.GameGUI = {
         backgroundShape.setTransform((this.width - matchCountWidth) * 0.5, this.hudHeight * 0.14);
         this.groupDisplayObject.addChild(backgroundShape);
 
-        matchCountLabel = new createjs.Text("Misses:", MemoryMatch.getScaledFontSize(64) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
+        matchCountLabel = new createjs.Text("Misses:", MemoryMatch.getScaledFontSize(64) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColor);
         matchCountLabel.textAlign = "right";
         matchCountLabel.textBaseline = "middle";
-        matchCountHeight = matchCountLabel.getMeasuredLineHeight();
-        matchCountLabel.setTransform(this.width * 0.5, this.hudHeight * 0.44);
+        matchCountLabel.setTransform(this.width * 0.5, this.hudHeight * 0.5);
         matchCountLabel.maxWidth = this.width * 0.06;
         this.matchCountLabel = matchCountLabel;
         this.groupDisplayObject.addChild(matchCountLabel);
 
-        matchCountField = new createjs.Text("0", MemoryMatch.getScaledFontSize(72) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColor);
+        matchCountField = new createjs.Text("0", MemoryMatch.getScaledFontSize(84) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         matchCountField.textAlign = "left";
         matchCountField.textBaseline = "middle";
-        matchCountField.setTransform(this.width * 0.51, this.hudHeight * 0.5);
+        matchCountField.setTransform(this.width * 0.53, this.hudHeight * 0.44);
         matchCountField.maxWidth = this.width * 0.03;
         this.matchCountField = matchCountField;
         this.groupDisplayObject.addChild(matchCountField);
@@ -521,7 +523,7 @@ MemoryMatch.GameGUI = {
 
     setupGameTimerTextField: function () {
         var maxFieldWidth = 10 * 22 * MemoryMatch.stageScaleFactor,
-            gameTimerField = new createjs.Text("", MemoryMatch.getScaledFontSize(56) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColor);
+            gameTimerField = new createjs.Text("", MemoryMatch.getScaledFontSize(64) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
 
         gameTimerField.textAlign = "left";
         gameTimerField.textBaseline = "middle";
@@ -544,7 +546,7 @@ MemoryMatch.GameGUI = {
         this.groupDisplayObject.addChild(messageField);
         this.messageField = messageField;
 
-        comboSprite = new createjs.Text("1x", MemoryMatch.getScaledFontSize(72) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColor);
+        comboSprite = new createjs.Text("1x", MemoryMatch.getScaledFontSize(72) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColorBonus);
         comboSprite.textAlign = "center";
         comboSprite.x = MemoryMatch.stageWidth * 0.9;
         comboSprite.y = MemoryMatch.stageHeight * 0.96;
