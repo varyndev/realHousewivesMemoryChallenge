@@ -400,6 +400,16 @@ var MemoryMatch = {
         }
     },
 
+    showSharePopup: function () {
+//        MemoryMatch.MessagePopup.setup(MemoryMatch.stage, {domElement: "helpArea", title: "Share", message: "", callback: MemoryMatch.onShareClosed.bind(MemoryMatch), closeButton: true, continueButton: false});
+//        MemoryMatch.MessagePopup.buildScreen(true);
+        MemoryMatch.showGameCompleted();
+    },
+
+    onShareClosed: function (event) {
+
+    },
+
     onQuitGame: function () {
         MemoryMatch.gameStartTime = 0;
         MemoryMatch.gamePauseTime = 0;

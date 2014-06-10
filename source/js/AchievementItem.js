@@ -160,12 +160,12 @@ MemoryMatch = MemoryMatch || {};
     };
 
     p.setupIcon = function () {
-        // add the icon on top of the button frame
+        // add the icon on top of the button frame, left-middle justified
         var colorFilter,
             spriteData,
             iconSize,
             iconSprite,
-            iconScale = 0.5;
+            iconScale = 2;
 
         if (this.icon != null) {
             spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.guiSpritesheet1Frames);

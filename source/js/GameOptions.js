@@ -206,6 +206,18 @@ MemoryMatch.GameOptions = {
         }
     },
 
+    onClickFullScreen: function (event) {
+        if (MemoryMatch.GameOptions.isEnabled) {
+            MemoryMatch.goFullScreen();
+        }
+    },
+
+    onClickShare: function (event) {
+        if (MemoryMatch.GameOptions.isEnabled) {
+            MemoryMatch.showSharePopup();
+        }
+    },
+
     onClickViewStats: function (event) {
         if (MemoryMatch.GameOptions.isEnabled) {
             MemoryMatch.unlockAllLevelsCounter ++;
@@ -326,6 +338,7 @@ MemoryMatch.GameOptions = {
             muted,
             xOffset,
             yOffset,
+            buttonGap,
             buttonBaseColor = MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].liteColor;
 
         // Close button always shows in its own special place
@@ -375,10 +388,10 @@ MemoryMatch.GameOptions = {
             buttonsGroup.addChild(gameButton);
             this.buttonInstances.push(gameButton);
 
-            // Show big Credits button
+            // Show small Credits button
             buttonTagCounter ++;
             yOffset += buttonSize.height + buttonMargin;
-            gameButton = MemoryMatch.GUIButton({name: "credits", tag: buttonTagCounter, disabled: false, callback: this.onClickCredits.bind(this), baseUp: "optionsLargeButtonBase", buttonBaseColor: buttonBaseColor, text: "Credits", iconUp: "optionsLargeCreditIcon", iconOver: "optionsLargeCreditDownIcon", iconDown: "optionsLargeCreditDownIcon"});
+            gameButton = MemoryMatch.GUIButton({name: "credits", tag: buttonTagCounter, disabled: false, callback: this.onClickCredits.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, iconUp: "optionsSmallCreditIcon", iconOver: "optionsSmallCreditDownIcon", iconDown: "optionsSmallCreditDownIcon"});
             gameButton.setTransform(xOffset, yOffset, 1, 1);
             buttonsGroup.addChild(gameButton);
             this.buttonInstances.push(gameButton);
@@ -400,6 +413,14 @@ MemoryMatch.GameOptions = {
             gameButton.setTransform(xOffset, yOffset, 1, 1);
             buttonsGroup.addChild(gameButton);
             this.buttonInstances.push(gameButton);
+
+            // Show fullscreen button
+            buttonTagCounter ++;
+            gameButton = MemoryMatch.GUIButton({name: "fullscreen", tag: buttonTagCounter, disabled: false, callback: this.onClickFullScreen.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, iconUp: "optionsSmallFullScreenIcon", iconOver: "optionsSmallFullScreenDownIcon", iconDown: "optionsSmallFullScreenDownIcon"});
+            yOffset += buttonSize.height + buttonMargin;
+            gameButton.setTransform(xOffset, yOffset, 1, 1);
+            buttonsGroup.addChild(gameButton);
+            this.buttonInstances.push(gameButton);
         } else {
             // Show View Stats button
             buttonTagCounter ++;
@@ -417,12 +438,41 @@ MemoryMatch.GameOptions = {
             buttonsGroup.addChild(gameButton);
             this.buttonInstances.push(gameButton);
 
-            // Show small Credits button
+            // Show small Help button
             buttonTagCounter ++;
-            gameButton = MemoryMatch.GUIButton({name: "credits", tag: buttonTagCounter, disabled: false, callback: this.onClickCredits.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, iconUp: "optionsSmallCreditIcon", iconOver: "optionsSmallCreditDownIcon", iconDown: "optionsSmallCreditDownIcon"});
+            gameButton = MemoryMatch.GUIButton({name: "help", tag: buttonTagCounter, disabled: false, callback: this.onClickHelp.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, iconUp: "optionsSmallHelpIcon", iconOver: "optionsSmallHelpDownIcon", iconDown: "optionsSmallHelpDownIcon"});
             buttonSize = gameButton.getSize();
             xOffset = groupWidth - buttonSize.width;
             yOffset = 0;
+            gameButton.setTransform(xOffset, yOffset, 1, 1);
+            buttonsGroup.addChild(gameButton);
+            this.buttonInstances.push(gameButton);
+
+            // adjust width of group for a 3rd column of buttons. Assumes 3rd column buttons are same width/height as the help button we just placed.
+            buttonGap = xOffset - buttonSize.width;
+            groupWidth += buttonGap + buttonSize.width;
+            xOffset += buttonSize.width + buttonGap;
+            yOffset = 0;
+
+            // Show small Full screen button
+            buttonTagCounter ++;
+            gameButton = MemoryMatch.GUIButton({name: "fullscreen", tag: buttonTagCounter, disabled: false, callback: this.onClickFullScreen.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, iconUp: "optionsSmallFullScreenIcon", iconOver: "optionsSmallFullScreenDownIcon", iconDown: "optionsSmallFullScreenDownIcon"});
+            gameButton.setTransform(xOffset, yOffset, 1, 1);
+            buttonsGroup.addChild(gameButton);
+            this.buttonInstances.push(gameButton);
+
+            // Show small Share button
+            buttonTagCounter ++;
+            gameButton = MemoryMatch.GUIButton({name: "share", tag: buttonTagCounter, disabled: false, callback: this.onClickShare.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, iconUp: "gameOverShareIcon", iconOver: "gameOverShareDownIcon", iconDown: "gameOverShareDownIcon"});
+            yOffset += buttonSize.height + buttonMargin;
+            gameButton.setTransform(xOffset, yOffset, 1, 1);
+            buttonsGroup.addChild(gameButton);
+            this.buttonInstances.push(gameButton);
+
+            // Show small Credits button
+            buttonTagCounter ++;
+            gameButton = MemoryMatch.GUIButton({name: "credits", tag: buttonTagCounter, disabled: false, callback: this.onClickCredits.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, iconUp: "optionsSmallCreditIcon", iconOver: "optionsSmallCreditDownIcon", iconDown: "optionsSmallCreditDownIcon"});
+            yOffset += buttonSize.height + buttonMargin;
             gameButton.setTransform(xOffset, yOffset, 1, 1);
             buttonsGroup.addChild(gameButton);
             this.buttonInstances.push(gameButton);
