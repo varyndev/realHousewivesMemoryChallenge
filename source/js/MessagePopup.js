@@ -27,6 +27,10 @@ MemoryMatch.MessagePopup = {
     domElement: null,
     stateCompleteCallback: null,
     closeEventType: null,
+    primaryColorFilter: null,
+    secondaryColorFilter: null,
+    primaryColorValue: null,
+    secondaryColorValue: null,
 
 
     setParameters: function (parameters) {
@@ -69,9 +73,10 @@ MemoryMatch.MessagePopup = {
         }
         // layout the screen
         this.groupDisplayObject = new createjs.Container();
-        this.marginTop = 140 * MemoryMatch.stageScaleFactor;
-        this.marginLeft = 140 * MemoryMatch.stageScaleFactor;
+        this.setColorFilters();
         this.showBackgroundImage();
+        this.marginTop = this.backgroundHeight * 0.05;
+        this.marginLeft = this.backgroundWidth * 0.09;
         this.centerX = this.backgroundWidth * 0.5;
         this.marginX = 12 * MemoryMatch.stageScaleFactor;
         this.setupTitleText();
@@ -176,6 +181,10 @@ MemoryMatch.MessagePopup = {
         this.groupDisplayObject.addChild(bgImage);
         this.backgroundWidth = popupImageAsset.width * xScale;
         this.backgroundHeight = popupImageAsset.height * yScale;
+        if (this.primaryColorFilter != null) {
+            bgImage.filters = [this.primaryColorFilter];
+            bgImage.cache(0, 0, this.backgroundWidth, this.backgroundHeight);
+        }
     },
 
     setupDOMElement: function () {
@@ -217,18 +226,18 @@ MemoryMatch.MessagePopup = {
     },
 
     setupButtons: function () {
-        var spriteFrame;
-        var spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.guiSpritesheet1Frames);
-        var buttonScale = 1.0;
-        var gameButton;
-        var newButtonInstance;
-        var buttonSize;
+        var spriteFrame,
+            spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.guiSpritesheet1Frames),
+            buttonScale = 1.0,
+            gameButton,
+            newButtonInstance,
+            buttonSize;
 
         // Close button always shows
         spriteFrame = "closeButtonUp";
         buttonSize = MemoryMatch.getSpriteFrameSize(MemoryMatch.GameSetup.guiSpritesheet1Frames, spriteFrame);
         gameButton = new createjs.Sprite(spriteData, spriteFrame);
-        gameButton.setTransform(this.backgroundWidth - buttonSize.width - buttonSize.width, buttonSize.width, buttonScale, buttonScale);
+        gameButton.setTransform(this.backgroundWidth * 0.94 - buttonSize.width, this.backgroundHeight * 0.05, buttonScale, buttonScale);
         gameButton.framerate = 1;
         newButtonInstance = new createjs.ButtonHelper(gameButton, "closeButtonUp", "closeButtonOver", "closeButtonDown", false);
         gameButton.addEventListener("click", this.onClickClose.bind(this));
@@ -254,11 +263,33 @@ MemoryMatch.MessagePopup = {
         return this.groupDisplayObject !== null && this.groupDisplayObject.visible;
     },
 
+    setColorFilters: function () {
+        var primaryColor,
+            secondaryColor;
+
+        this.primaryColorValue = MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].primaryColor;
+        this.secondaryColorValue = MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].primaryColor;
+        if (this.primaryColorValue != null) {
+            primaryColor = MemoryMatch.htmlColorStringToColorArray(this.primaryColorValue);
+            this.primaryColorFilter = new createjs.ColorFilter(0, 0, 0, 1, primaryColor[0], primaryColor[1], primaryColor[2], 0);
+        } else {
+            this.primaryColorFilter = null;
+        }
+        if (this.secondaryColorValue != null) {
+            secondaryColor = MemoryMatch.htmlColorStringToColorArray(this.secondaryColorValue);
+            this.secondaryColorFilter = new createjs.ColorFilter(0, 0, 0, 1, secondaryColor[0], secondaryColor[1], secondaryColor[2], 0);
+        } else {
+            this.secondaryColorFilter = null;
+        }
+    },
+
     killScreen: function () {
         // remove all display objects and object references:
         var i;
         var pageElement;
 
+        this.primaryColorFilter = null;
+        this.secondaryColorFilter = null;
         if (this.buttonInstances !== null) {
             for (i = 0; i < this.buttonInstances.length; i ++) {
                 this.buttonInstances[i].removeAllEventListeners();
