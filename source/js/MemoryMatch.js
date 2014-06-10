@@ -9,7 +9,7 @@ var assetLoader;
 
 
 var MemoryMatch = {
-    GameVersion: "1.0.60",
+    GameVersion: "1.0.61",
     platform: "unknown",
     locale: "en-US",
     debugMode: true,
@@ -734,16 +734,30 @@ var MemoryMatch = {
         }
         MemoryMatch.LevelIntroduction.setup(MemoryMatch.stage, MemoryMatch.levelIntroductionClosed.bind(MemoryMatch), MemoryMatch.gameId, MemoryMatch.gameLevel, gameNumber);
         MemoryMatch.LevelIntroduction.buildScreen(true);
-        MemoryMatch.UserData.setUserTipSeen(MemoryMatch.gameLevel);
+        MemoryMatch.setUserTipSeenForLevel(MemoryMatch.gameLevel);
         MemoryMatch.UserData.flush();
     },
 
     shouldShowLevelIntroduction: function (gameLevel) {
-        var userNotHasSeenLevelIntro = false,
+
+        // Tip ids are mapped from game ids, assuming a comprehensive tip system would have more than one tip per level.
+
+        var userNotHasSeenLevelIntro,
             gameTipId = MemoryMatch.GameSetup.levels[gameLevel - 1].tipId;
 
         userNotHasSeenLevelIntro = ! MemoryMatch.UserData.isUserTipSeen(gameTipId);
         return userNotHasSeenLevelIntro;
+    },
+
+    setUserTipSeenForLevel: function (gameLevel) {
+        var isSet = false,
+            gameTipId = MemoryMatch.GameSetup.levels[gameLevel - 1].tipId;
+
+        if (gameTipId != null) {
+            MemoryMatch.UserData.setUserTipSeen(gameTipId);
+            isSet = true;
+        }
+        return isSet;
     },
 
     getNextGameLevel: function () {
@@ -2980,7 +2994,7 @@ var MemoryMatch = {
 
 
 
-// TODO: Remove before release
+//  TODO: Remove before release. Use this to force Win scenario GameComplete screen.
 //                    MemoryMatch.userBeatAllChallengesFirstTime = true;
 
 
@@ -3307,7 +3321,7 @@ var MemoryMatch = {
 
     resetUserData: function () {
 
-        // Reset the user data to initial conditions. Current user will lose everything!
+        // Reset the user data to initial conditions. Current user will lose everything and start the game as if for the first time!
 
         var levelNumber,
             userDataObject = MemoryMatch.UserData.getUserDataObject(),
@@ -3321,6 +3335,7 @@ var MemoryMatch = {
             }
         }
         MemoryMatch.UserData.clearAllUserAchievements();
+        MemoryMatch.UserData.clearAllUserTips();
         userDataObject['audioMute'] = this.audioMute; // keep the Audio setting
         userDataObject['beatAllChallenges'] = false;
         userDataObject['numberOfGamesPlayed'] = 0;
