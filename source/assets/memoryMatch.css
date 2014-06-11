@@ -106,14 +106,14 @@ body {
 }
 
 #helpContent {
-    height: 1500px;
+    height: 860px;
     position: absolute;
     overflow-y: scroll;
     padding-left: 20px;
     font-family: SohoStd-BoldItalic, Arial, sans-serif;
     text-align: left;
     font-size: 32px;
-    color: #050608;
+    color: #ffffff;
 }
 
 #helpArea {
@@ -122,12 +122,22 @@ body {
     position: fixed;
     visibility: hidden;
     width: 1200px;
-    height: 750px;
+    height: 860px;
     margin-top: 32px;
     margin-bottom: 60px;
 }
 
-#helpContent a, a:link, a:hover, a:visited {
-    color: #CCCCCC;
+#helpContent a, a:link, a:visited {
+    color: #f0f0f0;
     text-decoration: none;
+}
+
+#helpContent a:hover {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+#helpContent h1 {
+    color: #ffffff;
+    font-size: 48px;
 }
