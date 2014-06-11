@@ -13,6 +13,7 @@ var MemoryMatch = {
     platform: "unknown",
     locale: "en-US",
     debugMode: true,
+    isTouchDevice: false,
     minimumSplashScreenDisplayTime: 2000,
     enginesis: null,
     debugQueue: [],
@@ -244,7 +245,9 @@ var MemoryMatch = {
 
         // create a new stage and point it at our canvas:
         this.stage = new createjs.Stage(canvas);
-//        this.stage.enableMouseOver(10); // removing mouseover for now as it is a performance burden
+        if ( ! MemoryMatch.isTouchDevice) {
+            this.stage.enableMouseOver(10); // detecting mouseover is a performance drain, so only do it if we need it
+        }
         createjs.Touch.enable(this.stage, true, false);
 
         this.showBackgroundImage(canvas);
@@ -3005,15 +3008,6 @@ var MemoryMatch = {
             earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.THREESTAR) | earnedAchievement;
         }
         if (MemoryMatch.isChallengeGame) {
-
-
-
-//  TODO: Remove before release. Use this to force Win scenario GameComplete screen.
-//                    MemoryMatch.userBeatAllChallengesFirstTime = true;
-
-
-
-
             if (MemoryMatch.challengePassed()) {
                 MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.WIN;
                 if ( ! MemoryMatch.userBeatAllChallenges) {
@@ -4406,6 +4400,11 @@ var MemoryMatch = {
     setPlatform: function () {
         MemoryMatch.platform = navigator.platform;
         MemoryMatch.locale = navigator.language;
+        if (Modernizr != null && Modernizr.touch != null) {
+            MemoryMatch.isTouchDevice = Modernizr.touch;
+        } else {
+            MemoryMatch.isTouchDevice = false;
+        }
     },
 
     getSpriteFrameSize: function (spriteSheet, spriteFrame) {

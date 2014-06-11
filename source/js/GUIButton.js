@@ -50,8 +50,10 @@ MemoryMatch.GUIButton = function (parameters) {
     guiButton.buttonBaseDown = null;
     guiButton.buttonBaseDisabled = null;
     guiButton.buttonBaseColor = null;
+    guiButton.buttonBaseRollOverColor = null;
     guiButton.spriteSheet = guiButton.spriteData;
     guiButton.buttonColorFilter = null;
+    guiButton.buttonRollOverColorFilter = null;
     guiButton.refreshParent = null;
     guiButton.flashingTimerId = null;
     guiButton.flashingCounter = null;
@@ -88,6 +90,9 @@ MemoryMatch.GUIButton = function (parameters) {
             }
             if (parameters.buttonBaseColor != null) {
                 guiButton.buttonBaseColor = parameters.buttonBaseColor;
+            }
+            if (parameters.buttonBaseRollOverColor != null) {
+                guiButton.buttonBaseRollOverColor = parameters.buttonBaseRollOverColor;
             }
             if (parameters.icon != null) {
                 guiButton.buttonFaceActive = parameters.icon;
@@ -161,6 +166,10 @@ MemoryMatch.GUIButton = function (parameters) {
             this.buttonColorFilter = new createjs.ColorFilter(0, 0, 0, 1, buttonColor[0], buttonColor[1], buttonColor[2], 0);
             this.buttonSprite.filters = [this.buttonColorFilter];
             this.buttonSprite.cache(0, 0, buttonSize.width, buttonSize.height);
+            if (this.buttonBaseRollOverColor != null) {
+                buttonColor = MemoryMatch.htmlColorStringToColorArray(this.buttonBaseRollOverColor);
+                this.buttonRollOverColorFilter = new createjs.ColorFilter(0, 0, 0, 1, buttonColor[0], buttonColor[1], buttonColor[2], 0);
+            }
         }
         if ( ! this.disabled) {
             this.setEnabled(true);
@@ -259,6 +268,10 @@ MemoryMatch.GUIButton = function (parameters) {
                 this._isPressed = true;
                 spriteFrameBase = this.buttonBaseDown;
                 spriteFrameIcon = this.buttonFaceDown;
+                if (this.buttonBaseRollOverColor != null) {
+                    this.buttonSprite.filters = [this.buttonRollOverColorFilter];
+                    this.buttonSprite.updateCache();
+                }
                 break;
             case "rollover":
                 if (this._isPressed) {
@@ -277,6 +290,10 @@ MemoryMatch.GUIButton = function (parameters) {
                 } else {
                     spriteFrameBase = this.buttonBaseActive;
                     spriteFrameIcon = this.buttonFaceActive;
+                }
+                if (this.buttonBaseRollOverColor != null && this.buttonBaseColor != null) {
+                    this.buttonSprite.filters = [this.buttonColorFilter];
+                    this.buttonSprite.updateCache();
                 }
                 clicked = true;
                 break;
@@ -300,9 +317,6 @@ MemoryMatch.GUIButton = function (parameters) {
         if (this.refreshParent != null && this.refreshParent.refreshCache != null) {
             this.refreshParent.refreshCache();
         }
-//        if (clicked) {
-//            this.onClicked(event);
-//        }
     };
 
     guiButton.onClicked = function (event) {
@@ -401,6 +415,7 @@ MemoryMatch.GUIButton = function (parameters) {
             this.flashingTimerId = null;
         }
         this.buttonColorFilter = null;
+        this.buttonRollOverColorFilter = null;
         this.removeAllEventListeners();
         this.removeAllChildren();
         this.shadowSource = null;

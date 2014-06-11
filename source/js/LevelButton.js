@@ -33,8 +33,10 @@ MemoryMatch.LevelButton = function (parameters) {
     levelButton.nextYPosition = 0;
     levelButton.primaryColor = 'ffffff';
     levelButton.secondaryColor = '000000';
+    levelButton.liteColor = 'C0C0C0';
     levelButton.buttonPrimaryColorFilter = null;
     levelButton.buttonSecondaryColorFilter = null;
+    levelButton.changeEventNotification = null;
 
 
     levelButton.setParameters = function (parameters) {
@@ -63,6 +65,9 @@ MemoryMatch.LevelButton = function (parameters) {
             if (parameters.secondaryColor != null) {
                 levelButton.secondaryColor = parameters.secondaryColor;
             }
+            if (parameters.liteColor != null) {
+                levelButton.liteColor = parameters.liteColor;
+            }
             if (parameters.scale != null) {
                 levelButton.buttonScale = parameters.scale;
             }
@@ -78,6 +83,9 @@ MemoryMatch.LevelButton = function (parameters) {
             }
             if (parameters.callback != null) {
                 levelButton.callback = parameters.callback;
+            }
+            if (parameters.changeEventNotification != null) {
+                levelButton.changeEventNotification = parameters.changeEventNotification;
             }
         }
     }
@@ -228,7 +236,7 @@ MemoryMatch.LevelButton = function (parameters) {
                 star.visible = showStar;
             }
         }
-        this.updateCache();
+        this.changeEvent();
     };
 
     levelButton.removeStars = function () {
@@ -246,11 +254,15 @@ MemoryMatch.LevelButton = function (parameters) {
     levelButton.createButton = function () {
         var spriteFrameBase = null, // a reference sprite frame, they should all be the same size
             spriteFrameRing,
+            spriteFrameRingOver,
             spriteFrameCircle,
+            spriteFrameCircleOver,
             gameButton,
             buttonRing,
+            rollOverFrame,
             spriteWidth,
             spriteHeight,
+            hitArea,
             buttonPrimaryColor = MemoryMatch.htmlColorStringToColorArray(this.primaryColor),
             buttonSecondaryColor = MemoryMatch.htmlColorStringToColorArray(this.secondaryColor);
 
@@ -261,9 +273,12 @@ MemoryMatch.LevelButton = function (parameters) {
             spriteFrameBase = 'bossBase';
             spriteFrameCircle = 'bossCircle';
             spriteFrameRing = 'bossRing';
+            spriteFrameRingOver = 'bossRingOver';
         } else {
             spriteFrameBase = 'levelSelectCircle';
+//            spriteFrameCircleOver = 'levelSelectCircleOver';
             spriteFrameRing = 'levelSelectRing';
+            spriteFrameRingOver = 'levelSelectRingOver';
             spriteFrameCircle = null;
         }
         spriteWidth = MemoryMatch.GameSetup.mapSpritesheetFrames.frames[MemoryMatch.GameSetup.mapSpritesheetFrames.animations[spriteFrameBase][0]][2] * this.buttonScale;
@@ -299,6 +314,16 @@ MemoryMatch.LevelButton = function (parameters) {
         buttonRing.visible = ! (this.isLocked || ! this.wasPlayed) || this.isChallengeGame;
         this.addChild(buttonRing);
 
+        rollOverFrame = new createjs.Sprite(this.spriteData, spriteFrameRingOver);
+        rollOverFrame.setTransform(this.width * 0.5, this.nextYPosition, this.buttonScale, this.buttonScale, 0, 0, 0, spriteWidth * 0.5, 0);
+        rollOverFrame.visible = false;
+        rollOverFrame.name = 'rollover';
+        if (this.isChallengeGame) {
+            rollOverFrame.filters = [this.buttonPrimaryColorFilter];
+            rollOverFrame.cache(0, 0, spriteWidth, spriteHeight);
+        }
+        this.addChild(rollOverFrame);
+
         this.nextYPosition += spriteHeight;
         levelButton.createLockIcon();
         if (this.isChallengeGame) {
@@ -306,10 +331,12 @@ MemoryMatch.LevelButton = function (parameters) {
         }
         levelButton.createGameNumberText();
         levelButton.createBestScoreText();
-        levelButton.cursor = 'pointer';
         levelButton.cache(0, 0, this.width, this.height);
+        hitArea = new createjs.Shape();
+        hitArea.graphics.beginFill("#ff0000").drawRect(0, 0, this.width, this.height);
+        levelButton.hitArea = hitArea;
         if ( ! this.isLocked) {
-            this.addEventListener("click", this.onLevelSelect);
+            this.setEnabled(true);
         }
     };
 
@@ -319,8 +346,12 @@ MemoryMatch.LevelButton = function (parameters) {
     };
 
     levelButton.onLevelSelect = function (event) {
+        var that;
         if (event != null && event.target != null) {
-            var that = event.target.parent;
+            that = event.target;
+            if (that.callback == null) {
+                that = event.target.parent;
+            }
             if (that.callback != null) {
                 MemoryMatch.triggerSoundFx("soundTap");
                 that.callback(that.gameNumber);
@@ -328,9 +359,35 @@ MemoryMatch.LevelButton = function (parameters) {
         }
     };
 
+    levelButton.onRollover = function (event) {
+        var rollOverFrame = this.getChildByName('rollover'),
+            gameNumberText = this.getChildByName('gameNumber');
+
+        if (rollOverFrame != null) {
+            rollOverFrame.visible = true;
+        }
+        if (gameNumberText != null) {
+            gameNumberText.color = this.liteColor;
+        }
+        this.changeEvent();
+    };
+
+    levelButton.onRollout = function (event) {
+        var rollOverFrame = this.getChildByName('rollover'),
+            gameNumberText = this.getChildByName('gameNumber');
+
+        if (rollOverFrame != null) {
+            rollOverFrame.visible = false;
+        }
+        if (gameNumberText != null) {
+            gameNumberText.color = this.isChallengeGame ? this.primaryColor : MemoryMatch.GameSetup.mapLevelColor;
+        }
+        this.changeEvent();
+    };
+
     levelButton.show = function (showFlag) {
         this.visible = showFlag;
-        this.updateCache();
+        this.changeEvent();
     };
 
     levelButton.setGameNumber = function (gameNumber) {
@@ -384,7 +441,6 @@ MemoryMatch.LevelButton = function (parameters) {
         if (this.gameNumber == 1 || this.wasPlayed) {
             this.isLocked = false;
         }
-        this.removeEventListener("click", this.onLevelSelect);
         if (this.isChallengeGame) {
             gemIcon = this.getChildByName("award");
             if (gemIcon != null) {
@@ -392,12 +448,13 @@ MemoryMatch.LevelButton = function (parameters) {
             }
         }
         if (this.isLocked) {
+            this.setEnabled(false);
             lockIcon.visible = true;
             bestScoreField.visible = false;
             gameNumberText.visible = false;
             buttonRing.visible = false;
         } else {
-            this.addEventListener("click", this.onLevelSelect);
+            this.setEnabled(true);
             lockIcon.visible = false;
             if (this.wasPlayed) {
                 if (this.isChallengeGame && this.userBeatChallenge) { // challenge game and user passed challenge
@@ -427,11 +484,25 @@ MemoryMatch.LevelButton = function (parameters) {
             this.setStarsEarned(this.starsEarned);
         }
         this.bestScore = this.bestScore;
-        this.updateCache();
+        this.changeEvent();
     };
 
+    levelButton.setEnabled = function (enableFlag) {
+        if (enableFlag) {
+            levelButton.cursor = 'pointer';
+            this.addEventListener("click", this.onLevelSelect);
+            this.addEventListener("rollover", this.onRollover.bind(this));
+            this.addEventListener("rollout", this.onRollout.bind(this));
+        } else {
+            levelButton.cursor = null;
+            this.removeEventListener("click", this.onLevelSelect);
+            this.removeEventListener("rollover", this.onRollover.bind(this));
+            this.removeEventListener("rollout", this.onRollout.bind(this));
+        }
+    }
+
     levelButton.kill = function () {
-        this.removeEventListener("click", this.onLevelSelect);
+        this.setEnabled(false);
         levelButton.shadowSource = null;
         levelButton.callback = null;
         levelButton.spriteData = null;
@@ -440,6 +511,13 @@ MemoryMatch.LevelButton = function (parameters) {
 
     levelButton.toString = function() {
         return "[LevelButton] gameNumber: " + levelButton.gameNumber.toString();
+    };
+
+    levelButton.changeEvent = function () {
+        this.updateCache();
+        if (this.changeEventNotification != null) {
+            this.changeEventNotification();
+        }
     };
 
     levelButton.setParameters(parameters);

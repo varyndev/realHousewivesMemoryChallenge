@@ -177,17 +177,18 @@ MemoryMatch.GameComplete = {
             buttonMargin = 42 * MemoryMatch.stageScaleFactor,
             gameButton,
             buttonBaseColor = MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].liteColor,
+            buttonRollOverColor = MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].secondaryColor,
             buttonTagCounter = 0,
             xOffset = (this.backgroundWidth - (buttonWidth + buttonMargin + buttonWidth)) * 0.5,
             yOffset = this.backgroundHeight * 0.75;
 
-        gameButton = MemoryMatch.GUIButton({name: "home", tag: ++ buttonTagCounter, disabled: false, callback: this.onClickHome.bind(this), baseUp: spriteFrame, buttonBaseColor: buttonBaseColor, iconUp: "gameOverMenuIcon", iconOver: "gameOverMenuDownIcon", iconDown: "gameOverMenuDownIcon"});
+        gameButton = MemoryMatch.GUIButton({name: "home", tag: ++ buttonTagCounter, disabled: false, callback: this.onClickHome.bind(this), baseUp: spriteFrame, buttonBaseColor: buttonBaseColor, buttonBaseRollOverColor: buttonRollOverColor, iconUp: "gameOverMenuIcon", iconOver: "gameOverMenuDownIcon", iconDown: "gameOverMenuDownIcon"});
         gameButton.setTransform(xOffset, yOffset, buttonScale, buttonScale);
         this.groupDisplayObject.addChild(gameButton);
         this.buttonInstances.push(gameButton);
 
         xOffset += buttonWidth + buttonMargin;
-        gameButton = MemoryMatch.GUIButton({name: "share", tag: ++ buttonTagCounter, disabled: false, callback: this.onClickShare.bind(this), baseUp: spriteFrame, buttonBaseColor: buttonBaseColor, iconUp: "gameOverShareIcon", iconOver: "gameOverShareDownIcon", iconDown: "gameOverShareDownIcon"});
+        gameButton = MemoryMatch.GUIButton({name: "share", tag: ++ buttonTagCounter, disabled: false, callback: this.onClickShare.bind(this), baseUp: spriteFrame, buttonBaseColor: buttonBaseColor, buttonBaseRollOverColor: buttonRollOverColor, iconUp: "gameOverShareIcon", iconOver: "gameOverShareDownIcon", iconDown: "gameOverShareDownIcon"});
         gameButton.setTransform(xOffset, yOffset, buttonScale, buttonScale);
         this.groupDisplayObject.addChild(gameButton);
         this.buttonInstances.push(gameButton);

@@ -339,7 +339,8 @@ MemoryMatch.GameOptions = {
             xOffset,
             yOffset,
             buttonGap,
-            buttonBaseColor = MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].liteColor;
+            buttonBaseColor = MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].liteColor,
+            buttonRollOverColor = MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].secondaryColor;
 
         // Close button always shows in its own special place
         buttonTagCounter ++;
@@ -362,7 +363,7 @@ MemoryMatch.GameOptions = {
         // Audio button always shows but we need to set the correct state
         buttonTagCounter ++;
         muted = createjs.Sound.getMute();
-        gameButton = MemoryMatch.GUIButton({name: "audioOn", tag: buttonTagCounter, disabled: false, callback: this.onClickAudio.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, iconUp: "optionsSmallSoundOnIcon", iconOver: "optionsSmallSoundOnDownIcon", iconDown: "optionsSmallSoundOnDownIcon"});
+        gameButton = MemoryMatch.GUIButton({name: "audioOn", tag: buttonTagCounter, disabled: false, callback: this.onClickAudio.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, buttonBaseRollOverColor: buttonRollOverColor, iconUp: "optionsSmallSoundOnIcon", iconOver: "optionsSmallSoundOnDownIcon", iconDown: "optionsSmallSoundOnDownIcon"});
         gameButton.setTransform(xOffset, yOffset, 1, 1);
         gameButton.visible = ! muted;
         gameButton.setEnabled( ! muted);
@@ -371,7 +372,7 @@ MemoryMatch.GameOptions = {
         this.buttonInstances.push(gameButton);
 
         buttonTagCounter ++;
-        gameButton = MemoryMatch.GUIButton({name: "audioOff", tag: buttonTagCounter, disabled: false, callback: this.onClickAudio.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, iconUp: "optionsSmallSoundOffIcon", iconOver: "optionsSmallSoundOffDownIcon", iconDown: "optionsSmallSoundOffDownIcon"});
+        gameButton = MemoryMatch.GUIButton({name: "audioOff", tag: buttonTagCounter, disabled: false, callback: this.onClickAudio.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, buttonBaseRollOverColor: buttonRollOverColor, iconUp: "optionsSmallSoundOffIcon", iconOver: "optionsSmallSoundOffDownIcon", iconDown: "optionsSmallSoundOffDownIcon"});
         gameButton.setTransform(xOffset, yOffset, 1, 1);
         gameButton.visible = muted;
         gameButton.setEnabled(muted);
@@ -383,7 +384,7 @@ MemoryMatch.GameOptions = {
             // Show Map button
             buttonTagCounter ++;
             yOffset += buttonSize.height + buttonMargin;
-            gameButton = MemoryMatch.GUIButton({name: "home", tag: buttonTagCounter, disabled: false, callback: this.onClickHome.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, iconUp: "optionsSmallMenuIcon", iconOver: "optionsSmallMenuDownIcon", iconDown: "optionsSmallMenuDownIcon"});
+            gameButton = MemoryMatch.GUIButton({name: "home", tag: buttonTagCounter, disabled: false, callback: this.onClickHome.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, buttonBaseRollOverColor: buttonRollOverColor, iconUp: "optionsSmallMenuIcon", iconOver: "optionsSmallMenuDownIcon", iconDown: "optionsSmallMenuDownIcon"});
             gameButton.setTransform(xOffset, yOffset, 1, 1);
             buttonsGroup.addChild(gameButton);
             this.buttonInstances.push(gameButton);
@@ -391,14 +392,14 @@ MemoryMatch.GameOptions = {
             // Show small Credits button
             buttonTagCounter ++;
             yOffset += buttonSize.height + buttonMargin;
-            gameButton = MemoryMatch.GUIButton({name: "credits", tag: buttonTagCounter, disabled: false, callback: this.onClickCredits.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, iconUp: "optionsSmallCreditIcon", iconOver: "optionsSmallCreditDownIcon", iconDown: "optionsSmallCreditDownIcon"});
+            gameButton = MemoryMatch.GUIButton({name: "credits", tag: buttonTagCounter, disabled: false, callback: this.onClickCredits.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, buttonBaseRollOverColor: buttonRollOverColor, iconUp: "optionsSmallCreditIcon", iconOver: "optionsSmallCreditDownIcon", iconDown: "optionsSmallCreditDownIcon"});
             gameButton.setTransform(xOffset, yOffset, 1, 1);
             buttonsGroup.addChild(gameButton);
             this.buttonInstances.push(gameButton);
 
             // Show Help button
             buttonTagCounter ++;
-            gameButton = MemoryMatch.GUIButton({name: "help", tag: buttonTagCounter, disabled: false, callback: this.onClickHelp.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, iconUp: "optionsSmallHelpIcon", iconOver: "optionsSmallHelpDownIcon", iconDown: "optionsSmallHelpDownIcon"});
+            gameButton = MemoryMatch.GUIButton({name: "help", tag: buttonTagCounter, disabled: false, callback: this.onClickHelp.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, buttonBaseRollOverColor: buttonRollOverColor, iconUp: "optionsSmallHelpIcon", iconOver: "optionsSmallHelpDownIcon", iconDown: "optionsSmallHelpDownIcon"});
             buttonSize = gameButton.getSize();
             xOffset = groupWidth - buttonSize.width;
             yOffset = 0;
@@ -408,7 +409,7 @@ MemoryMatch.GameOptions = {
 
             // Show Restart (Replay) button
             buttonTagCounter ++;
-            gameButton = MemoryMatch.GUIButton({name: "restart", tag: buttonTagCounter, disabled: false, callback: this.onClickRestart.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, iconUp: "optionsSmallReplayIcon", iconOver: "optionsSmallReplayDownIcon", iconDown: "optionsSmallReplayDownIcon"});
+            gameButton = MemoryMatch.GUIButton({name: "restart", tag: buttonTagCounter, disabled: false, callback: this.onClickRestart.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, buttonBaseRollOverColor: buttonRollOverColor, iconUp: "optionsSmallReplayIcon", iconOver: "optionsSmallReplayDownIcon", iconDown: "optionsSmallReplayDownIcon"});
             yOffset += buttonSize.height + buttonMargin;
             gameButton.setTransform(xOffset, yOffset, 1, 1);
             buttonsGroup.addChild(gameButton);
@@ -416,7 +417,7 @@ MemoryMatch.GameOptions = {
 
             // Show fullscreen button
             buttonTagCounter ++;
-            gameButton = MemoryMatch.GUIButton({name: "fullscreen", tag: buttonTagCounter, disabled: false, callback: this.onClickFullScreen.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, iconUp: "optionsSmallFullScreenIcon", iconOver: "optionsSmallFullScreenDownIcon", iconDown: "optionsSmallFullScreenDownIcon"});
+            gameButton = MemoryMatch.GUIButton({name: "fullscreen", tag: buttonTagCounter, disabled: false, callback: this.onClickFullScreen.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, buttonBaseRollOverColor: buttonRollOverColor, iconUp: "optionsSmallFullScreenIcon", iconOver: "optionsSmallFullScreenDownIcon", iconDown: "optionsSmallFullScreenDownIcon"});
             yOffset += buttonSize.height + buttonMargin;
             gameButton.setTransform(xOffset, yOffset, 1, 1);
             buttonsGroup.addChild(gameButton);
@@ -425,7 +426,7 @@ MemoryMatch.GameOptions = {
             // Show View Stats button
             buttonTagCounter ++;
             yOffset += buttonSize.height + buttonMargin;
-            gameButton = MemoryMatch.GUIButton({name: "viewstats", tag: buttonTagCounter, disabled: false, callback: this.onClickViewStats.bind(this), baseUp: "optionsLargeButtonBase", buttonBaseColor: buttonBaseColor, text: "View Stats", iconUp: "optionsLargeAwardsIcon", iconOver: "optionsLargeAwardsDownIcon", iconDown: "optionsLargeAwardsDownIcon"});
+            gameButton = MemoryMatch.GUIButton({name: "viewstats", tag: buttonTagCounter, disabled: false, callback: this.onClickViewStats.bind(this), baseUp: "optionsLargeButtonBase", buttonBaseColor: buttonBaseColor, buttonBaseRollOverColor: buttonRollOverColor, text: "View Stats", iconUp: "optionsLargeAwardsIcon", iconOver: "optionsLargeAwardsDownIcon", iconDown: "optionsLargeAwardsDownIcon"});
             gameButton.setTransform(xOffset, yOffset, 1, 1);
             buttonsGroup.addChild(gameButton);
             this.buttonInstances.push(gameButton);
@@ -433,14 +434,14 @@ MemoryMatch.GameOptions = {
             // Show Clear Stats button
             buttonTagCounter ++;
             yOffset += buttonSize.height + buttonMargin;
-            gameButton = MemoryMatch.GUIButton({name: "clearstats", tag: buttonTagCounter, disabled: false, callback: this.onClickClearStats.bind(this), baseUp: "optionsLargeButtonBase", buttonBaseColor: buttonBaseColor, text: "Clear Stats", iconUp: "optionsLargeClearIcon", iconOver: "optionsLargeClearDownIcon", iconDown: "optionsLargeClearDownIcon"});
+            gameButton = MemoryMatch.GUIButton({name: "clearstats", tag: buttonTagCounter, disabled: false, callback: this.onClickClearStats.bind(this), baseUp: "optionsLargeButtonBase", buttonBaseColor: buttonBaseColor, buttonBaseRollOverColor: buttonRollOverColor, text: "Clear Stats", iconUp: "optionsLargeClearIcon", iconOver: "optionsLargeClearDownIcon", iconDown: "optionsLargeClearDownIcon"});
             gameButton.setTransform(xOffset, yOffset, 1, 1);
             buttonsGroup.addChild(gameButton);
             this.buttonInstances.push(gameButton);
 
             // Show small Help button
             buttonTagCounter ++;
-            gameButton = MemoryMatch.GUIButton({name: "help", tag: buttonTagCounter, disabled: false, callback: this.onClickHelp.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, iconUp: "optionsSmallHelpIcon", iconOver: "optionsSmallHelpDownIcon", iconDown: "optionsSmallHelpDownIcon"});
+            gameButton = MemoryMatch.GUIButton({name: "help", tag: buttonTagCounter, disabled: false, callback: this.onClickHelp.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, buttonBaseRollOverColor: buttonRollOverColor, iconUp: "optionsSmallHelpIcon", iconOver: "optionsSmallHelpDownIcon", iconDown: "optionsSmallHelpDownIcon"});
             buttonSize = gameButton.getSize();
             xOffset = groupWidth - buttonSize.width;
             yOffset = 0;
@@ -456,14 +457,14 @@ MemoryMatch.GameOptions = {
 
             // Show small Full screen button
             buttonTagCounter ++;
-            gameButton = MemoryMatch.GUIButton({name: "fullscreen", tag: buttonTagCounter, disabled: false, callback: this.onClickFullScreen.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, iconUp: "optionsSmallFullScreenIcon", iconOver: "optionsSmallFullScreenDownIcon", iconDown: "optionsSmallFullScreenDownIcon"});
+            gameButton = MemoryMatch.GUIButton({name: "fullscreen", tag: buttonTagCounter, disabled: false, callback: this.onClickFullScreen.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, buttonBaseRollOverColor: buttonRollOverColor, iconUp: "optionsSmallFullScreenIcon", iconOver: "optionsSmallFullScreenDownIcon", iconDown: "optionsSmallFullScreenDownIcon"});
             gameButton.setTransform(xOffset, yOffset, 1, 1);
             buttonsGroup.addChild(gameButton);
             this.buttonInstances.push(gameButton);
 
             // Show small Share button
             buttonTagCounter ++;
-            gameButton = MemoryMatch.GUIButton({name: "share", tag: buttonTagCounter, disabled: false, callback: this.onClickShare.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, iconUp: "gameOverShareIcon", iconOver: "gameOverShareDownIcon", iconDown: "gameOverShareDownIcon"});
+            gameButton = MemoryMatch.GUIButton({name: "share", tag: buttonTagCounter, disabled: false, callback: this.onClickShare.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, buttonBaseRollOverColor: buttonRollOverColor, iconUp: "gameOverShareIcon", iconOver: "gameOverShareDownIcon", iconDown: "gameOverShareDownIcon"});
             yOffset += buttonSize.height + buttonMargin;
             gameButton.setTransform(xOffset, yOffset, 1, 1);
             buttonsGroup.addChild(gameButton);
@@ -471,7 +472,7 @@ MemoryMatch.GameOptions = {
 
             // Show small Credits button
             buttonTagCounter ++;
-            gameButton = MemoryMatch.GUIButton({name: "credits", tag: buttonTagCounter, disabled: false, callback: this.onClickCredits.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, iconUp: "optionsSmallCreditIcon", iconOver: "optionsSmallCreditDownIcon", iconDown: "optionsSmallCreditDownIcon"});
+            gameButton = MemoryMatch.GUIButton({name: "credits", tag: buttonTagCounter, disabled: false, callback: this.onClickCredits.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, buttonBaseRollOverColor: buttonRollOverColor, iconUp: "optionsSmallCreditIcon", iconOver: "optionsSmallCreditDownIcon", iconDown: "optionsSmallCreditDownIcon"});
             yOffset += buttonSize.height + buttonMargin;
             gameButton.setTransform(xOffset, yOffset, 1, 1);
             buttonsGroup.addChild(gameButton);

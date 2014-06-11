@@ -210,6 +210,7 @@ MemoryMatch.MainMenu = {
             buttonScale,
             primaryColor,
             secondaryColor,
+            liteColor,
             gameScoresCollection,
             gameScoreData,
             totalGamesPlayed,
@@ -225,6 +226,7 @@ MemoryMatch.MainMenu = {
             landNumber = landIndex + 1;
             primaryColor = levelData[landIndex].primaryColor;
             secondaryColor = levelData[landIndex].secondaryColor;
+            liteColor = levelData[landIndex].liteColor;
             gameScoresCollection = MemoryMatch.UserData.getLevelDataItem(landNumber, "levelScoreCollection");
             gamesUnlocked = gameScoresCollection.length;
             buttonBeforeThisOne = null;
@@ -255,7 +257,7 @@ MemoryMatch.MainMenu = {
                     starsEarned = 0;
                 }
                 buttonScale = 1;
-                levelButton = MemoryMatch.LevelButton({gameNumber: levelNumber, landNumber: landNumber, starsEarned: starsEarned, bestScore: bestScore, wasPlayed: wasPlayed, isLocked: isLocked, isChallengeGame: false, primaryColor: primaryColor, secondaryColor: secondaryColor, scale: buttonScale, callback:this.onContinue.bind(this)});
+                levelButton = MemoryMatch.LevelButton({gameNumber: levelNumber, landNumber: landNumber, starsEarned: starsEarned, bestScore: bestScore, wasPlayed: wasPlayed, isLocked: isLocked, isChallengeGame: false, primaryColor: primaryColor, secondaryColor: secondaryColor, liteColor: liteColor, scale: buttonScale, callback:this.onContinue.bind(this), changeEventNotification:this.changeEvent.bind(this)});
                 levelButton.x = levelMapPosition.x * MemoryMatch.stageScaleFactor;
                 levelButton.y = levelMapPosition.y * MemoryMatch.stageScaleFactor;
                 levelButton.name = this.makeLevelButtonName(landNumber, levelNumber);
@@ -290,7 +292,7 @@ MemoryMatch.MainMenu = {
                 bestScore = 0;
                 starsEarned = 0;
             }
-            levelButton = MemoryMatch.LevelButton({gameNumber: levelNumber, landNumber: landNumber, starsEarned: starsEarned, bestScore: bestScore, wasPlayed: wasPlayed, isLocked: isLocked, isChallengeGame: true, primaryColor: primaryColor, secondaryColor: secondaryColor, scale: buttonScale, callback:this.onContinue.bind(this)});
+            levelButton = MemoryMatch.LevelButton({gameNumber: levelNumber, landNumber: landNumber, starsEarned: starsEarned, bestScore: bestScore, wasPlayed: wasPlayed, isLocked: isLocked, isChallengeGame: true, primaryColor: primaryColor, secondaryColor: secondaryColor, liteColor: liteColor, scale: buttonScale, callback:this.onContinue.bind(this), changeEventNotification:this.changeEvent.bind(this)});
             levelButton.x = levelMapPosition.x * MemoryMatch.stageScaleFactor;
             levelButton.y = levelMapPosition.y * MemoryMatch.stageScaleFactor;
             levelButton.name = this.makeLevelButtonName(landNumber, levelNumber);
@@ -433,6 +435,11 @@ MemoryMatch.MainMenu = {
 
     isShowing: function () {
         return this.groupDisplayObject != null && this.groupDisplayObject.visible;
+    },
+
+    changeEvent: function () {
+        // provide a notification event if a child makes a display change so we can update our cache
+        this.groupDisplayObject.updateCache();
     },
 
     makeLevelButtonName: function (landNumber, levelNumber) {
