@@ -477,6 +477,7 @@ var MemoryMatch = {
         if (  (MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.CHAINS
             || MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.EYESPY
             || MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.MONTE
+            || MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.PATTERN
             || MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.HAYSTACK)
         && MemoryMatch.gamePlayState == MemoryMatch.GAMEPLAYSTATE.BOARD_SETUP) {
             MemoryMatch.replayCurrentGame();
@@ -2599,13 +2600,15 @@ var MemoryMatch = {
         var i,
             card;
 
-        for (i = 0; i < MemoryMatch.allCardsOnBoard.length; i ++) {
-            card = MemoryMatch.allCardsOnBoard[i];
-            if (showFlag && card.state == MemoryMatch.CARDSTATE.DOWN) {
-                card.flip();
-            } else if ( ! showFlag && card.state == MemoryMatch.CARDSTATE.UP){
-                card.unselect();
-                card.flipBack();
+        if (MemoryMatch.allCardsOnBoard != null) {
+            for (i = 0; i < MemoryMatch.allCardsOnBoard.length; i ++) {
+                card = MemoryMatch.allCardsOnBoard[i];
+                if (showFlag && card.state == MemoryMatch.CARDSTATE.DOWN) {
+                    card.flip();
+                } else if ( ! showFlag && card.state == MemoryMatch.CARDSTATE.UP){
+                    card.unselect();
+                    card.flipBack();
+                }
             }
         }
     },
@@ -3049,7 +3052,7 @@ var MemoryMatch = {
 
     restartGameRemoveCardThenRestart: function (card) {
         MemoryMatch.removeCardFromBoard(card);
-        MemoryMatch.replayLastGame();
+        window.setTimeout(MemoryMatch.replayLastGame.bind(MemoryMatch), 600); // need a delay to wait for the card fade-out animation to complete
     },
 
     gameOver: function () {
