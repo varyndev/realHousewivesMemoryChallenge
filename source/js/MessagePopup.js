@@ -16,8 +16,6 @@ MemoryMatch.MessagePopup = {
     backgroundCover: null,
     marginTop: 0,
     marginLeft: 0,
-    centerX: 0,
-    marginX: 0,
     lineHeight: 0,
     isEnabled: false,
     title: null,
@@ -25,7 +23,6 @@ MemoryMatch.MessagePopup = {
     closeButton: true,
     continueButton: false,
     domElement: null,
-    stateCompleteCallback: null,
     closeEventType: null,
     primaryColorFilter: null,
     secondaryColorFilter: null,
@@ -77,17 +74,16 @@ MemoryMatch.MessagePopup = {
         this.showBackgroundImage();
         this.marginTop = this.backgroundHeight * 0.05;
         this.marginLeft = this.backgroundWidth * 0.09;
-        this.centerX = this.backgroundWidth * 0.5;
-        this.marginX = 12 * MemoryMatch.stageScaleFactor;
         this.setupTitleText();
-        if (this.domElement != null) {
-            this.setupDOMElement();
-        } else {
+        if (this.domElement == null) {
             this.setupMessageText();
         }
         this.setupButtons();
         this.parentDisplayObject.addChild(this.groupDisplayObject);
         this.groupDisplayObject.setTransform(this.parentDisplayObject.canvas.width * 0.5, this.parentDisplayObject.canvas.height * 0.5, 1, 1, 0, 0, 0, this.backgroundWidth * 0.5, this.backgroundHeight * 0.5);
+        if (this.domElement != null) {
+            this.setupDOMElement(); // need to do this after the transformation
+        }
         if (autoStart == null) {
             autoStart = false;
         }
@@ -150,13 +146,15 @@ MemoryMatch.MessagePopup = {
     },
 
     showBackgroundImage: function () {
+
         // This method will scale the background image to fit the current stage if it is too big.
-        var canvas = this.parentDisplayObject.canvas;
-        var popupImageAsset = assetLoader.getResult("popup-bg");
-        var bgImage = new createjs.Bitmap(popupImageAsset);
-        var xScale;
-        var yScale;
-        var backgroundCover;
+
+        var canvas = this.parentDisplayObject.canvas,
+            popupImageAsset = assetLoader.getResult("popup-bg"),
+            bgImage = new createjs.Bitmap(popupImageAsset),
+            xScale,
+            yScale,
+            backgroundCover;
 
         if (popupImageAsset.width > canvas.width) {
             xScale = canvas.width / popupImageAsset.width;
@@ -189,22 +187,25 @@ MemoryMatch.MessagePopup = {
 
     setupDOMElement: function () {
         // Position a DOM element in the center of the popup. Expecting the element to be a div containing what we want to show.
-        // Register domElement to its center, you need to get that from the html/css, then position in center of popup
-        var pageElement = document.getElementById(this.domElement);
-        var domElement = new createjs.DOMElement(pageElement);
+        // Register domElement to its center
+        var pageElement = document.getElementById(this.domElement),
+            domElement = new createjs.DOMElement(pageElement),
+            scaleFactor = MemoryMatch.stageScaleFactor;
+
         if (domElement != null) {
-            domElement.regX = parseInt(pageElement.style.width) * 0.5;
-            domElement.regY = parseInt(pageElement.style.height) * 0.5;
-            domElement.x = this.marginLeft * 0.5;
-            domElement.y = this.marginTop;
-            domElement.scaleX = MemoryMatch.stageScaleFactor;
-            domElement.scaleY = MemoryMatch.stageScaleFactor;
+            if (scaleFactor < 0.5) {
+                // this is a complete hack. If the scale factor is less than 50% it is scaled too much (about 2x too much), so
+                // I am adjusting it on a random number that looks good while testing. No idea why this is happening or what the right number should be.
+                scaleFactor *= 1.5;
+            }
+            domElement.setTransform(this.marginLeft, this.backgroundHeight * 0.1, scaleFactor, scaleFactor, 0, 0, 0, 0, 0);
             this.groupDisplayObject.addChild(domElement);
         }
     },
 
     setupTitleText: function () {
         var titleTextField;
+
         titleTextField = new createjs.Text(this.title, MemoryMatch.getScaledFontSize(72) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColor);
         titleTextField.textAlign = "center";
         titleTextField.x = this.backgroundWidth * 0.5;
@@ -216,6 +217,7 @@ MemoryMatch.MessagePopup = {
 
     setupMessageText: function () {
         var titleTextField;
+
         titleTextField = new createjs.Text(this.message, MemoryMatch.getScaledFontSize(48) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         titleTextField.textAlign = "left";
         titleTextField.x = this.marginLeft;
@@ -285,8 +287,8 @@ MemoryMatch.MessagePopup = {
 
     killScreen: function () {
         // remove all display objects and object references:
-        var i;
-        var pageElement;
+        var i,
+            pageElement;
 
         this.primaryColorFilter = null;
         this.secondaryColorFilter = null;
