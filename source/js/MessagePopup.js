@@ -23,6 +23,7 @@ MemoryMatch.MessagePopup = {
     closeButton: true,
     continueButton: false,
     domElement: null,
+    noscale: false,
     closeEventType: null,
     primaryColorFilter: null,
     secondaryColorFilter: null,
@@ -53,6 +54,9 @@ MemoryMatch.MessagePopup = {
             }
             if (parameters.callback != null) {
                 this.stateCompleteCallback = parameters.callback;
+            }
+            if (parameters.noscale != null) {
+                this.noscale = parameters.noscale;
             }
         }
     },
@@ -190,15 +194,30 @@ MemoryMatch.MessagePopup = {
         // Register domElement to its center
         var pageElement = document.getElementById(this.domElement),
             domElement = new createjs.DOMElement(pageElement),
-            scaleFactor = MemoryMatch.stageScaleFactor;
+            scaleFactor = 1,
+            x,
+            y,
+            width,
+            height;
 
         if (domElement != null) {
-            if (scaleFactor < 0.5) {
-                // this is a complete hack. If the scale factor is less than 50% it is scaled too much (about 2x too much), so
-                // I am adjusting it on a random number that looks good while testing. No idea why this is happening or what the right number should be.
-                scaleFactor *= 1.5;
+            width = pageElement.clientWidth;
+            height = pageElement.clientHeight;
+            if ( ! this.noscale) {
+                scaleFactor = MemoryMatch.stageScaleFactor;
+                if (scaleFactor < 0.5) {
+                    // this is a complete hack. If the scale factor is less than 50% it is scaled too much (about 2x too much), so
+                    // I am adjusting it on a random number that looks good while testing. No idea why this is happening or what the right number should be.
+                    scaleFactor *= 1.3333;
+                }
+                width *= scaleFactor;
+                height *= scaleFactor;
+                x = this.backgroundWidth * 0.05;
+            } else {
+                x = (this.backgroundWidth - width) * 0.5;
             }
-            domElement.setTransform(this.marginLeft, this.backgroundHeight * 0.1, scaleFactor, scaleFactor, 0, 0, 0, 0, 0);
+            y = this.backgroundHeight * 0.08;
+            domElement.setTransform(x, y, scaleFactor, scaleFactor, 0, 0, 0, 0, 0);
             this.groupDisplayObject.addChild(domElement);
         }
     },

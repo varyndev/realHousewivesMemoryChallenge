@@ -404,13 +404,12 @@ var MemoryMatch = {
     },
 
     showSharePopup: function () {
-//        MemoryMatch.MessagePopup.setup(MemoryMatch.stage, {domElement: "helpArea", title: "Share", message: "", callback: MemoryMatch.onShareClosed.bind(MemoryMatch), closeButton: true, continueButton: false});
-//        MemoryMatch.MessagePopup.buildScreen(true);
-        MemoryMatch.showGameCompleted();
+        MemoryMatch.MessagePopup.setup(MemoryMatch.stage, {domElement: "sharearea", title: "Share", message: "", callback: MemoryMatch.onShareClosed.bind(MemoryMatch), closeButton: true, continueButton: false, noscale: true});
+        MemoryMatch.MessagePopup.buildScreen(true);
     },
 
     onShareClosed: function (event) {
-
+        MemoryMatch.GameOptions.closePopupFromPopup("continue");
     },
 
     onQuitGame: function () {
@@ -5272,8 +5271,9 @@ function runTests() {
 // we call MemoryMatch.allAssetsLoaded
 //====================================================================================
 function initApp() {
+    window.stLight.options({publisher: "87e0f36a-6cae-4fde-8e24-3a7255f57b39", doNotHash: false, doNotCopy: false, hashAddressBar: false});
     MemoryMatch.setPlatform();
-    MemoryMatch.debugLog("Loading " + MemoryMatch.GameSetup.gameName + " version " + MemoryMatch.GameVersion + " on " + MemoryMatch.platform + " using locale " + MemoryMatch.locale);
+    MemoryMatch.debugLog("Loading " + MemoryMatch.GameSetup.gameName + " version " + MemoryMatch.GameVersion + " on " + MemoryMatch.platform + " using locale " + MemoryMatch.locale + (MemoryMatch.isTouchDevice ? " Touch" : " Mouse"));
     if (document.getElementById(MemoryMatch.loaderElement) != null) {
         // show canvas under loader so we can implement a loadbar until we get everything setup for EaselJS to take over
         document.getElementById(MemoryMatch.loaderElement).style.display = "block";

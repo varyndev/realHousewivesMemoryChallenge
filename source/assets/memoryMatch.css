@@ -141,3 +141,16 @@ body {
     color: #ffffff;
     font-size: 48px;
 }
+
+#sharearea {
+    position: absolute;
+    visibility: hidden;
+    width: 1200px;
+    text-align: center;
+    color: #ffffff;
+    font-size: 32px;
+}
+
+#sharebuttons {
+    padding-top: 40px;
+}

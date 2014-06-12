@@ -200,7 +200,7 @@ MemoryMatch.GameOptions = {
                 MemoryMatch.LevelIntroduction.setup(MemoryMatch.stage, MemoryMatch.GameOptions.onHelpCallback.bind(MemoryMatch.GameOptions), MemoryMatch.gameId, MemoryMatch.gameLevel, MemoryMatch.gameNumber);
                 MemoryMatch.LevelIntroduction.buildScreen(true, false);
             } else {
-                MemoryMatch.MessagePopup.setup(MemoryMatch.stage, {domElement: "helpArea", title: "Help!", message: "", callback: MemoryMatch.GameOptions.onMessagePopupCallback.bind(MemoryMatch.GameOptions), closeButton: true, continueButton: false});
+                MemoryMatch.MessagePopup.setup(MemoryMatch.stage, {domElement: "helpArea", title: "Help!", message: "", callback: MemoryMatch.GameOptions.onMessagePopupCallback.bind(MemoryMatch.GameOptions), closeButton: true, continueButton: false, noscale: false});
                 MemoryMatch.MessagePopup.buildScreen(true);
             }
         }

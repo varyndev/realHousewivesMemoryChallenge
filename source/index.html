@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="format-detection" content="telephone=no" />
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, target-densitydpi=device-dpi, minimal-ui" />
@@ -9,6 +11,7 @@
     <title>The Real Housewives Memory Challenge</title>
     <link href="assets/MyFontsWebfontsKit.css" rel="stylesheet" type="text/css"/>
     <link href="assets/memoryMatch.css" rel="stylesheet" type="text/css"/>
+    <link rel="icon" type="image/png" href="assets/icon-48.png" sizes="48x48"/>
     <link rel="apple-touch-icon" href="assets/icon-72.png" sizes="72x72"/>
     <link rel="apple-touch-icon" href="assets/icon-76.png"/>
     <link rel="apple-touch-icon" href="assets/icon-76.png" sizes="76x76"/>
@@ -18,11 +21,11 @@
     <meta property="og:url" content="http://www.enginesis.com/games/realHousewivesMemoryChallenge/index.html">
     <meta property="og:site_name" content="BravoTV">
     <meta property="og:description" content="A memory match game like no other. Eight different play patterns organized into a quest for the ultimate Real Housewives award. Play through 28 levels of increasing difficulty, earn achievements and special bonus awards, build your memory all while having fun! A unique challenge in the category of puzzle games.">
-    <meta property="og:image" content="http://www.enginesis.com/games/realHousewivesMemoryChallenge/images/1200x900.png">
-    <meta property="og:image" content="http://www.enginesis.com/games/realHousewivesMemoryChallenge/images/gameLogo-1024.png">
-    <meta property="og:image" content="http://www.enginesis.com/games/realHousewivesMemoryChallenge/images/1200x600.png">
-    <meta property="og:image" content="http://www.enginesis.com/games/realHousewivesMemoryChallenge/images/600x600.png">
-    <meta property="og:image" content="http://www.enginesis.com/games/realHousewivesMemoryChallenge/images/2048x1536.png">
+    <meta property="og:image" content="assets/1200x900.png">
+    <meta property="og:image" content="assets/gameLogo-1024.png">
+    <meta property="og:image" content="assets/1200x600.png">
+    <meta property="og:image" content="assets/600x600.png">
+    <meta property="og:image" content="assets/2048x1536.png">
     <meta property="og:type" content="game">
     <script src="lib/head.min.js"></script>
     <script src="lib/modernizr.custom.74056.js"></script>
@@ -32,7 +35,7 @@
             initApp();
         });
 //        head.js("lib/easeljs-0.7.1.min.js", "lib/preloadjs-0.4.1.min.js", "lib/soundjs-0.5.2.min.js", "lib/jquery.min.js", "lib/screenfull.min.js", "lib/enginesis.js", "js/MemoryMatch.min.js");
-        head.js("lib/easeljs-0.7.1.min.js", "lib/preloadjs-0.4.1.min.js", "lib/soundjs-0.5.2.min.js", "lib/jquery.min.js", "lib/screenfull.min.js", "lib/enginesis.js", "js/MemoryMatch.js", "js/Nemesis.js", "js/setup.js", "js/UserData.js", "js/GameGUI.js", "js/GUIButton.js", "js/MainMenu.js", "js/LevelIntroduction.js", "js/GameResults.js", "js/GameOptions.js", "js/AnimationHandler.js", "js/LevelButton.js", "js/MainMenuButton.js", "js/ChallengeIntroduction.js", "js/MessagePopup.js", "js/InfoPopup.js", "js/CreditsPopup.js", "js/AchievementItem.js", "js/AwardsPopup.js", "js/GameComplete.js");
+        head.js("http://w.sharethis.com/button/buttons.js", "lib/easeljs-0.7.1.min.js", "lib/preloadjs-0.4.1.min.js", "lib/soundjs-0.5.2.min.js", "lib/jquery.min.js", "lib/screenfull.min.js", "lib/enginesis.js", "js/MemoryMatch.js", "js/Nemesis.js", "js/setup.js", "js/UserData.js", "js/GameGUI.js", "js/GUIButton.js", "js/MainMenu.js", "js/LevelIntroduction.js", "js/GameResults.js", "js/GameOptions.js", "js/AnimationHandler.js", "js/LevelButton.js", "js/MainMenuButton.js", "js/ChallengeIntroduction.js", "js/MessagePopup.js", "js/InfoPopup.js", "js/CreditsPopup.js", "js/AchievementItem.js", "js/AwardsPopup.js", "js/GameComplete.js");
 
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
             (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -41,10 +44,12 @@
         ga('create', 'UA-13133265-1', 'auto');
         ga('send', 'pageview');
 
+        var switchTo5x=true;
     </script>
 </head>
 
 <body>
+<div id="fb-root"></div>
 <div id="canvasArea">
     <div id="loader">
         <div id="loaderProgress"></div>
@@ -104,6 +109,17 @@
             <a id="ref_techniques"><h3>Memory Techniques</h3></a>
             <p>Now we are going to teach you some important memory techniques to make you a better player.</p>
             <p>** - <a href="#ref_top">Back to top</a> - **</p>
+        </div>
+    </div>
+    <div id="sharearea">
+        <p>Choose your social network:</p>
+        <div id="sharebuttons">
+            <span class='st_email_large' displayText='Email'></span>
+            <span class='st_facebook_large' displayText='Facebook'></span>
+            <span class='st_googleplus_large' displayText='Google +'></span>
+            <span class='st_twitter_large' displayText='Tweet'></span>
+            <span class='st_pinterest_large' displayText='Pinterest'></span>
+            <span class='st_sharethis_large' displayText='ShareThis'></span>
         </div>
     </div>
     <canvas id="memoryMatch">In order to enjoy this content you must upgrade your browser to an HTML5 compatible version.</canvas>
