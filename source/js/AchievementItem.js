@@ -165,7 +165,7 @@ MemoryMatch = MemoryMatch || {};
             spriteData,
             iconSize,
             iconSprite,
-            iconScale = 2;
+            iconScale = 1;
 
         if (this.icon != null) {
             spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.guiSpritesheet1Frames);

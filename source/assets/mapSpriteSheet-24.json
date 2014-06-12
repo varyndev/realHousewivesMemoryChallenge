@@ -14,23 +14,26 @@
     [0, 309, 165, 168], 
     [165, 236, 117, 221], 
     [126, 0, 223, 184], 
-    [323, 396, 24, 24], 
-    [126, 278, 27, 27], 
+    [323, 423, 27, 27], 
+    [323, 396, 27, 27], 
     [334, 184, 14, 17], 
-    [307, 211, 24, 24], 
+    [126, 278, 27, 27], 
     [307, 184, 27, 27], 
     [240, 457, 25, 20], 
     [215, 457, 25, 20], 
     [190, 457, 25, 20], 
     [165, 457, 25, 20], 
+    [330, 211, 23, 23], 
     [282, 443, 23, 23], 
-    [347, 389, 23, 23], 
-    [323, 420, 23, 23], 
+    [350, 435, 23, 23], 
+    [350, 412, 23, 23], 
+    [350, 389, 23, 23], 
+    [307, 211, 23, 23], 
     [153, 290, 12, 12], 
     [153, 278, 12, 12], 
     [282, 236, 107, 113], 
-    [282, 396, 41, 47], 
-    [282, 349, 64, 47]
+    [282, 349, 64, 47], 
+    [282, 396, 41, 47]
 ],
 "animations": {
     
@@ -55,17 +58,20 @@
         "mapAwardLand2":[18], 
         "mapAwardLand4":[19],
         "mapAwardLand3":[20],
-        "mapOptionsButtonDown":[21], 
-        "mapOptionsButtonOver":[22], 
-        "mapOptionsButtonUp":[23], 
-        "mapStarEarned":[24], 
-        "mapStarUnearned":[25], 
-        "mapTrophy":[26], 
-        "planeRouteGa":[27], 
-        "planeRouteCa":[28]
+        "mapFullScreenButtonDown":[21], 
+        "mapFullScreenButtonOver":[22], 
+        "mapFullScreenButtonUp":[23], 
+        "mapOptionsButtonDown":[24], 
+        "mapOptionsButtonOver":[25], 
+        "mapOptionsButtonUp":[26], 
+        "mapStarEarned":[27], 
+        "mapStarUnearned":[28], 
+        "mapTrophy":[29], 
+        "planeRouteCa":[30], 
+        "planeRouteGa":[31]
 },
 "texturepacker": [
-        "SmartUpdateHash: $TexturePacker:SmartUpdate:70c26664c85cc6cce0e8b62f1f9ceb52:58aef6633f19ae491b9f54b2db1c669e:cdb5667d50aaf85afe7c0b7457dde048$",
+        "SmartUpdateHash: $TexturePacker:SmartUpdate:5056d8078f92a79d7f9a368b39196675:e7e5f4cd595541ff7fa224e490270a26:cdb5667d50aaf85afe7c0b7457dde048$",
         "Created with TexturePacker (http://www.texturepacker.com) for EaselJS"
 ]
 }
