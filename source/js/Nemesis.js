@@ -224,7 +224,7 @@ MemoryMatch.Nemesis = {
         bottleBottomSprite.framerate = 1;
         bottleBottomSprite.name = 'miss' + missCounter.toString();
         bottleBottomSprite.gotoAndStop(this.bottleBottomFilled);
-        tileSize = MemoryMatch.getSpriteFrameSize(this.spriteFrameData, this.bottleBottomFilled);
+        tileSize = MemoryMatch.getSpriteFrameSize(spriteFrameData, this.bottleBottomFilled);
         bottleBottomSprite.setTransform(groupCenterX, nextY, 1, 1, 0, 0, 0, tileSize.width * 0.5, 0);
         nextY += tileSize.height;
         groupDisplayObject.addChild(bottleBottomSprite);
@@ -311,7 +311,7 @@ MemoryMatch.Nemesis = {
                             } else {
                                 nextFrame = this.bottleNeckEmpty;
                             }
-                        } else if (i == this.maxNumberOfPieces) { // bottom
+                        } else if (i == maxNumberOfPieces) { // bottom
                             nextFrame = this.bottleBottomEmpty;
                         } else { // middle
                             if (emptyPieces > i) {
@@ -325,7 +325,7 @@ MemoryMatch.Nemesis = {
                             nextFrame = this.bottleTopFilled;
                         } else if (i == 2) { // neck
                             nextFrame = this.bottleNeckFilled;
-                        } else if (i == this.maxNumberOfPieces) { // bottom
+                        } else if (i == maxNumberOfPieces) { // bottom
                             nextFrame = this.bottleBottomFilled;
                         } else { // middle
                             nextFrame = this.bottleSectionFilled;
