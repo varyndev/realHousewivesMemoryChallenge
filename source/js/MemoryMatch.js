@@ -759,7 +759,7 @@ var MemoryMatch = {
             gameTipId = MemoryMatch.GameSetup.levels[gameLevel - 1].tipId;
 
         userNotHasSeenLevelIntro = ! MemoryMatch.UserData.isUserTipSeen(gameTipId);
-        return true; // userNotHasSeenLevelIntro;
+        return userNotHasSeenLevelIntro;
     },
 
     setUserTipSeenForLevel: function (gameLevel) {
