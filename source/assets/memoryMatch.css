@@ -105,17 +105,6 @@ body {
     color: #36c2dd;
 }
 
-#helpContent {
-    height: 860px;
-    position: absolute;
-    overflow-y: scroll;
-    padding-left: 20px;
-    font-family: SohoStd-BoldItalic, Arial, sans-serif;
-    text-align: left;
-    font-size: 32px;
-    color: #ffffff;
-}
-
 #helpArea {
     overflow: auto;
     z-index: 1;
@@ -125,6 +114,22 @@ body {
     height: 860px;
     margin-top: 32px;
     margin-bottom: 60px;
+    background-color: #aad4dc;
+    left:       50%;
+    top:        50%;
+    align:      center;
+    text-align: center;
+}
+
+#helpContent {
+    height: 860px;
+    position: absolute;
+    overflow-y: scroll;
+    padding-left: 20px;
+    font-family: SohoStd-BoldItalic, Arial, sans-serif;
+    text-align: left;
+    font-size: 32px;
+    color: #ffffff;
 }
 
 #helpContent a, a:link, a:visited {
@@ -142,6 +147,13 @@ body {
     font-size: 48px;
 }
 
+#helpContent p {
+    color: #ffffff;
+    font-family: open_sanscondensed_light, Arial, sans-serif;
+    font-size: 36px;
+    margin-left: 22px;
+}
+
 #sharearea {
     position: absolute;
     visibility: hidden;
@@ -151,6 +163,6 @@ body {
     font-size: 32px;
 }
 
-#sharebuttons {
-    padding-top: 40px;
+.debug {
+    font-size: 36px;
 }
