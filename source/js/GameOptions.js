@@ -316,7 +316,7 @@ MemoryMatch.GameOptions = {
         var info,
             infoTextField;
 
-        info = MemoryMatch.GameSetup.gameName + " version " + MemoryMatch.GameVersion + " on " + MemoryMatch.platform + " locale " + MemoryMatch.locale;
+        info = MemoryMatch.GameSetup.gameName + " version " + MemoryMatch.GameVersion + " on " + MemoryMatch.platform + " locale " + MemoryMatch.locale + (MemoryMatch.isTouchDevice ? " / Touch" : " / Mouse");
         infoTextField = new createjs.Text(info, MemoryMatch.getScaledFontSize(36) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiInfoColor);
         infoTextField.textAlign = "left";
         infoTextField.x = this.marginLeft;

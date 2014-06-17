@@ -9,10 +9,11 @@ MemoryMatch.MessagePopup = {
     stateCompleteCallback: null,
     parentDisplayObject: null,
     groupDisplayObject: null,
-    buttonHelperInstances: null,
     buttonInstances: null,
     backgroundWidth: 0,
     backgroundHeight: 0,
+    bgImageScaleX: 1,
+    bgImageScaleY: 1,
     backgroundCover: null,
     marginTop: 0,
     marginLeft: 0,
@@ -63,7 +64,6 @@ MemoryMatch.MessagePopup = {
 
     setup: function (displayObject, parameters) {
         this.parentDisplayObject = displayObject;
-        this.buttonHelperInstances = [];
         this.buttonInstances = [];
         this.setParameters(parameters);
     },
@@ -125,8 +125,13 @@ MemoryMatch.MessagePopup = {
     },
 
     closePopup: function (closeEventType) {
+        var domElement = this.groupDisplayObject.getChildByName('text');
+
         this.isEnabled = false;
         this.closeEventType = closeEventType;
+        if (domElement != null) {
+            domElement.visible = false;
+        }
         // begin animation, then once close is complete send notification
         this.closeStartAnimation();
     },
@@ -183,6 +188,8 @@ MemoryMatch.MessagePopup = {
         this.groupDisplayObject.addChild(bgImage);
         this.backgroundWidth = popupImageAsset.width * xScale;
         this.backgroundHeight = popupImageAsset.height * yScale;
+        this.bgImageScaleX = xScale;
+        this.bgImageScaleY = yScale;
         if (this.primaryColorFilter != null) {
             bgImage.filters = [this.primaryColorFilter];
             bgImage.cache(0, 0, this.backgroundWidth, this.backgroundHeight);
@@ -194,31 +201,31 @@ MemoryMatch.MessagePopup = {
         // Register domElement to its center
         var pageElement = document.getElementById(this.domElement),
             domElement = new createjs.DOMElement(pageElement),
-            scaleFactor = 1,
+            positionOffset,
+            scaleFactorX,
+            scaleFactorY,
             x,
             y,
             width,
             height;
 
         if (domElement != null) {
+            domElement.name = 'text';
             width = pageElement.clientWidth;
             height = pageElement.clientHeight;
-            if ( ! this.noscale) {
-                scaleFactor = MemoryMatch.stageScaleFactor;
-                if (scaleFactor < 0.5) {
-                    // this is a complete hack. If the scale factor is less than 50% it is scaled too much (about 2x too much), so
-                    // I am adjusting it on a random number that looks good while testing. No idea why this is happening or what the right number should be.
-                    scaleFactor *= 1.3333;
-                }
-                width *= scaleFactor;
-                height *= scaleFactor;
-                x = this.backgroundWidth * 0.05;
+
+            // the div was scaled by CSS, we need to determine how much the div was scaled, then center it
+            scaleFactorX = MemoryMatch.stageScaleFactor * (MemoryMatch.cssScaledWidth / MemoryMatch.stageWidth);
+            scaleFactorY = MemoryMatch.stageScaleFactor * (MemoryMatch.cssScaledHeight / MemoryMatch.stageHeight);
+            if (MemoryMatch.stageScaleFactor == 0.5) {
+                positionOffset = -0.5;
             } else {
-                x = (this.backgroundWidth - width) * 0.5;
+                positionOffset = -0.57;
             }
-            y = this.backgroundHeight * 0.08;
-            domElement.setTransform(x, y, scaleFactor, scaleFactor, 0, 0, 0, 0, 0);
+            x = Math.floor(this.backgroundWidth * positionOffset);
+            y = Math.floor(this.backgroundHeight * positionOffset);
             this.groupDisplayObject.addChild(domElement);
+            domElement.setTransform(x, y, scaleFactorX, scaleFactorY, 0, 0, 0, 0, 0);
         }
     },
 
@@ -247,35 +254,27 @@ MemoryMatch.MessagePopup = {
     },
 
     setupButtons: function () {
-        var spriteFrame,
-            spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.guiSpritesheet1Frames),
-            buttonScale = 1.0,
+        var buttonScale = 1.0,
             gameButton,
-            newButtonInstance,
-            buttonSize;
+            buttonTagCounter = 0,
+            buttonSize,
+            buttonBaseColor = MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].liteColor,
+            buttonRollOverColor = MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].secondaryColor;
 
-        // Close button always shows
-        spriteFrame = "closeButtonUp";
-        buttonSize = MemoryMatch.getSpriteFrameSize(MemoryMatch.GameSetup.guiSpritesheet1Frames, spriteFrame);
-        gameButton = new createjs.Sprite(spriteData, spriteFrame);
+        // Close button always shows in its own special place
+        buttonTagCounter ++;
+        gameButton = MemoryMatch.GUIButton({name: "close", tag: buttonTagCounter, disabled: false, callback: this.onClickClose.bind(this), baseUp: "closeButtonUp", baseOver: "closeButtonDown", baseDown: "closeButtonDown"});
+        buttonSize = gameButton.getSize();
         gameButton.setTransform(this.backgroundWidth * 0.94 - buttonSize.width, this.backgroundHeight * 0.05, buttonScale, buttonScale);
-        gameButton.framerate = 1;
-        newButtonInstance = new createjs.ButtonHelper(gameButton, "closeButtonUp", "closeButtonOver", "closeButtonDown", false);
-        gameButton.addEventListener("click", this.onClickClose.bind(this));
         this.groupDisplayObject.addChild(gameButton);
-        this.buttonHelperInstances.push(newButtonInstance);
         this.buttonInstances.push(gameButton);
 
         if (this.continueButton) {
-            spriteFrame = "gameOverNextUp";
-            buttonSize = MemoryMatch.getSpriteFrameSize(MemoryMatch.GameSetup.guiSpritesheet1Frames, spriteFrame);
-            gameButton = new createjs.Sprite(spriteData, spriteFrame);
-            gameButton.setTransform((this.backgroundWidth - buttonSize.width) * 0.5, this.backgroundHeight * 0.77, buttonScale, buttonScale);
-            gameButton.framerate = 1;
-            newButtonInstance = new createjs.ButtonHelper(gameButton, "gameOverNextUp", "gameOverNextOver", "gameOverNextDown", false);
-            gameButton.addEventListener("click", this.onClickContinue.bind(this));
+            buttonTagCounter ++;
+            buttonSize = MemoryMatch.getSpriteFrameSize(MemoryMatch.GameSetup.guiSpritesheet1Frames, 'gameOverButtonBase');
+            gameButton = MemoryMatch.GUIButton({name: "continue", tag: buttonTagCounter, disabled: false, callback: this.onClickContinue.bind(this), baseUp: "gameOverButtonBase", buttonBaseColor: buttonBaseColor, buttonBaseRollOverColor: buttonRollOverColor, iconUp: "gameOverNextIcon", iconOver: "gameOverNextDownIcon", iconDown: "gameOverNextDownIcon"});
+            gameButton.setTransform((this.backgroundWidth - buttonSize.width) * 0.5, this.backgroundHeight * 0.75, buttonScale, buttonScale);
             this.groupDisplayObject.addChild(gameButton);
-            this.buttonHelperInstances.push(newButtonInstance);
             this.buttonInstances.push(gameButton);
         }
     },
@@ -326,7 +325,6 @@ MemoryMatch.MessagePopup = {
         this.domElement = null;
         this.title = null;
         this.message = null;
-        this.buttonHelperInstances = null;
         this.groupDisplayObject.removeAllChildren();
         this.parentDisplayObject.removeChild(this.groupDisplayObject);
         this.parentDisplayObject.removeChild(this.backgroundCover);

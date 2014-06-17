@@ -8,15 +8,12 @@
 MemoryMatch.CreditsPopup = {
     parentDisplayObject: null,
     groupDisplayObject: null,
-    buttonHelperInstances: null,
     buttonInstances: null,
     backgroundWidth: 0,
     backgroundHeight: 0,
     backgroundCover: null,
     marginTop: 0,
     marginLeft: 0,
-    centerX: 0,
-    marginX: 0,
     lineHeight: 0,
     isEnabled: false,
     title: null,
@@ -29,7 +26,6 @@ MemoryMatch.CreditsPopup = {
 
     setup: function (displayObject, stateCompleteCallback) {
         this.parentDisplayObject = displayObject;
-        this.buttonHelperInstances = [];
         this.buttonInstances = [];
         this.stateCompleteCallback = stateCompleteCallback;
     },
@@ -44,8 +40,6 @@ MemoryMatch.CreditsPopup = {
         this.showBackgroundImage(this.parentDisplayObject.canvas);
         this.marginTop = this.backgroundHeight * 0.05;
         this.marginLeft = this.backgroundWidth * 0.09;
-        this.centerX = this.backgroundWidth * 0.5;
-        this.marginX = 12 * MemoryMatch.stageScaleFactor;
         this.setupTitleText();
         this.setupCopyrightText();
         this.showCredits();
@@ -251,7 +245,6 @@ MemoryMatch.CreditsPopup = {
             }
             this.buttonInstances = null;
         }
-        this.buttonHelperInstances = null;
         this.parentDisplayObject.removeChild(this.groupDisplayObject);
         this.parentDisplayObject.removeChild(this.backgroundCover);
         this.backgroundCover = null;

@@ -112,6 +112,8 @@ var MemoryMatch = {
     stageUpdated: false,
     stageWidth: 0,
     stageHeight: 0,
+    cssScaledWidth: 0,
+    cssScaledHeight: 0,
     stageScaleFactor: 1,
     cardScaleFactor: 1,
     stageAspectRatio: 1.3333,
@@ -260,8 +262,8 @@ var MemoryMatch = {
         createjs.Ticker.addEventListener("tick", this.onEnterFrame.bind(this));
 
         this.restoreLastSession();
-        window.addEventListener('resize', MemoryMatch.setCanvasSize, false);
-        window.addEventListener('orientationchange', MemoryMatch.setCanvasSize, false);
+        window.addEventListener('resize', MemoryMatch.stageSizeChanged, false);
+        window.addEventListener('orientationchange', MemoryMatch.stageSizeChanged, false);
         document.addEventListener('pause', MemoryMatch.onPauseGame.bind(this), false);
         document.addEventListener('resume', MemoryMatch.unPauseGame.bind(this), false);
         document.addEventListener(MemoryMatch.getVisibilityChangeEvent(), MemoryMatch.onVisibilityChange.bind(MemoryMatch));
@@ -404,12 +406,24 @@ var MemoryMatch = {
     },
 
     showSharePopup: function () {
-        MemoryMatch.MessagePopup.setup(MemoryMatch.stage, {domElement: "sharearea", title: "Share", message: "", callback: MemoryMatch.onShareClosed.bind(MemoryMatch), closeButton: true, continueButton: false, noscale: true});
-        MemoryMatch.MessagePopup.buildScreen(true);
+        MemoryMatch.SharePopup.setup(MemoryMatch.stage, {title: "Share", message: "Share with your favorite social network:", callback: MemoryMatch.onShareClosed.bind(MemoryMatch), closeButton: true, continueButton: false, noscale: true});
+        MemoryMatch.SharePopup.buildScreen(true);
     },
 
     onShareClosed: function (event) {
         MemoryMatch.GameOptions.closePopupFromPopup("continue");
+    },
+
+    closeAllPopups: function () {
+        if (MemoryMatch.SharePopup.isShowing()) {
+            MemoryMatch.SharePopup.closePopup();
+        }
+        if (MemoryMatch.MessagePopup.isShowing()) {
+            MemoryMatch.MessagePopup.closePopup();
+        }
+        if (MemoryMatch.GameOptions.isShowing()) {
+            MemoryMatch.GameOptions.closePopupFromPopup("continue");
+        }
     },
 
     onQuitGame: function () {
@@ -4899,6 +4913,17 @@ var MemoryMatch = {
     //
     //====================================================================================
 
+    stageSizeChanged: function (event) {
+        var priorAssetPostfix = MemoryMatch.assetFileNamePostfix;
+
+        MemoryMatch.closeAllPopups();
+        MemoryMatch.setCanvasSize(null);
+        // if a game is in progress you need to reload the assets and redraw
+        if (MemoryMatch.assetFileNamePostfix != priorAssetPostfix) {
+            MemoryMatch.loadAllAssets(true);
+        }
+    },
+
     setCanvasSize: function (canvas) {
         // here we are going to set the stage resolution based on our current device display area
         // this game is always landscape orientation. Also important the aspect ratio of every entry must be the same.
@@ -4918,13 +4943,11 @@ var MemoryMatch = {
             canvas = document.getElementById(MemoryMatch.stageCanvasElement);
         }
         // match current stage resolution to the best fit resolution we can support
-        MemoryMatch.debugLog("setCanvasSize checking for " + currentWidth + "," + currentHeight);
         for (i = 0; i < supportedResolutions.length; i ++) {
             // compare currentWidth and currentHeight against supportedResolutions[i].width/height within some tolerance (75%)
             // if smaller then try next resolution and scale down
             if (currentWidth >= Math.ceil(supportedResolutions[i].width * 0.6) && currentHeight >= Math.ceil(supportedResolutions[i].height * 0.6)) {
                 resolutionIndex = i;
-                MemoryMatch.debugLog("setCanvasSize selected " + i + " for " + currentWidth + "," + currentHeight);
                 break;
             }
         }
@@ -4938,7 +4961,6 @@ var MemoryMatch = {
         MemoryMatch.stageAspectRatio = supportedResolutions[resolutionIndex].width / supportedResolutions[resolutionIndex].height;
         MemoryMatch.stageScaleFactor = supportedResolutions[resolutionIndex].scaleFactor;
         MemoryMatch.cardScaleFactor = supportedResolutions[resolutionIndex].cardScaleFactor;
-
         MemoryMatch.stageWidth = supportedResolutions[resolutionIndex].width;
         MemoryMatch.stageHeight = supportedResolutions[resolutionIndex].height;
         canvas.width = MemoryMatch.stageWidth;
@@ -4947,16 +4969,16 @@ var MemoryMatch = {
         // Now let CSS scale and center the containing <div> based on the the best fit of our game stage relative
         // to the maximum available screen space
         if (windowAspectRatio > MemoryMatch.stageAspectRatio) { // window width is too wide relative to desired game width
-            currentWidth = currentHeight * MemoryMatch.stageAspectRatio;
-            containerDiv.style.height = currentHeight + 'px';
-            containerDiv.style.width = currentWidth + 'px';
+            currentWidth = Math.floor(currentHeight * MemoryMatch.stageAspectRatio);
         } else { // window height is too high relative to desired game height
-            currentHeight = currentWidth / MemoryMatch.stageAspectRatio;
-            containerDiv.style.width = currentWidth + 'px';
-            containerDiv.style.height = currentHeight + 'px';
+            currentHeight = Math.floor(currentWidth / MemoryMatch.stageAspectRatio);
         }
-        containerDiv.style.marginTop = (-currentHeight / 2) + 'px';
-        containerDiv.style.marginLeft = (-currentWidth / 2) + 'px';
+        containerDiv.style.width = currentWidth + 'px';
+        containerDiv.style.height = currentHeight + 'px';
+        containerDiv.style.marginTop = (currentHeight * -0.5) + 'px';
+        containerDiv.style.marginLeft = (currentWidth * -0.5) + 'px';
+        MemoryMatch.cssScaledWidth = currentWidth;
+        MemoryMatch.cssScaledHeight = currentHeight;
         MemoryMatch.debugLog("setCanvasSize: Width: " + MemoryMatch.stageWidth + ", Height: " + MemoryMatch.stageHeight +  ", prefix: " + MemoryMatch.assetFileNamePostfix +  ", aspect: " + MemoryMatch.stageAspectRatio +  ", scale: " + MemoryMatch.stageScaleFactor);
     },
 
@@ -4966,6 +4988,17 @@ var MemoryMatch = {
 
     isLandscape: function () {
         return MemoryMatch.stageAspectRatio >= 1.0;
+    },
+
+    captureDebugInformation: function () {
+        var debugData = '';
+        var canvas = document.getElementById(this.stageCanvasElement);
+
+        debugData += '<div class="debug">';
+        debugData += '<p>Stage: (' + MemoryMatch.stageWidth + ',' + MemoryMatch.stageHeight + '); Canvas:  (' + canvas.width + ',' + canvas.height + '); CSS: (' + MemoryMatch.cssScaledWidth + ',' + MemoryMatch.cssScaledHeight + '); Scale factor: ' + MemoryMatch.stageScaleFactor + '; Aspect Ratio: ' + MemoryMatch.stageAspectRatio + '</p>';
+        debugData += '<p>CSS scale width: ' + (MemoryMatch.stageScaleFactor * (MemoryMatch.cssScaledWidth / MemoryMatch.stageWidth)) + ', CSS scale height: ' + (MemoryMatch.stageScaleFactor * (MemoryMatch.cssScaledHeight / MemoryMatch.stageHeight)) + '</p>';
+        debugData += '</div>';
+        return debugData;
     },
 
     onVisibilityChange: function (event) {
@@ -5101,6 +5134,86 @@ var MemoryMatch = {
                     break;
             }
         }
+    },
+
+    loadAllAssets: function (reloadFlag) {
+        // assetManifest array defines all the assets we require to load before the game starts.
+        // We are loading everything required by the game before we start. This way a user can "deep-link"
+        // to any level and we don't have to worry about those assets being ready.
+        var soundAssetName,
+            gameLevelIndex,
+            gameData,
+            imageArray,
+            imageIndex,
+            assetsFolder = MemoryMatch.qualifiedFolder(MemoryMatch.GameSetup.assetsFolder),
+            guiSpritesArray,
+            i,
+            objectType,
+            assetManifest = [
+                {src:MemoryMatch.makeResolutionBasedFileNameFromFileName(assetsFolder + MemoryMatch.GameSetup.backgroundImage), id:"background"},
+                {src:MemoryMatch.makeResolutionBasedFileNameFromFileName(assetsFolder + MemoryMatch.GameSetup.popupBackground), id:"popup-bg"},
+                {src:assetsFolder + MemoryMatch.GameSetup.particleSprite, id:"particles"}
+            ];
+
+        guiSpritesArray = MemoryMatch.GameSetup.guiSprites;
+        if (guiSpritesArray != null && guiSpritesArray.length > 0) {
+            for (i = 0; i < guiSpritesArray.length; i ++) {
+                assetManifest.push({src:MemoryMatch.makeResolutionBasedFileNameFromFileName(assetsFolder + guiSpritesArray[i]), id: "guiSprites" + (i + 1)});
+                assetManifest.push({src:MemoryMatch.makeResolutionBasedJsonFileFromFileName(assetsFolder + guiSpritesArray[i]), id: "guiSprites" + (i + 1) + "json"});
+            }
+        }
+
+        // All level based assets are under GameSetup.levels
+        for (gameLevelIndex = 0; gameLevelIndex < MemoryMatch.GameSetup.games.length; gameLevelIndex ++) {
+            gameData = MemoryMatch.GameSetup.games[gameLevelIndex];
+            if (gameData.cardSprites != null) {
+                objectType = Object.prototype.toString.call(gameData.cardSprites); // is it an Array or is it a String?
+                if (objectType.indexOf('String') >= 0) { // just a single card sprite reference
+                    gameData.numberOfCardSets = 1;
+                    assetManifest.push({src: "assets/" + MemoryMatch.makeResolutionBasedFileNameFromFileName(gameData.cardSprites, true), id: 'cards' + gameData.gameId.toString() + '-0'});
+                } else {
+                    gameData.numberOfCardSets = gameData.cardSprites.length;
+                    for (i = 0; i < gameData.numberOfCardSets; i ++) {
+                        assetManifest.push({src: "assets/" + MemoryMatch.makeResolutionBasedFileNameFromFileName(gameData.cardSprites[i], true), id: 'cards' + gameData.gameId.toString() + '-' + i.toString()});
+                    }
+                }
+            }
+            if (gameData.images != null) {
+                // If images property exists, it is an array of image objects {image:x, cardSprites: y}.
+                // To reference them later, use makeLevelImageAssetName() and makeLevelCardDeckAssetName().
+                imageArray = gameData.images;
+                for (imageIndex = 0; imageIndex < imageArray.length; imageIndex ++) {
+                    if (imageArray[imageIndex].image != null && imageArray[imageIndex].image.length > 0) {
+                        assetManifest.push({src: assetsFolder + MemoryMatch.makeResolutionBasedFileNameFromFileName(imageArray[imageIndex].image), id: MemoryMatch.makeLevelImageAssetName(gameData.gameId, imageIndex)});
+                    }
+                    if (imageArray[imageIndex].cardSprites != null && imageArray[imageIndex].cardSprites.length > 0) {
+                        assetManifest.push({src: assetsFolder + MemoryMatch.makeResolutionBasedFileNameFromFileName(imageArray[imageIndex].cardSprites, true), id: MemoryMatch.makeLevelCardDeckAssetName(gameData.gameId, imageIndex)});
+                    }
+                }
+            }
+        }
+        assetLoader = new createjs.LoadQueue(false, '', 'Anonymous');
+        if ( ! reloadFlag) {
+            // All sounds are located in the structure GameSetup.Sounds
+            for (soundAssetName in MemoryMatch.GameSetup.Sounds) {
+                if (MemoryMatch.GameSetup.Sounds.hasOwnProperty(soundAssetName)) {
+                    assetManifest.push({src: assetsFolder + MemoryMatch.GameSetup.Sounds[soundAssetName], id: soundAssetName});
+                }
+            }
+            assetLoader.installPlugin(createjs.Sound);
+            if ( ! createjs.Sound.initializeDefaultPlugins()) {
+                MemoryMatch.debugLog("CreateJS.Sound error cannot init");
+            }
+            if (createjs.Sound.BrowserDetect.isIOS || createjs.Sound.BrowserDetect.isAndroid) {
+                MemoryMatch.debugLog("CreateJS.Sound error iOS or Android issues!");
+            }
+            createjs.Sound.registerPlugins([createjs.HTMLAudioPlugin, createjs.WebAudioPlugin, createjs.FlashPlugin]);
+            createjs.Sound.alternateExtensions = ["mp3"];
+        }
+        assetLoader.addEventListener("complete", MemoryMatch.allAssetsLoaded.bind(MemoryMatch));
+        assetLoader.addEventListener("progress", MemoryMatch.assetLoadProgress);
+        assetLoader.addEventListener("error", MemoryMatch.assetLoadError);
+        assetLoader.loadManifest(assetManifest);
     }
 };
 
@@ -5271,9 +5384,8 @@ function runTests() {
 // we call MemoryMatch.allAssetsLoaded
 //====================================================================================
 function initApp() {
-    window.stLight.options({publisher: "87e0f36a-6cae-4fde-8e24-3a7255f57b39", doNotHash: false, doNotCopy: false, hashAddressBar: false});
     MemoryMatch.setPlatform();
-    MemoryMatch.debugLog("Loading " + MemoryMatch.GameSetup.gameName + " version " + MemoryMatch.GameVersion + " on " + MemoryMatch.platform + " using locale " + MemoryMatch.locale + (MemoryMatch.isTouchDevice ? " Touch" : " Mouse"));
+    MemoryMatch.debugLog("Loading " + MemoryMatch.GameSetup.gameName + " version " + MemoryMatch.GameVersion + " on " + MemoryMatch.platform + " using locale " + MemoryMatch.locale + (MemoryMatch.isTouchDevice ? " / Touch" : " / Mouse"));
     if (document.getElementById(MemoryMatch.loaderElement) != null) {
         // show canvas under loader so we can implement a loadbar until we get everything setup for EaselJS to take over
         document.getElementById(MemoryMatch.loaderElement).style.display = "block";
@@ -5287,81 +5399,7 @@ function initApp() {
 
     // Determine canvas size, it will determine which assets need to be loaded
     MemoryMatch.setCanvasSize(null);
+    MemoryMatch.loadAllAssets(false);
 
-    // assetManifest array defines all the assets we require to load before the game starts.
-    // We are loading everything required by the game before we start. This way a user can "deep-link"
-    // to any level and we don't have to worry about those assets being ready.
-    var soundAssetName,
-        gameLevelIndex,
-        gameData,
-        imageArray,
-        imageIndex,
-        assetsFolder = MemoryMatch.qualifiedFolder(MemoryMatch.GameSetup.assetsFolder),
-        guiSpritesArray,
-        i,
-        objectType,
-        assetManifest = [
-        {src:MemoryMatch.makeResolutionBasedFileNameFromFileName(assetsFolder + MemoryMatch.GameSetup.backgroundImage), id:"background"},
-        {src:MemoryMatch.makeResolutionBasedFileNameFromFileName(assetsFolder + MemoryMatch.GameSetup.popupBackground), id:"popup-bg"},
-        {src:assetsFolder + MemoryMatch.GameSetup.particleSprite, id:"particles"}
-        ];
-
-    guiSpritesArray = MemoryMatch.GameSetup.guiSprites;
-    if (guiSpritesArray != null && guiSpritesArray.length > 0) {
-        for (i = 0; i < guiSpritesArray.length; i ++) {
-            assetManifest.push({src:MemoryMatch.makeResolutionBasedFileNameFromFileName(assetsFolder + guiSpritesArray[i]), id: "guiSprites" + (i + 1)});
-            assetManifest.push({src:MemoryMatch.makeResolutionBasedJsonFileFromFileName(assetsFolder + guiSpritesArray[i]), id: "guiSprites" + (i + 1) + "json"});
-        }
-    }
-
-    // All level based assets are under GameSetup.levels
-    for (gameLevelIndex = 0; gameLevelIndex < MemoryMatch.GameSetup.games.length; gameLevelIndex ++) {
-        gameData = MemoryMatch.GameSetup.games[gameLevelIndex];
-        if (gameData.cardSprites != null) {
-            objectType = Object.prototype.toString.call(gameData.cardSprites); // is it an Array or is it a String?
-            if (objectType.indexOf('String') >= 0) { // just a single card sprite reference
-                gameData.numberOfCardSets = 1;
-                assetManifest.push({src: "assets/" + MemoryMatch.makeResolutionBasedFileNameFromFileName(gameData.cardSprites, true), id: 'cards' + gameData.gameId.toString() + '-0'});
-            } else {
-                gameData.numberOfCardSets = gameData.cardSprites.length;
-                for (i = 0; i < gameData.numberOfCardSets; i ++) {
-                    assetManifest.push({src: "assets/" + MemoryMatch.makeResolutionBasedFileNameFromFileName(gameData.cardSprites[i], true), id: 'cards' + gameData.gameId.toString() + '-' + i.toString()});
-                }
-            }
-        }
-        if (gameData.images != null) {
-            // If images property exists, it is an array of image objects {image:x, cardSprites: y}.
-            // To reference them later, use makeLevelImageAssetName() and makeLevelCardDeckAssetName().
-            imageArray = gameData.images;
-            for (imageIndex = 0; imageIndex < imageArray.length; imageIndex ++) {
-                if (imageArray[imageIndex].image != null && imageArray[imageIndex].image.length > 0) {
-                    assetManifest.push({src: assetsFolder + MemoryMatch.makeResolutionBasedFileNameFromFileName(imageArray[imageIndex].image), id: MemoryMatch.makeLevelImageAssetName(gameData.gameId, imageIndex)});
-                }
-                if (imageArray[imageIndex].cardSprites != null && imageArray[imageIndex].cardSprites.length > 0) {
-                    assetManifest.push({src: assetsFolder + MemoryMatch.makeResolutionBasedFileNameFromFileName(imageArray[imageIndex].cardSprites, true), id: MemoryMatch.makeLevelCardDeckAssetName(gameData.gameId, imageIndex)});
-                }
-            }
-        }
-    }
-    // All sounds are located in the structure GameSetup.Sounds
-    for (soundAssetName in MemoryMatch.GameSetup.Sounds) {
-        if (MemoryMatch.GameSetup.Sounds.hasOwnProperty(soundAssetName)) {
-            assetManifest.push({src: assetsFolder + MemoryMatch.GameSetup.Sounds[soundAssetName], id: soundAssetName});
-        }
-    }
-    assetLoader = new createjs.LoadQueue(false, '', 'Anonymous');
-    assetLoader.installPlugin(createjs.Sound);
-    if ( ! createjs.Sound.initializeDefaultPlugins()) {
-        MemoryMatch.debugLog("CreateJS.Sound error cannot init");
-    }
-    if (createjs.Sound.BrowserDetect.isIOS || createjs.Sound.BrowserDetect.isAndroid) {
-        MemoryMatch.debugLog("CreateJS.Sound error iOS or Android issues!");
-    }
-    createjs.Sound.registerPlugins([createjs.HTMLAudioPlugin, createjs.WebAudioPlugin, createjs.FlashPlugin]);
-    createjs.Sound.alternateExtensions = ["mp3"];
-    assetLoader.addEventListener("complete", MemoryMatch.allAssetsLoaded.bind(MemoryMatch));
-    assetLoader.addEventListener("progress", MemoryMatch.assetLoadProgress);
-    assetLoader.addEventListener("error", MemoryMatch.assetLoadError);
-    assetLoader.loadManifest(assetManifest);
 //    runTests(); // run unit tests
 }

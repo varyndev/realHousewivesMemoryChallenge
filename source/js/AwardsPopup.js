@@ -10,7 +10,6 @@ MemoryMatch.AwardsPopup = {
     parentDisplayObject: null,
     groupDisplayObject: null,
     contentDisplayObject: null,
-    closeButtonHelper: null,
     closeButtonInstance: null,
     backgroundWidth: 0,
     backgroundHeight: 0,
@@ -18,8 +17,6 @@ MemoryMatch.AwardsPopup = {
     scrollMask: null,
     marginTop: 0,
     marginLeft: 0,
-    centerX: 0,
-    marginX: 0,
     lineHeight: 0,
     isEnabled: false,
     animate: false,
@@ -55,8 +52,6 @@ MemoryMatch.AwardsPopup = {
         this.setupBackground();
         this.marginTop = this.backgroundHeight * 0.05;
         this.marginLeft = this.backgroundWidth * 0.09;
-        this.centerX = this.backgroundWidth * 0.5;
-        this.marginX = 12 * MemoryMatch.stageScaleFactor;
         this.contentDisplayObject = new createjs.Container();
         this.setupMask();
         this.setupTitleText();
@@ -466,7 +461,6 @@ MemoryMatch.AwardsPopup = {
         this.secondaryColorFilter = null;
         this.closeButtonInstance.removeAllEventListeners();
         this.closeButtonInstance = null;
-        this.closeButtonHelper = null;
         this.scrollMask.removeAllEventListeners();
         this.scrollMask = null;
         this.groupDisplayObject.removeChild(this.contentDisplayObject);
