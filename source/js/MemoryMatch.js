@@ -410,8 +410,8 @@ var MemoryMatch = {
         }
     },
 
-    showSharePopup: function () {
-        MemoryMatch.SharePopup.setup(MemoryMatch.stage, {title: "Share", message: "Share " + MemoryMatch.GameSetup.gameTitle + " with your favorite social network:", callback: MemoryMatch.onShareClosed.bind(MemoryMatch), closeButton: true, continueButton: false, noscale: true});
+    showSharePopup: function (shareMessage) {
+        MemoryMatch.SharePopup.setup(MemoryMatch.stage, {title: "Share", message: "Share " + MemoryMatch.GameSetup.gameTitle + " with your favorite social network:", callback: MemoryMatch.onShareClosed.bind(MemoryMatch), closeButton: true, continueButton: false, noscale: true, shareMessage: shareMessage});
         MemoryMatch.SharePopup.buildScreen(true);
     },
 
@@ -857,6 +857,14 @@ var MemoryMatch = {
             // If the next button was requested we need to determine where to go next based on the users current situation
             if (MemoryMatch.canUserAdvance()) {
                 if (MemoryMatch.isChallengeGame) {
+
+
+                    // TODO: Testing only!
+                    MemoryMatch.userBeatAllChallengesFirstTime = true;
+
+
+
+
                     // When a Challenge game is completed check if the game has been completed
                     if (MemoryMatch.userBeatAllChallengesFirstTime) {
                         MemoryMatch.userBeatAllChallengesFirstTime = false;

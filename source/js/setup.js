@@ -12,6 +12,7 @@ MemoryMatch.GameSetup = {
     developerKey: '',
     twitterId: '@bravotv',
     socialHashTag: '#rhmc',
+    facebookAppId: '307827179366236',
     orientation: "landscape",
     assetsFolder: "assets",
     backgroundImage: "background.jpg",

@@ -24,7 +24,7 @@ enginesis.ShareHelper = {
     responseInfo: '',
     callBackWhenComplete: null,
 
-    initialize: function (networkList, callbackWhenComplete) {
+    initialize: function (networkList, parameters, callbackWhenComplete) {
         var objectType,
             networkName,
             i;
@@ -40,17 +40,17 @@ enginesis.ShareHelper = {
             objectType = Object.prototype.toString.call(networkList); // is it an Array or is it a String?
             if (objectType.indexOf('String') >= 0) {
                 networkName = networkList;
-                this.initializeNetwork(networkName, callbackWhenComplete);
+                this.initializeNetwork(networkName, parameters, callbackWhenComplete);
             } else if (objectType.indexOf('Number') >= 0) {
                 if (networkList > this.networks.length || networkList < 0) {
                     networkList = this.networks.length - 1;
                 }
                 networkName = this.networks[networkList];
-                this.initializeNetwork(networkName, callbackWhenComplete);
+                this.initializeNetwork(networkName, parameters, callbackWhenComplete);
             } else if (networkList.length > 0) {
                 for (i = 0; i < networkList.length; i ++) {
                     networkName = networkList[i];
-                    this.initializeNetwork(networkName, callbackWhenComplete);
+                    this.initializeNetwork(networkName, parameters, callbackWhenComplete);
                 }
             }
         }
@@ -69,7 +69,7 @@ enginesis.ShareHelper = {
         }
     },
 
-    initializeNetwork: function (networkName, callbackWhenComplete) {
+    initializeNetwork: function (networkName, parameters, callbackWhenComplete) {
         // load and init requested network
         var i,
             networkDetails;
@@ -77,26 +77,51 @@ enginesis.ShareHelper = {
         for (i = 0; i < this.networks.length; i ++) {
             networkDetails = this.networks[i];
             if (networkDetails.id == networkName) {
-                networkDetails.init(callbackWhenComplete);
+                networkDetails.init(parameters, callbackWhenComplete);
             }
         }
     },
 
-    initializeFacebook: function (callbackWhenComplete) {
+    initializeFacebook: function (parameters, callbackWhenComplete) {
+        var facebookScript = '//connect.facebook.net/en_US/sdk.js',
+            domId = 'facebook-jssdk',
+            firstJS = document.getElementsByTagName('script')[0];
+
         if (FB == null || FB.ui == null) {
             // load and init FB SDK
-        }
-        if (callbackWhenComplete != null) {
-            callbackWhenComplete('facebook');
+            window.fbAsyncInit = function() {
+                FB.init({
+                    appId: parameters.facebookAppId,
+                    xfbml: true,
+                    version: 'v2.0'
+                });
+            };
+
+            (function (domId) {
+                var facebookJS;
+                if (document.getElementById(domId)) {
+                    return;
+                }
+                firstJS = document.getElementsByTagName('script')[0];
+                facebookJS = document.createElement('script');
+                facebookJS.id = domId;
+                facebookJS.src = facebookScript;
+                firstJS.parentNode.insertBefore(facebookJS, firstJS);
+                // when facebookJS loads it will automatically call window.fbAsyncInit
+            }(domId));
+        } else {
+            if (callbackWhenComplete != null) {
+                callbackWhenComplete('facebook');
+            }
         }
     },
 
-    initializeTwitter: function (callbackWhenComplete) {
+    initializeTwitter: function (parameters, callbackWhenComplete) {
 
         // load and init Twitter intents
 
         var twitterScript = '//platform.twitter.com/widgets.js',
-            domId = 'twitter-wjs',
+            domId = 'twitter-jswidgets',
             twttr,
             twitterJS,
             firstJS = document.getElementsByTagName('script')[0];
@@ -109,29 +134,35 @@ enginesis.ShareHelper = {
                 firstJS.parentNode.insertBefore(twitterJS, firstJS);
                 return window.twttr || (twttr = { _e: [], ready: function(f) { twttr._e.push(f) } });
             })();
-        }
-        window.twttr.ready(function (twttr) {
-            twttr.events.bind('tweet', this.onTweetComplete);
+            window.twttr.ready(function (twttr) {
+                twttr.events.bind('tweet', this.onTweetComplete);
+                if (callbackWhenComplete != null) {
+                    callbackWhenComplete('twitter');
+                }
+            });
+        } else {
             if (callbackWhenComplete != null) {
                 callbackWhenComplete('twitter');
             }
-        });
+        }
     },
 
     onTweetComplete: function (event) {
-        // the tweet was sent or it failed, how do we know?
+
+        // TODO: the tweet was sent or it failed, how do we know?
 
         var result = event;
+        enginesis.debugLog('ShareHelper:onTweetComplete event=' + event);
     },
 
-    initializeGooglePlus: function (callbackWhenComplete) {
+    initializeGooglePlus: function (parameters, callbackWhenComplete) {
         // load and init G+
         if (callbackWhenComplete != null) {
             callbackWhenComplete('googleplus');
         }
     },
 
-    initializeEmail: function (callbackWhenComplete) {
+    initializeEmail: function (parameters, callbackWhenComplete) {
         // nothing to do for email
         if (callbackWhenComplete != null) {
             callbackWhenComplete('email');

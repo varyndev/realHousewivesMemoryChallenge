@@ -214,7 +214,7 @@ MemoryMatch.GameOptions = {
 
     onClickShare: function (event) {
         if (MemoryMatch.GameOptions.isEnabled) {
-            MemoryMatch.showSharePopup();
+            MemoryMatch.showSharePopup(MemoryMatch.GameSetup.gameSubTitle);
         }
     },
 

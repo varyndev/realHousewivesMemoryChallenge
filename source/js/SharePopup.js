@@ -30,6 +30,7 @@ MemoryMatch.SharePopup = {
     secondaryColorFilter: null,
     primaryColorValue: null,
     secondaryColorValue: null,
+    shareMessage: null,
 
 
     setParameters: function (parameters) {
@@ -58,6 +59,9 @@ MemoryMatch.SharePopup = {
             }
             if (parameters.noscale != null) {
                 this.noscale = parameters.noscale;
+            }
+            if (parameters.shareMessage != null) {
+                this.shareMessage = parameters.shareMessage;
             }
         }
     },
@@ -102,8 +106,9 @@ MemoryMatch.SharePopup = {
     },
 
     closeStartAnimation: function () {
-        var duration = 0.1; // seconds of animation
-        var animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.groupDisplayObject, 0, duration * 1000, false, null, this.closeShrink.bind(this));
+        var duration = 0.1, // seconds of animation
+            animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.groupDisplayObject, 0, duration * 1000, false, null, this.closeShrink.bind(this));
+
         if (animator != null) {
             animator.endYScale = animator.endXScale = 1.08;
             animator.vYScale = animator.vXScale = animator.endXScale / (duration * MemoryMatch.fps);
@@ -114,8 +119,9 @@ MemoryMatch.SharePopup = {
     },
 
     closeShrink: function () {
-        var duration = 0.3; // seconds of animation
-        var animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.groupDisplayObject, 0, duration * 1000, false, null, this.closeComplete.bind(this));
+        var duration = 0.3, // seconds of animation
+            animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.groupDisplayObject, 0, duration * 1000, false, null, this.closeComplete.bind(this));
+
         animator.endYScale = animator.endXScale = 0;
         animator.vYScale = animator.vXScale = (-1 * this.groupDisplayObject.scaleX) / (duration * MemoryMatch.fps);
     },
@@ -138,9 +144,14 @@ MemoryMatch.SharePopup = {
     },
 
     onClickNetworkButton: function (networkId) {
+        var parameters;
+
         if (this.isEnabled) {
             this.isEnabled = false; // do not allow clicking any other button until this completes
-            enginesis.ShareHelper.initialize(networkId, this.onNetworkInitializeComplete.bind(this));
+            parameters = {
+                facebookAppId: MemoryMatch.GameSetup.facebookAppId
+            };
+            enginesis.ShareHelper.initialize(networkId, parameters, this.onNetworkInitializeComplete.bind(this));
         }
     },
 
@@ -150,12 +161,18 @@ MemoryMatch.SharePopup = {
 
     onNetworkInitializeComplete: function (networkId) {
         // the requested network was initialized now try to call it
+        // TODO: Get description from parameters, do not hard code it here
         var parameters = {
-            description: MemoryMatch.GameSetup.gameSubTitle,
+            description: '',
             socialHashTags: MemoryMatch.GameSetup.socialHashTag,
             viaId: MemoryMatch.GameSetup.twitterId,
             link: MemoryMatch.GameSetup.gameLink};
 
+        if (this.shareMessage != null) {
+            parameters.description = this.shareMessage;
+        } else {
+            parameters.description = MemoryMatch.GameSetup.gameSubTitle;
+        }
         enginesis.ShareHelper.share(networkId, parameters, this.onNetworkShareComplete.bind(this));
         this.closePopup("continue"); // if user cancels we will never know!
     },

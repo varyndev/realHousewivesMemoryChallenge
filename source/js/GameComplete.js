@@ -82,8 +82,10 @@ MemoryMatch.GameComplete = {
     },
 
     onClickShare: function (event) {
-        if (MemoryMatch.GameOptions.isEnabled) {
-            MemoryMatch.showSharePopup();
+        var shareMessage = '';
+        if (MemoryMatch.GameComplete.isEnabled) {
+            shareMessage = 'I just completed ' + MemoryMatch.GameSetup.gameTitle + ' with a score of ' + MemoryMatch.totalScore + '. can you beat me?';
+            MemoryMatch.showSharePopup(shareMessage);
         }
     },
 
@@ -93,11 +95,11 @@ MemoryMatch.GameComplete = {
 
     showBackgroundImage: function (canvas) {
         // This method will scale the background image to fit the current stage if it is too big.
-        var popupImageAsset = assetLoader.getResult("popup-bg");
-        var bgImage = new createjs.Bitmap(popupImageAsset);
-        var xScale;
-        var yScale;
-        var backgroundCover;
+        var popupImageAsset = assetLoader.getResult("popup-bg"),
+            bgImage = new createjs.Bitmap(popupImageAsset),
+            xScale,
+            yScale,
+            backgroundCover;
 
         if (popupImageAsset.width > canvas.width) {
             xScale = canvas.width / popupImageAsset.width;
