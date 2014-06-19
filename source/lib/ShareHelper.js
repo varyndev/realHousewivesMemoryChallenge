@@ -87,14 +87,17 @@ enginesis.ShareHelper = {
             domId = 'facebook-jssdk',
             firstJS = document.getElementsByTagName('script')[0];
 
-        if (FB == null || FB.ui == null) {
+        if (window.FB == null || window.FB.ui == null) {
             // load and init FB SDK
             window.fbAsyncInit = function() {
-                FB.init({
+                window.FB.init({
                     appId: parameters.facebookAppId,
                     xfbml: true,
                     version: 'v2.0'
                 });
+                if (callbackWhenComplete != null) {
+                    callbackWhenComplete('facebook');
+                }
             };
 
             (function (domId) {
