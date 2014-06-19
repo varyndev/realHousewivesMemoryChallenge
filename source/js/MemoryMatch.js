@@ -9,7 +9,7 @@ var assetLoader;
 
 
 var MemoryMatch = {
-    GameVersion: "1.0.61",
+    GameVersion: "1.0.62",
     platform: "unknown",
     locale: "en-US",
     debugMode: true,
@@ -215,9 +215,14 @@ var MemoryMatch = {
         if (loaderObject != null) {
             this.GameSetup.mapSpritesheetFrames = loaderObject;
         }
+        loaderObject = assetLoader.getResult("guiSprites4json");
+        if (loaderObject != null) {
+            this.GameSetup.shareIconsFrames = loaderObject;
+        }
         this.GameSetup.guiSpritesheet1Frames.images = [assetLoader.getResult("guiSprites1")];
         this.GameSetup.guiSpritesheet2Frames.images = [assetLoader.getResult("guiSprites2")];
         this.GameSetup.mapSpritesheetFrames.images = [assetLoader.getResult("guiSprites3")];
+        this.GameSetup.shareIconsFrames.images = [assetLoader.getResult("guiSprites4")];
 
         MemoryMatch.backgroundImage = assetLoader.getResult("background");
         MemoryMatch.cardMargin = 2;
@@ -406,7 +411,7 @@ var MemoryMatch = {
     },
 
     showSharePopup: function () {
-        MemoryMatch.SharePopup.setup(MemoryMatch.stage, {title: "Share", message: "Share with your favorite social network:", callback: MemoryMatch.onShareClosed.bind(MemoryMatch), closeButton: true, continueButton: false, noscale: true});
+        MemoryMatch.SharePopup.setup(MemoryMatch.stage, {title: "Share", message: "Share " + MemoryMatch.GameSetup.gameTitle + " with your favorite social network:", callback: MemoryMatch.onShareClosed.bind(MemoryMatch), closeButton: true, continueButton: false, noscale: true});
         MemoryMatch.SharePopup.buildScreen(true);
     },
 
@@ -1122,6 +1127,9 @@ var MemoryMatch = {
                             break;
                         case "guiSprites3json":
                             MemoryMatch.GameSetup.mapSpritesheetFrames = jsonObject;
+                            break;
+                        case "guiSprites4json":
+                            MemoryMatch.GameSetup.shareIconsFrames = jsonObject;
                             break;
                         default:
                             break;
@@ -4289,6 +4297,19 @@ var MemoryMatch = {
             }
         }
         return result;
+    },
+
+    replaceChar: function (str, char) {
+        // this should be a String extension
+        // String.prototype.replaceChar
+        var pos = str.indexOf(char);
+        if (pos > 0) {
+            return str.substr(0, pos) + str.substr(pos + 1);
+        } else if (pos == 0) {
+            return str.substr(1);
+        } else {
+            return str;
+        }
     },
 
     formatTimeAsString: function (sourceTimeInMilliseconds, showLeadingMinutes, showLeadingHours) {

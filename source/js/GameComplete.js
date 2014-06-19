@@ -194,7 +194,6 @@ MemoryMatch.GameComplete = {
         this.buttonInstances.push(gameButton);
     },
 
-
     setupAward: function () {
         // Show Award
         var spriteFrame = 'mapTrophy',

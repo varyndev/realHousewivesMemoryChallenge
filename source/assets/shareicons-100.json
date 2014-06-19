@@ -1,0 +1,21 @@
+{
+"images": ["shareicons-100.png"],
+"frames": [
+
+    [384, 0, 128, 128], 
+    [256, 0, 128, 128], 
+    [128, 0, 128, 128], 
+    [0, 0, 128, 128]
+],
+"animations": {
+    
+        "email-icon":[0], 
+        "facebook-icon":[1], 
+        "googleplus-icon":[2], 
+        "twitter-icon":[3]
+},
+"texturepacker": [
+        "SmartUpdateHash: $TexturePacker:SmartUpdate:23fb637257c038052915bc109925e1c3:b3d7092b4196f868243fd39c0379d615:0ae438a6da19424d42ff18f6049f4f0a$",
+        "Created with TexturePacker (http://www.texturepacker.com) for EaselJS"
+]
+}

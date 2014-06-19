@@ -39,7 +39,8 @@ MemoryMatch.GUIButton = function (parameters) {
     guiButton._isPressed = false;
     guiButton._isOver = false;
     guiButton._isFlashing = false;
-    guiButton.spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.guiSpritesheet1Frames);
+    guiButton.spriteFrames = null;
+    guiButton.spriteData = null;
     guiButton.shadowSource = null;
     guiButton.buttonFaceActive = null;
     guiButton.buttonFaceOver = null;
@@ -112,6 +113,11 @@ MemoryMatch.GUIButton = function (parameters) {
             if (parameters.addTextShadow != null) {
                 guiButton.addTextShadow = parameters.addTextShadow;
             }
+            if (parameters.spriteFrames != null) {
+                guiButton.spriteFrames = parameters.spriteFrames;
+            } else {
+                guiButton.spriteFrames = MemoryMatch.GameSetup.guiSpritesheet1Frames;
+            }
             // set defaults for things not provided
             if (guiButton.buttonBaseOver == null) {
                 guiButton.buttonBaseOver = guiButton.buttonBaseActive;
@@ -134,6 +140,7 @@ MemoryMatch.GUIButton = function (parameters) {
             if (this.name == null) {
                 this.name = 'button' + this.tag.toString();
             }
+            guiButton.spriteData = new createjs.SpriteSheet(guiButton.spriteFrames);
         }
     }
 
@@ -153,7 +160,7 @@ MemoryMatch.GUIButton = function (parameters) {
             this.buttonSprite.framerate = 1;
             this.addChild(this.buttonSprite);
         }
-        buttonSize = MemoryMatch.getSpriteFrameSize(MemoryMatch.GameSetup.guiSpritesheet1Frames, spriteFrame);
+        buttonSize = MemoryMatch.getSpriteFrameSize(this.spriteFrames, spriteFrame);
         this.width = buttonSize.width * this.buttonScale;
         this.height = buttonSize.height * this.buttonScale;
         this.buttonSprite.hitArea = new createjs.Shape(new createjs.Graphics().beginFill('909090').drawRect(0, 0, this.width, this.height));
@@ -228,7 +235,7 @@ MemoryMatch.GUIButton = function (parameters) {
 
         if (this.iconSprite == null && this.buttonFaceActive != null) {
             icon = new createjs.Sprite(this.spriteData, this.buttonFaceActive);
-            spriteSize = MemoryMatch.getSpriteFrameSize(MemoryMatch.GameSetup.guiSpritesheet1Frames, this.buttonFaceActive);
+            spriteSize = MemoryMatch.getSpriteFrameSize(this.spriteFrames, this.buttonFaceActive);
             icon.framerate = 1;
             icon.name = "buttonIcon";
             y = (this.height - spriteSize.height) * 0.5;

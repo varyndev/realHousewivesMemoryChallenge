@@ -7,7 +7,7 @@
  */
 
 MemoryMatch.SharePopup = {
-    shareNetworks: ['email', 'facebook', 'twitter', 'googleplus', 'pinterest'],
+    shareNetworks: [{id: 'email', icon: 'email-icon'}, {id: 'facebook', icon: 'facebook-icon'}, {id: 'twitter', icon: 'twitter-icon'}, {id: 'googleplus', icon: 'googleplus-icon'}],
     stateCompleteCallback: null,
     parentDisplayObject: null,
     groupDisplayObject: null,
@@ -137,14 +137,32 @@ MemoryMatch.SharePopup = {
         }
     },
 
-    onClickNetworkButton: function (event) {
+    onClickNetworkButton: function (networkId) {
         if (this.isEnabled) {
-            this.closePopup("continue");
+            this.isEnabled = false; // do not allow clicking any other button until this completes
+            enginesis.ShareHelper.initialize(networkId, this.onNetworkInitializeComplete.bind(this));
         }
     },
 
     onClickBackground: function (event) {
         // this just eats the click so anything under the popup is not activated
+    },
+
+    onNetworkInitializeComplete: function (networkId) {
+        // the requested network was initialized now try to call it
+        var parameters = {
+            description: MemoryMatch.GameSetup.gameSubTitle,
+            socialHashTags: MemoryMatch.GameSetup.socialHashTag,
+            viaId: MemoryMatch.GameSetup.twitterId,
+            link: MemoryMatch.GameSetup.gameLink};
+
+        enginesis.ShareHelper.share(networkId, parameters, this.onNetworkShareComplete.bind(this));
+        this.closePopup("continue"); // if user cancels we will never know!
+    },
+
+    onNetworkShareComplete: function (networkId) {
+        // the requested share is done
+        this.closePopup("continue");
     },
 
     showBackgroundImage: function () {
@@ -238,7 +256,7 @@ MemoryMatch.SharePopup = {
         titleTextField = new createjs.Text(this.message, MemoryMatch.getScaledFontSize(48) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         titleTextField.textAlign = "left";
         titleTextField.x = this.marginLeft;
-        titleTextField.y = this.backgroundHeight * 0.4;
+        titleTextField.y = this.backgroundHeight * 0.2;
         titleTextField.lineWidth = this.backgroundWidth - (this.marginLeft * 2);
         titleTextField.maxWidth = this.backgroundWidth - (this.marginLeft * 2);
         this.groupDisplayObject.addChild(titleTextField);
@@ -255,6 +273,7 @@ MemoryMatch.SharePopup = {
             buttonTagCounter = 0,
             buttonSize,
             networkId,
+            icon,
             i;
 
         // Close button always shows in its own special place
@@ -268,9 +287,10 @@ MemoryMatch.SharePopup = {
         // Show the share buttons
         shareButtonsCount = this.shareNetworks.length;
         for (i = 0; i < shareButtonsCount; i ++) {
-            networkId = this.shareNetworks[i];
+            networkId = this.shareNetworks[i].id;
+            icon = this.shareNetworks[i].icon;
             buttonTagCounter ++;
-            shareButton = MemoryMatch.GUIButton({name: networkId, tag: buttonTagCounter, disabled: false, callback: this.onClickNetworkButton.bind(this), baseUp: networkId, baseOver: networkId, baseDown: networkId});
+            shareButton = MemoryMatch.GUIButton({name: networkId, tag: buttonTagCounter, disabled: false, callback: this.onClickNetworkButton.bind(this), spriteFrames: MemoryMatch.GameSetup.shareIconsFrames, baseUp: icon, baseOver: icon, baseDown: icon});
             if (shareButtonsWidth == 0) {
                 // we are assuming all share buttons are the exact same size, otherwise this logic is incorrect.
                 buttonSize = gameButton.getSize();
@@ -278,7 +298,7 @@ MemoryMatch.SharePopup = {
                 shareButtonsWidth = ((buttonSize.width + shareButtonsMargin) * shareButtonsCount) - shareButtonsMargin;
                 shareButtonsStartX = (this.backgroundWidth - shareButtonsWidth) * 0.5;
             }
-            shareButton.setTransform(shareButtonsStartX + ((buttonSize.width + shareButtonsMargin) * i), this.backgroundHeight * 0.5, buttonScale, buttonScale);
+            shareButton.setTransform(shareButtonsStartX + ((buttonSize.width + shareButtonsMargin) * i), this.backgroundHeight * 0.4, buttonScale, buttonScale);
             this.groupDisplayObject.addChild(shareButton);
             this.buttonInstances.push(shareButton);
         }
