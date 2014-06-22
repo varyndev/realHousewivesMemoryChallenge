@@ -13,6 +13,7 @@ MemoryMatch.GameSetup = {
     twitterId: '@bravotv',
     socialHashTag: '#rhmc',
     facebookAppId: '477181735758491',
+    promoImage: 'http://www.enginesis.com/games/realHousewivesMemoryChallenge/assets/1200x900.png',
     orientation: "landscape",
     assetsFolder: "assets",
     backgroundImage: "background.jpg",

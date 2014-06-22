@@ -84,8 +84,7 @@ enginesis.ShareHelper = {
 
     initializeFacebook: function (parameters, callbackWhenComplete) {
         var facebookScript = '//connect.facebook.net/en_US/sdk.js',
-            domId = 'facebook-jssdk',
-            firstJS = document.getElementsByTagName('script')[0];
+            domId = 'facebook-jssdk';
 
         if (window.FB == null || window.FB.ui == null) {
             // load and init FB SDK
@@ -93,6 +92,11 @@ enginesis.ShareHelper = {
                 window.FB.init({
                     appId: parameters.facebookAppId,
                     xfbml: true,
+                    status: true,
+                    cookie: true,
+                    oauth: true,
+                    frictionlessRequests: true,
+                    display: 'popup',
                     version: 'v2.0'
                 });
                 if (callbackWhenComplete != null) {
@@ -101,16 +105,18 @@ enginesis.ShareHelper = {
             };
 
             (function (domId) {
-                var facebookJS;
+                var facebookJS,
+                    firstJS;
                 if (document.getElementById(domId)) {
                     return;
                 }
                 firstJS = document.getElementsByTagName('script')[0];
                 facebookJS = document.createElement('script');
                 facebookJS.id = domId;
+                facebookJS.async = true;
                 facebookJS.src = facebookScript;
                 firstJS.parentNode.insertBefore(facebookJS, firstJS);
-                // when facebookJS loads it will automatically call window.fbAsyncInit
+                // when facebookJS loads it will automatically call window.fbAsyncInit which will call our callback so we know FB is ready
             }(domId));
         } else {
             if (callbackWhenComplete != null) {
@@ -177,11 +183,11 @@ enginesis.ShareHelper = {
             FB.ui(
                 {
                     method: 'feed',
-                    name: this.title,
-                    caption: this.subtitle,
+                    name: parameters.title,
+                    caption: parameters.caption,
                     description: this.description,
-                    link: this.link,
-                    picture: this.image
+                    link: parameters.link,
+                    picture: parameters.picture
                 },
                 function(response) {
                     if (response && response.post_id) {

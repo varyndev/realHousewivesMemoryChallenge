@@ -161,12 +161,15 @@ MemoryMatch.SharePopup = {
 
     onNetworkInitializeComplete: function (networkId) {
         // the requested network was initialized now try to call it
-        // TODO: Get description from parameters, do not hard code it here
         var parameters = {
             description: '',
+            title: MemoryMatch.GameSetup.gameTitle,
+            caption: MemoryMatch.GameSetup.gameSubTitle,
+            picture: MemoryMatch.GameSetup.promoImage,
             socialHashTags: MemoryMatch.GameSetup.socialHashTag,
             viaId: MemoryMatch.GameSetup.twitterId,
-            link: MemoryMatch.GameSetup.gameLink};
+            link: MemoryMatch.GameSetup.gameLink
+        };
 
         if (this.shareMessage != null) {
             parameters.description = this.shareMessage;
