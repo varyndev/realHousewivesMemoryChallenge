@@ -166,8 +166,20 @@ enginesis.ShareHelper = {
 
     initializeGooglePlus: function (parameters, callbackWhenComplete) {
         // load and init G+
-        if (callbackWhenComplete != null) {
-            callbackWhenComplete('googleplus');
+        var googleJS,
+            plusOneJS = document.createElement('script');
+
+        this.callBackWhenComplete = callbackWhenComplete;
+        plusOneJS.type = 'text/javascript';
+        plusOneJS.async = true;
+        plusOneJS.src = 'https://apis.google.com/js/client:plusone.js?onload=onGooglePlusLoaded';
+        googleJS = document.getElementsByTagName('script')[0];
+        googleJS.parentNode.insertBefore(plusOneJS, googleJS);
+    },
+
+    onGooglePlusLoaded: function (event) {
+        if (this.callBackWhenComplete != null) {
+            this.callBackWhenComplete('googleplus');
         }
     },
 
@@ -203,7 +215,25 @@ enginesis.ShareHelper = {
     },
 
     GoogleFeed: function (parameters, callbackWhenComplete) {
+        var options = {
+            contenturl: parameters.link,
+            clientid: '972925239064-mgco9a8lvqu00tuf9pv3q9c385834h66.apps.googleusercontent.com',
+            cookiepolicy: 'single_host_origin',
+            prefilltext: parameters.description,
+            calltoactionlabel: 'CHALLENGE',
+            calltoactionurl: parameters.link,
+            contentdeeplinkid: '/pages',
+            calltoactiondeeplinkid: '/pages/create'
+            },
+            domElement;
 
+        // Call the render method when appropriate within your app to display
+        // the button.
+        gapi.interactivepost.render('googleSharePost', options);
+        domElement = document.getElementById('googleSharePost');
+        if (typeof domElement.onclick == "function") {
+            domElement.onclick.apply(domElement);
+        }
     },
 
     TwitterStatus: function (parameters, callbackWhenComplete) {

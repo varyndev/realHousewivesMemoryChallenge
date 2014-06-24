@@ -23,7 +23,7 @@ MemoryMatch.SharePopup = {
     message: null,
     closeButton: true,
     continueButton: false,
-    domElement: null,
+    domElementEmailForm: null,
     noscale: false,
     closeEventType: null,
     primaryColorFilter: null,
@@ -45,8 +45,8 @@ MemoryMatch.SharePopup = {
             } else if (this.message == null) {
                 this.message = "";
             }
-            if (parameters.domElement != null) {
-                this.domElement = parameters.domElement;
+            if (parameters.domElementEmailForm != null) {
+                this.domElementEmailForm = parameters.domElementEmailForm;
             }
             if (parameters.closeButton != null) {
                 this.closeButton = parameters.closeButton;
@@ -89,9 +89,6 @@ MemoryMatch.SharePopup = {
         this.setupButtons();
         this.parentDisplayObject.addChild(this.groupDisplayObject);
         this.groupDisplayObject.setTransform(this.parentDisplayObject.canvas.width * 0.5, this.parentDisplayObject.canvas.height * 0.5, 1, 1, 0, 0, 0, this.backgroundWidth * 0.5, this.backgroundHeight * 0.5);
-        if (this.domElement != null) {
-            this.setupDOMElement(); // need to do this after the transformation
-        }
         if (autoStart == null) {
             autoStart = false;
         }
@@ -177,7 +174,11 @@ MemoryMatch.SharePopup = {
             parameters.description = MemoryMatch.GameSetup.gameSubTitle;
         }
         enginesis.ShareHelper.share(networkId, parameters, this.onNetworkShareComplete.bind(this));
-        this.closePopup("continue"); // if user cancels we will never know!
+        if (networkId != 'email') {
+            this.closePopup("continue"); // if user cancels we will never know!
+        } else {
+            this.showEmailForm();
+        }
     },
 
     onNetworkShareComplete: function (networkId) {
@@ -225,36 +226,39 @@ MemoryMatch.SharePopup = {
         }
     },
 
-    setupDOMElement: function () {
+    setupDOMElement: function (domElementId) {
         // Position a DOM element in the center of the popup. Expecting the element to be a div containing what we want to show.
         // Register domElement to its center
-        var pageElement = document.getElementById(this.domElement),
-            domElement = new createjs.DOMElement(pageElement),
-            scaleFactor = 1,
+        var pageElement = document.getElementById(domElementId),
+            domElement,
+            positionOffset,
+            scaleFactorX,
+            scaleFactorY,
             x,
             y,
             width,
             height;
 
-        if (domElement != null) {
-            width = pageElement.clientWidth;
-            height = pageElement.clientHeight;
-            if ( ! this.noscale) {
-                scaleFactor = MemoryMatch.stageScaleFactor;
-                if (scaleFactor < 0.5) {
-                    // this is a complete hack. If the scale factor is less than 50% it is scaled too much (about 2x too much), so
-                    // I am adjusting it on a random number that looks good while testing. No idea why this is happening or what the right number should be.
-                    scaleFactor *= 1.3333;
+        if (pageElement != null) {
+            domElement = new createjs.DOMElement(pageElement)
+            if (domElement != null) {
+                domElement.name = 'text';
+                width = pageElement.clientWidth;
+                height = pageElement.clientHeight;
+
+                // the div was scaled by CSS, we need to determine how much the div was scaled, then center it
+                scaleFactorX = MemoryMatch.stageScaleFactor * (MemoryMatch.cssScaledWidth / MemoryMatch.stageWidth);
+                scaleFactorY = MemoryMatch.stageScaleFactor * (MemoryMatch.cssScaledHeight / MemoryMatch.stageHeight);
+                if (MemoryMatch.stageScaleFactor == 0.5) {
+                    positionOffset = -0.5;
+                } else {
+                    positionOffset = -0.57;
                 }
-                width *= scaleFactor;
-                height *= scaleFactor;
-                x = this.backgroundWidth * 0.05;
-            } else {
-                x = (this.backgroundWidth - width) * 0.5;
+                x = Math.floor(this.backgroundWidth * positionOffset);
+                y = Math.floor(this.backgroundHeight * positionOffset);
+                this.groupDisplayObject.addChild(domElement);
+                domElement.setTransform(x, y, scaleFactorX, scaleFactorY, 0, 0, 0, 0, 0);
             }
-            y = this.backgroundHeight * 0.08;
-            domElement.setTransform(x, y, scaleFactor, scaleFactor, 0, 0, 0, 0, 0);
-            this.groupDisplayObject.addChild(domElement);
         }
     },
 
@@ -279,6 +283,7 @@ MemoryMatch.SharePopup = {
         titleTextField.y = this.backgroundHeight * 0.2;
         titleTextField.lineWidth = this.backgroundWidth - (this.marginLeft * 2);
         titleTextField.maxWidth = this.backgroundWidth - (this.marginLeft * 2);
+        titleTextField.name = 'title';
         this.groupDisplayObject.addChild(titleTextField);
     },
 
@@ -321,6 +326,32 @@ MemoryMatch.SharePopup = {
             shareButton.setTransform(shareButtonsStartX + ((buttonSize.width + shareButtonsMargin) * i), this.backgroundHeight * 0.4, buttonScale, buttonScale);
             this.groupDisplayObject.addChild(shareButton);
             this.buttonInstances.push(shareButton);
+        }
+    },
+
+    showEmailForm: function () {
+        // the email form is a DOM element we need to show it, hide the buttons
+        // Hide the share buttons
+        var shareButton,
+            shareButtonsCount,
+            networkId,
+            i;
+
+        this.isEnabled = true;
+        shareButtonsCount = this.shareNetworks.length;
+        for (i = 0; i < shareButtonsCount; i ++) {
+            networkId = this.shareNetworks[i].id;
+            shareButton = this.groupDisplayObject.getChildByName(networkId);
+            if (shareButton != null) {
+                shareButton.visible = false;
+            }
+        }
+        shareButton = this.groupDisplayObject.getChildByName('title');
+        if (shareButton != null) {
+            shareButton.visible = false;
+        }
+        if (this.domElement != null) {
+            this.setupDOMElement(this.domElementEmailForm);
         }
     },
 

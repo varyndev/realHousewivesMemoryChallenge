@@ -5408,6 +5408,12 @@ function runTests() {
 
 };
 
+function onGooglePlusLoaded () {
+    if (enginesis != null && enginesis.ShareHelper != null) {
+        enginesis.ShareHelper.onGooglePlusLoaded();
+    }
+};
+
 //====================================================================================
 // initApp is called from the page load. This is the entry point. When assets are loaded
 // we call MemoryMatch.allAssetsLoaded
