@@ -128,8 +128,13 @@ MemoryMatch.SharePopup = {
     },
 
     closePopup: function (closeEventType) {
+        var domElement = this.groupDisplayObject.getChildByName(this.domElementEmailForm);
+
         this.isEnabled = false;
         this.closeEventType = closeEventType;
+        if (domElement != null) {
+            domElement.visible = false;
+        }
         // begin animation, then once close is complete send notification
         this.closeStartAnimation();
     },
@@ -149,6 +154,21 @@ MemoryMatch.SharePopup = {
                 facebookAppId: MemoryMatch.GameSetup.facebookAppId
             };
             enginesis.ShareHelper.initialize(networkId, parameters, this.onNetworkInitializeComplete.bind(this));
+        }
+    },
+
+    onClickSend: function () {
+        var name,
+            fromEmail,
+            toEmail,
+            message;
+
+        name = document.getElementById('fromname').value;
+        fromEmail = document.getElementById('fromemail').value;
+        toEmail = document.getElementById('toemail').value;
+        message = document.getElementById('message').value;
+        if (fromEmail.length > 0 && toEmail.length > 0) {
+            this.closePopup("continue");
         }
     },
 
@@ -231,7 +251,6 @@ MemoryMatch.SharePopup = {
         // Register domElement to its center
         var pageElement = document.getElementById(domElementId),
             domElement,
-            positionOffset,
             scaleFactorX,
             scaleFactorY,
             x,
@@ -242,22 +261,36 @@ MemoryMatch.SharePopup = {
         if (pageElement != null) {
             domElement = new createjs.DOMElement(pageElement)
             if (domElement != null) {
-                domElement.name = 'text';
+                domElement.name = domElementId;
                 width = pageElement.clientWidth;
                 height = pageElement.clientHeight;
-
-                // the div was scaled by CSS, we need to determine how much the div was scaled, then center it
-                scaleFactorX = MemoryMatch.stageScaleFactor * (MemoryMatch.cssScaledWidth / MemoryMatch.stageWidth);
-                scaleFactorY = MemoryMatch.stageScaleFactor * (MemoryMatch.cssScaledHeight / MemoryMatch.stageHeight);
+                // the div is independent of the CSS container to we need to center it and scale it based on where the background is placed
                 if (MemoryMatch.stageScaleFactor == 0.5) {
-                    positionOffset = -0.5;
+                    scaleFactorX = 1;
+                    x = width * -0.12;
+                    y = MemoryMatch.stageHeight * 0.15; // Math.floor((MemoryMatch.stageHeight - height) * (-0.5 * scaleFactorX));
+                } else if (MemoryMatch.stageScaleFactor < 0.5) {
+//                    scaleFactorX = 0.8; // MemoryMatch.stageScaleFactor * (MemoryMatch.cssScaledWidth / MemoryMatch.stageWidth);
+//                    scaleFactorY = 0.8; // MemoryMatch.stageScaleFactor * (MemoryMatch.cssScaledHeight / MemoryMatch.stageHeight);
+                    scaleFactorX = 0.8;
+                    x = width * 0.05; // Math.floor((MemoryMatch.stageWidth - width) * 0.5);
+                    y = MemoryMatch.stageHeight * 0.15; // Math.floor((MemoryMatch.stageHeight - height) * 0.5);
                 } else {
-                    positionOffset = -0.57;
+//                    scaleFactorX = 1; // MemoryMatch.stageScaleFactor * (MemoryMatch.cssScaledWidth / MemoryMatch.stageWidth);
+//                    scaleFactorY = 1; // MemoryMatch.stageScaleFactor * (MemoryMatch.cssScaledHeight / MemoryMatch.stageHeight);
+//                    x = Math.floor((MemoryMatch.stageWidth - width) * 0.5 * scaleFactorX);
+//                    y = Math.floor((MemoryMatch.stageHeight - height) * 0.5 * scaleFactorX);
+                    scaleFactorX = 1; // this.backgroundWidth / width;
+                    x = width * -0.12; // Math.floor((MemoryMatch.stageWidth - width) * (-0.5 * scaleFactorX));
+                    y = MemoryMatch.stageHeight * 0.15; // Math.floor((MemoryMatch.stageHeight - height) * (-0.5 * scaleFactorX));
                 }
-                x = Math.floor(this.backgroundWidth * positionOffset);
-                y = Math.floor(this.backgroundHeight * positionOffset);
-                this.groupDisplayObject.addChild(domElement);
-                domElement.setTransform(x, y, scaleFactorX, scaleFactorY, 0, 0, 0, 0, 0);
+                MemoryMatch.debugLog("X,Y=(" + x + "," + y + "); Scale=" + scaleFactorX + "; Client w/h (" + width + "," + height + "); background (" + this.backgroundWidth + "," + this.backgroundHeight + "); stage(" + MemoryMatch.stageWidth + "," + MemoryMatch.stageHeight + ")");
+                this.groupDisplayObject.addChildAt(domElement, 0);
+                domElement.setTransform(x, y, scaleFactorX, scaleFactorX, 0, 0, 0, 0, 0);
+                pageElement = document.getElementById('send');
+                if (pageElement != null) {
+                    pageElement.onclick = this.onClickSend.bind(this);
+                }
             }
         }
     },
@@ -350,7 +383,7 @@ MemoryMatch.SharePopup = {
         if (shareButton != null) {
             shareButton.visible = false;
         }
-        if (this.domElement != null) {
+        if (this.domElementEmailForm != null) {
             this.setupDOMElement(this.domElementEmailForm);
         }
     },

@@ -411,7 +411,7 @@ var MemoryMatch = {
     },
 
     showSharePopup: function (shareMessage) {
-        MemoryMatch.SharePopup.setup(MemoryMatch.stage, {title: "Share", message: "Share " + MemoryMatch.GameSetup.gameTitle + " with your favorite social network:", callback: MemoryMatch.onShareClosed.bind(MemoryMatch), closeButton: true, continueButton: false, noscale: true, shareMessage: shareMessage});
+        MemoryMatch.SharePopup.setup(MemoryMatch.stage, {title: "Share", message: "Share " + MemoryMatch.GameSetup.gameTitle + " with your favorite social network:", callback: MemoryMatch.onShareClosed.bind(MemoryMatch), closeButton: true, continueButton: false, noscale: true, shareMessage: shareMessage, domElementEmailForm: 'emailshare'});
         MemoryMatch.SharePopup.buildScreen(true);
     },
 
@@ -5149,7 +5149,7 @@ var MemoryMatch = {
     },
 
     goFullScreen: function () {
-        if (window.screenfull != null) {
+        if (window.screenfull !== false) {
             window.screenfull.toggle(document.getElementById(MemoryMatch.canvasContainerElement));
         }
     },

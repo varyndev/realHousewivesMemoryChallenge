@@ -163,6 +163,96 @@ body {
     font-size: 32px;
 }
 
+#emailshare {
+    position: absolute;
+    visibility: hidden;
+    width: 100%;
+    align:      center;
+    text-align: center;
+    overflow: hidden;
+    color: #ffffff;
+    font-size: 28px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+#emailform {
+    width:      50%;
+    height:     50%;
+    align:      center;
+    text-align: center;
+    margin: 0 auto;
+/*    background-color: #aad4dc; */
+}
+
+#emailtable {
+    left:       auto;
+    top:        auto;
+    align:      center;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.emailtablelabel {
+    text-align: right;
+}
+
+.emailtablefield {
+    color: #000090;
+    font-size: 18px;
+}
+
+.emailtablebutton {
+    -moz-box-shadow:inset 0px 1px 0px 0px #ffffff;
+    -webkit-box-shadow:inset 0px 1px 0px 0px #ffffff;
+    box-shadow:inset 0px 1px 0px 0px #ffffff;
+    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #ededed), color-stop(1, #dfdfdf) );
+    background:-moz-linear-gradient( center top, #ededed 5%, #dfdfdf 100% );
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ededed', endColorstr='#dfdfdf');
+    background-color:#ededed;
+    -webkit-border-top-left-radius:0px;
+    -moz-border-radius-topleft:0px;
+    border-top-left-radius:0px;
+    -webkit-border-top-right-radius:0px;
+    -moz-border-radius-topright:0px;
+    border-top-right-radius:0px;
+    -webkit-border-bottom-right-radius:0px;
+    -moz-border-radius-bottomright:0px;
+    border-bottom-right-radius:0px;
+    -webkit-border-bottom-left-radius:0px;
+    -moz-border-radius-bottomleft:0px;
+    border-bottom-left-radius:0px;
+    text-indent:0;
+    border:1px solid #dcdcdc;
+    display:inline-block;
+    color:#777777;
+    font-family: SohoStd-BoldItalic, Arial, sans-serif;
+    font-size:18px;
+    font-weight:bold;
+    font-style:normal;
+    height:40px;
+    line-height:40px;
+    width:80px;
+    text-decoration:none;
+    text-align:center;
+    text-shadow:1px 1px 0px #ffffff;
+}
+
+.emailtablebutton:hover {
+    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #dfdfdf), color-stop(1, #ededed) );
+    background:-moz-linear-gradient( center top, #dfdfdf 5%, #ededed 100% );
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#dfdfdf', endColorstr='#ededed');
+    background-color:#dfdfdf;
+}
+
+.emailtablebutton:active {
+     position:relative;
+     top:1px;
+ }
+
 .debug {
     font-size: 36px;
 }
