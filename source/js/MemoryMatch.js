@@ -5420,7 +5420,7 @@ function onGooglePlusLoaded () {
 //====================================================================================
 function initApp() {
     MemoryMatch.setPlatform();
-    MemoryMatch.debugLog("Loading " + MemoryMatch.GameSetup.gameName + " version " + MemoryMatch.GameVersion + " on " + MemoryMatch.platform + " using locale " + MemoryMatch.locale + (MemoryMatch.isTouchDevice ? " / Touch" : " / Mouse"));
+    MemoryMatch.debugLog("Loading " + MemoryMatch.GameSetup.gameTitle + " version " + MemoryMatch.GameVersion + " on " + MemoryMatch.platform + " using locale " + MemoryMatch.locale + (MemoryMatch.isTouchDevice ? " / Touch" : " / Mouse"));
     if (document.getElementById(MemoryMatch.loaderElement) != null) {
         // show canvas under loader so we can implement a loadbar until we get everything setup for EaselJS to take over
         document.getElementById(MemoryMatch.loaderElement).style.display = "block";
