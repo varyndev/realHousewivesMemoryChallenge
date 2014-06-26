@@ -56,12 +56,9 @@ MemoryMatch.GameComplete = {
         this.isEnabled = true;
         MemoryMatch.stopBackgroundMusic();
         if (this.backgroundSoundInstance !== null) {
-            this.backgroundSoundInstance.play({delay: 0, loop: -1});
+            this.backgroundSoundInstance.play({delay: 0, loop: 0});
         } else {
-            this.backgroundSoundInstance = createjs.Sound.play("soundWin", {delay: 0, loop: -1});
-        }
-        if (this.stateCompleteCallback !== null) {
-            // stateCompleteCallback();
+            this.backgroundSoundInstance = createjs.Sound.play("soundWin", {delay: 0, loop: 0});
         }
     },
 

@@ -857,14 +857,6 @@ var MemoryMatch = {
             // If the next button was requested we need to determine where to go next based on the users current situation
             if (MemoryMatch.canUserAdvance()) {
                 if (MemoryMatch.isChallengeGame) {
-
-
-                    // TODO: Testing only!
-                    MemoryMatch.userBeatAllChallengesFirstTime = true;
-
-
-
-
                     // When a Challenge game is completed check if the game has been completed
                     if (MemoryMatch.userBeatAllChallengesFirstTime) {
                         MemoryMatch.userBeatAllChallengesFirstTime = false;
@@ -1606,14 +1598,14 @@ var MemoryMatch = {
         var difficulty,
             gameNumber = MemoryMatch.gameNumber;
 
-        if (gameNumber < 3) {
+        if (gameNumber < 3) { // 2 of diff 1
             difficulty = 1;
-        } else if (gameNumber < 6) {
+        } else if (gameNumber < 6) { // 3 of diff 2
             difficulty = 2;
-        } else if (gameNumber <= 9) {
+        } else if (gameNumber <= 9) { // 4 of diff 3
             difficulty = 3;
         } else {
-            difficulty = 4;
+            difficulty = 4; // 6 of diff 4
         }
         return difficulty;
     },

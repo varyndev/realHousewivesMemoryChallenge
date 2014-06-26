@@ -182,17 +182,19 @@ MemoryMatch.GameSetup = {
                 {sprites: 0, difficulty: 1, targetCard: 5, matchCard: 10, badCardCount: 2, badCards: [9,12,13,14,15]},
                 {sprites: 0, difficulty: 1, targetCard: 5, matchCard: 16, badCardCount: 2, badCards: [9,12,13,14,15]},
                 {sprites: 0, difficulty: 2, targetCard: 6, matchCard: 12, badCardCount: 2, badCards: [9,10,11,14,16,19]},
-                {sprites: 0, difficulty: 2, targetCard: 1, matchCard: 16, badCardCount: 2, badCards: [13,17,14,18]},
                 {sprites: 0, difficulty: 2, targetCard: 1, matchCard: 16, badCardCount: 2, badCards: [11,12,13,14,17,18,19]},
                 {sprites: 0, difficulty: 2, targetCard: 5, matchCard: 11, badCardCount: 2, badCards: [9,12,13,14,15]},
                 {sprites: 0, difficulty: 3, targetCard: 2, matchCard: 8, badCardCount: 3, badCards: [7,11,14,15,16,19]},
                 {sprites: 0, difficulty: 3, targetCard: 4, matchCard: 10, badCardCount: 3, badCards: [8,11,13,14,15,16,19]},
                 {sprites: 0, difficulty: 3, targetCard: 2, matchCard: 9, badCardCount: 3, badCards: [7,11,14,15,16,19]},
                 {sprites: 0, difficulty: 3, targetCard: 4, matchCard: 12, badCardCount: 3, badCards: [8,11,13,14,15,16,19]},
-                {sprites: 0, difficulty: 3, targetCard: 4, matchCard: 7, badCardCount: 3, badCards: [8,11,13,14,15,16,19]},
                 {sprites: 0, difficulty: 3, targetCard: 4, matchCard: 9, badCardCount: 3, badCards: [8,11,13,14,15,16,19]},
+                {sprites: 0, difficulty: 4, targetCard: 6, matchCard: 12, badCardCount: 4, badCards: [9,10,11,14,16,19]},
+                {sprites: 0, difficulty: 4, targetCard: 4, matchCard: 7, badCardCount: 4, badCards: [8,11,13,14,15,16,19]},
                 {sprites: 0, difficulty: 4, targetCard: 3, matchCard: 9, badCardCount: 4, badCards: [7,11,12,13,14,15,16,18]},
-                {sprites: 0, difficulty: 4, targetCard: 2, matchCard: 10, badCardCount: 4, badCards: [7,11,13,14,15,16,19]}
+                {sprites: 0, difficulty: 4, targetCard: 3, matchCard: 10, badCardCount: 4, badCards: [7,11,12,13,14,15,16,18]},
+                {sprites: 0, difficulty: 4, targetCard: 4, matchCard: 10, badCardCount: 4, badCards: [8,11,13,14,15,16,19]},
+                {sprites: 0, difficulty: 4, targetCard: 2, matchCard: 9, badCardCount: 4, badCards: [7,11,13,14,15,16,19]}
             ]
         }
     ],
