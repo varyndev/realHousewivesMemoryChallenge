@@ -507,15 +507,15 @@ MemoryMatch.GameGUI = {
         matchCountLabel = new createjs.Text("Misses:", MemoryMatch.getScaledFontSize(64) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColor);
         matchCountLabel.textAlign = "right";
         matchCountLabel.textBaseline = "middle";
-        matchCountLabel.setTransform(this.width * 0.5, this.hudHeight * 0.5);
-        matchCountLabel.maxWidth = this.width * 0.06;
+        matchCountLabel.setTransform(this.width * 0.52, this.hudHeight * 0.5);
+        matchCountLabel.maxWidth = this.width * 0.1;
         this.matchCountLabel = matchCountLabel;
         this.groupDisplayObject.addChild(matchCountLabel);
 
         matchCountField = new createjs.Text("0", MemoryMatch.getScaledFontSize(84) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         matchCountField.textAlign = "left";
         matchCountField.textBaseline = "middle";
-        matchCountField.setTransform(this.width * 0.53, this.hudHeight * 0.44);
+        matchCountField.setTransform(this.width * 0.54, this.hudHeight * 0.44);
         matchCountField.maxWidth = this.width * 0.03;
         this.matchCountField = matchCountField;
         this.groupDisplayObject.addChild(matchCountField);
