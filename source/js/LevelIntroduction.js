@@ -473,7 +473,7 @@ MemoryMatch.LevelIntroduction = {
         matchCountLabel.maxWidth = width * 0.75;
         groupDisplayObject.addChild(matchCountLabel);
 
-        matchCountField = new createjs.Text("2", MemoryMatch.getScaledFontSize(72) + " " + MemoryMatch.GameSetup.guiBoldFontName, '#FF0000');
+        matchCountField = new createjs.Text("2", MemoryMatch.getScaledFontSize(72) + " " + MemoryMatch.GameSetup.guiBoldFontName, '#FFFFFF');
         matchCountField.textAlign = "left";
         matchCountField.textBaseline = "middle";
         matchCountField.setTransform(x + (width * 0.7), y + (height * 0.55));

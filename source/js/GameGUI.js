@@ -504,7 +504,7 @@ MemoryMatch.GameGUI = {
         backgroundShape.setTransform((this.width - matchCountWidth) * 0.5, this.hudHeight * 0.14);
         this.groupDisplayObject.addChild(backgroundShape);
 
-        matchCountLabel = new createjs.Text("Misses:", MemoryMatch.getScaledFontSize(64) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColor);
+        matchCountLabel = new createjs.Text("Misses:", MemoryMatch.getScaledFontSize(60) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColor);
         matchCountLabel.textAlign = "right";
         matchCountLabel.textBaseline = "middle";
         matchCountLabel.setTransform(this.width * 0.52, this.hudHeight * 0.5);

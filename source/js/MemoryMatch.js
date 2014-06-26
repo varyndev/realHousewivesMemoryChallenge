@@ -9,7 +9,7 @@ var assetLoader;
 
 
 var MemoryMatch = {
-    GameVersion: "1.0.62",
+    GameVersion: "1.0.63",
     platform: "unknown",
     locale: "en-US",
     debugMode: true,
