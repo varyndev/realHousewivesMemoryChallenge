@@ -1047,7 +1047,7 @@ var MemoryMatch = {
     },
 
     setImageSheet: function (spriteSheetAsset, spriteWidth, spriteHeight) {
-//        MemoryMatch.debugLog("Loading sprites " + spriteSheetAsset + " size (" + spriteWidth + "," + spriteHeight + ")");
+        MemoryMatch.debugLog("setImageSheet: loading card sprites " + spriteSheetAsset + " size (" + spriteWidth + "," + spriteHeight + ")");
         MemoryMatch.imageSheetImage = assetLoader.getResult(spriteSheetAsset);
         MemoryMatch.imageSheetSpriteWidth = spriteWidth;
         MemoryMatch.imageSheetSpriteHeight = spriteHeight;
@@ -5121,13 +5121,13 @@ var MemoryMatch = {
         } else {
             cardWidth = gameData.cardWidth;
         }
-        cardWidth = Math.floor(cardWidth * MemoryMatch.cardScaleFactor);
+        cardWidth = Math.ceil(cardWidth * MemoryMatch.cardScaleFactor);
         if (gameData.cardHeight == null || gameData.cardHeight < 1) {
             cardHeight = MemoryMatch.GameSetup.cardHeight;
         } else {
             cardHeight = gameData.cardHeight;
         }
-        cardHeight = Math.floor(cardHeight * MemoryMatch.cardScaleFactor);
+        cardHeight = Math.ceil(cardHeight * MemoryMatch.cardScaleFactor);
         return {width: cardWidth, height: cardHeight};
     },
 
@@ -5146,6 +5146,10 @@ var MemoryMatch = {
 
     getScaledFontSize: function (requestedSizeAt100Percent) {
         return Math.floor(requestedSizeAt100Percent * MemoryMatch.cardScaleFactor) + "px";
+    },
+
+    isFullScreenAvailable: function () {
+        return window.screenfull !== false;
     },
 
     goFullScreen: function () {

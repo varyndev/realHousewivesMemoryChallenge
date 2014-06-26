@@ -36,6 +36,7 @@ MemoryMatch.GUIButton = function (parameters) {
     guiButton.tag = 0;
     guiButton.buttonScale = 1;
     guiButton.disabled = false;
+    guiButton.forceDisabledDisplay = false;
     guiButton._isPressed = false;
     guiButton._isOver = false;
     guiButton._isFlashing = false;
@@ -135,6 +136,7 @@ MemoryMatch.GUIButton = function (parameters) {
                 guiButton.buttonFaceDown = guiButton.buttonFaceActive;
             }
             if (guiButton.buttonFaceDisabled == null) {
+                guiButton.forceDisabledDisplay = true;
                 guiButton.buttonFaceDisabled = guiButton.buttonFaceActive;
             }
             if (this.name == null) {
@@ -181,6 +183,8 @@ MemoryMatch.GUIButton = function (parameters) {
         if ( ! this.disabled) {
             this.setEnabled(true);
             this.handleEvent({type: "rollout"});
+        } else {
+            this.showEnabled(false);
         }
     };
 
@@ -344,6 +348,7 @@ MemoryMatch.GUIButton = function (parameters) {
         // show button in the enabled state
         if (this.disabled) {
             this.setEnabled(true);
+            this.showEnabled(true);
             this.handleEvent({type: "rollout"});
         }
     };
@@ -351,12 +356,7 @@ MemoryMatch.GUIButton = function (parameters) {
     guiButton.disable = function () {
         // show button in the disabled state
         this.setEnabled(false);
-        if (this.buttonSprite != null) {
-            this.buttonSprite.gotoAndStop(this.buttonBaseDisabled);
-        }
-        if (this.iconSprite != null) {
-            this.iconSprite.gotoAndStop(this.buttonFaceDisabled);
-        }
+        this.showEnabled(false);
     };
 
     guiButton.setEnabled = function (enableFlag) {
@@ -376,6 +376,39 @@ MemoryMatch.GUIButton = function (parameters) {
             this.removeEventListener("rollout", this);
             this.removeEventListener("mousedown", this);
             this.removeEventListener("pressup", this);
+        }
+    };
+
+    guiButton.showEnabled = function (enableFlag) {
+        var alpha = 1,
+            buttonBase,
+            buttonFace,
+            buttonText = this.getChildByName("buttonText");
+
+        if (enableFlag) {
+            buttonBase = this.buttonBaseActive;
+            buttonFace = this.buttonFaceActive;
+            if (this.forceDisabledDisplay) {
+                buttonText = this.getChildByName("buttonText");
+            }
+        } else {
+            if (this.forceDisabledDisplay) {
+                alpha = 0.4;
+                buttonText = this.getChildByName("buttonText");
+            }
+            buttonBase = this.buttonBaseDisabled;
+            buttonFace = this.buttonFaceDisabled;
+        }
+        if (this.buttonSprite != null) {
+            this.buttonSprite.gotoAndStop(buttonBase);
+            this.buttonSprite.alpha = alpha;
+        }
+        if (this.iconSprite != null) {
+            this.iconSprite.gotoAndStop(buttonFace);
+            this.iconSprite.alpha = alpha;
+        }
+        if (buttonText != null) {
+            buttonText.alpha = alpha;
         }
     };
 

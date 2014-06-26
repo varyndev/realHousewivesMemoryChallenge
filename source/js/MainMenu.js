@@ -439,7 +439,9 @@ MemoryMatch.MainMenu = {
 
     changeEvent: function () {
         // provide a notification event if a child makes a display change so we can update our cache
-        this.groupDisplayObject.updateCache();
+        if (this.groupDisplayObject != null) {
+            this.groupDisplayObject.updateCache();
+        }
     },
 
     makeLevelButtonName: function (landNumber, levelNumber) {

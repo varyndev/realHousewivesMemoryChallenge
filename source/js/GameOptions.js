@@ -336,6 +336,7 @@ MemoryMatch.GameOptions = {
             groupWidth,
             groupHeight,
             muted,
+            fullScreenDisabled = ! MemoryMatch.isFullScreenAvailable(),
             xOffset,
             yOffset,
             buttonGap,
@@ -417,7 +418,7 @@ MemoryMatch.GameOptions = {
 
             // Show fullscreen button
             buttonTagCounter ++;
-            gameButton = MemoryMatch.GUIButton({name: "fullscreen", tag: buttonTagCounter, disabled: false, callback: this.onClickFullScreen.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, buttonBaseRollOverColor: buttonRollOverColor, iconUp: "optionsSmallFullScreenIcon", iconOver: "optionsSmallFullScreenDownIcon", iconDown: "optionsSmallFullScreenDownIcon"});
+            gameButton = MemoryMatch.GUIButton({name: "fullscreen", tag: buttonTagCounter, disabled: fullScreenDisabled, callback: this.onClickFullScreen.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, buttonBaseRollOverColor: buttonRollOverColor, iconUp: "optionsSmallFullScreenIcon", iconOver: "optionsSmallFullScreenDownIcon", iconDown: "optionsSmallFullScreenDownIcon"});
             yOffset += buttonSize.height + buttonMargin;
             gameButton.setTransform(xOffset, yOffset, 1, 1);
             buttonsGroup.addChild(gameButton);
@@ -457,7 +458,7 @@ MemoryMatch.GameOptions = {
 
             // Show small Full screen button
             buttonTagCounter ++;
-            gameButton = MemoryMatch.GUIButton({name: "fullscreen", tag: buttonTagCounter, disabled: false, callback: this.onClickFullScreen.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, buttonBaseRollOverColor: buttonRollOverColor, iconUp: "optionsSmallFullScreenIcon", iconOver: "optionsSmallFullScreenDownIcon", iconDown: "optionsSmallFullScreenDownIcon"});
+            gameButton = MemoryMatch.GUIButton({name: "fullscreen", tag: buttonTagCounter, disabled: fullScreenDisabled, callback: this.onClickFullScreen.bind(this), baseUp: "optionsSmallButtonBase", buttonBaseColor: buttonBaseColor, buttonBaseRollOverColor: buttonRollOverColor, iconUp: "optionsSmallFullScreenIcon", iconOver: "optionsSmallFullScreenDownIcon", iconDown: "optionsSmallFullScreenDownIcon"});
             gameButton.setTransform(xOffset, yOffset, 1, 1);
             buttonsGroup.addChild(gameButton);
             this.buttonInstances.push(gameButton);
