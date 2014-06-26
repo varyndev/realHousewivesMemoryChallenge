@@ -256,7 +256,6 @@ MemoryMatch.LevelButton = function (parameters) {
             spriteFrameRing,
             spriteFrameRingOver,
             spriteFrameCircle,
-            spriteFrameCircleOver,
             gameButton,
             buttonRing,
             rollOverFrame,
@@ -276,7 +275,6 @@ MemoryMatch.LevelButton = function (parameters) {
             spriteFrameRingOver = 'bossRingOver';
         } else {
             spriteFrameBase = 'levelSelectCircle';
-//            spriteFrameCircleOver = 'levelSelectCircleOver';
             spriteFrameRing = 'levelSelectRing';
             spriteFrameRingOver = 'levelSelectRingOver';
             spriteFrameCircle = null;
@@ -383,6 +381,18 @@ MemoryMatch.LevelButton = function (parameters) {
             gameNumberText.color = this.isChallengeGame ? this.primaryColor : MemoryMatch.GameSetup.mapLevelColor;
         }
         this.changeEvent();
+    };
+
+    levelButton.onTouchDown = function (event) {
+        if (MemoryMatch.isTouchDevice) {
+            this.onRollover(event);
+        }
+    };
+
+    levelButton.onTouchUp = function (event) {
+        if (MemoryMatch.isTouchDevice) {
+            this.onRollout(event);
+        }
     };
 
     levelButton.show = function (showFlag) {
@@ -493,11 +503,17 @@ MemoryMatch.LevelButton = function (parameters) {
             this.addEventListener("click", this.onLevelSelect);
             this.addEventListener("rollover", this.onRollover.bind(this));
             this.addEventListener("rollout", this.onRollout.bind(this));
+            this.addEventListener("mousedown", this.onTouchDown.bind(this));
+            this.addEventListener("pressup", this.onTouchUp.bind(this));
+            this.addEventListener("rollout", this.onTouchUp.bind(this));
         } else {
             levelButton.cursor = null;
             this.removeEventListener("click", this.onLevelSelect);
             this.removeEventListener("rollover", this.onRollover.bind(this));
             this.removeEventListener("rollout", this.onRollout.bind(this));
+            this.removeEventListener("mousedown", this.onTouchDown.bind(this));
+            this.removeEventListener("pressup", this.onTouchUp.bind(this));
+            this.removeEventListener("rollout", this.onTouchUp.bind(this));
         }
     }
 
