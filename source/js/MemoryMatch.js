@@ -2271,13 +2271,6 @@ var MemoryMatch = {
             userDataObject,
             earnedAchievement = false;
 
-
-
-
-
-        MemoryMatch.achievementDisplayQueue.push(MemoryMatch.ACHIEVEMENT.TRIPLECOMBO);
-
-
         if (matchTime - MemoryMatch.lastMatchTime < 1600 && MemoryMatch.gameType != MemoryMatch.GAMEPLAYTYPE.PATTERN) {
             earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.FASTMATCH);
         }
