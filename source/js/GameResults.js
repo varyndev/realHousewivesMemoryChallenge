@@ -457,6 +457,7 @@ MemoryMatch.GameResults = {
         tipTextField.y = this.backgroundHeight * 0.32;
         tipTextField.lineWidth = this.backgroundWidth - (this.marginLeft * 2);
         tipTextField.maxWidth = this.backgroundWidth - (this.marginLeft * 2);
+        tipTextField.lineHeight = tipTextField.getMeasuredLineHeight() * 1.5;
         groupDisplayObject.addChild(tipTextField);
     },
 

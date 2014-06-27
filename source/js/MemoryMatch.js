@@ -1290,9 +1290,6 @@ var MemoryMatch = {
                 if (gameData.cardAdvance != null && MemoryMatch.gameNumber >= gameData.cardAdvance) {
                     MemoryMatch.columns = gameData.advanceToColumns;
                     totalWidthNeeded = ((MemoryMatch.cardWidth + distanceBetweenCards) * MemoryMatch.columns);
-                    if (MemoryMatch.gameNumber == gameData.cardAdvance) {
-                        MemoryMatch.monteNumberOfMoves = gameData.shuffleCount;
-                    }
                 }
                 allCardsShuffled = MemoryMatch.makeMonteDeck(MemoryMatch.rows, MemoryMatch.columns, MemoryMatch.numCardsAvailable);
                 MemoryMatch.gameMatchCount = 1;
