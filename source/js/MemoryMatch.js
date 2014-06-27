@@ -4817,11 +4817,13 @@ var MemoryMatch = {
         card.flipAnimationComplete = function (card) {
             var cardFace = card.getChildAt(card.SPRITEINDEX.SPRITE_CARDFACE);
 
+            card.skewY = 0;
             if (cardFace.visible) {
                 card.state = MemoryMatch.CARDSTATE.UP;
             } else {
                 card.state = MemoryMatch.CARDSTATE.DOWN;
             }
+            card.updateCache();
         }
 
         card.unselect = function () {
