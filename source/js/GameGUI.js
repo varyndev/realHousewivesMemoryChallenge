@@ -580,10 +580,11 @@ MemoryMatch.GameGUI = {
     setupOptionsButton: function () {
         var spriteFrame = "mapOptionsButtonUp",
             optionsButton = new createjs.Sprite(new createjs.SpriteSheet(MemoryMatch.GameSetup.mapSpritesheetFrames), spriteFrame),
+            optionsButtonMargin = 16 * MemoryMatch.stageScaleFactor, // a little extra margin for the hit-area of the button
             buttonSize = MemoryMatch.getSpriteFrameSize(MemoryMatch.GameSetup.mapSpritesheetFrames, spriteFrame);
 
-        optionsButton.hitArea = new createjs.Shape(new createjs.Graphics().beginFill('909090').drawRect(0, 0, buttonSize.width, buttonSize.height));
-        optionsButton.setTransform(this.width * 0.93, this.height * 0.01);
+        optionsButton.hitArea = new createjs.Shape(new createjs.Graphics().beginFill('909090').drawRect(-1 * optionsButtonMargin, 0, buttonSize.width + optionsButtonMargin, buttonSize.height + optionsButtonMargin));
+        optionsButton.setTransform(this.width * 0.94, this.height * 0.04);
         optionsButton.framerate = 1;
         this.optionsButtonHelper = new createjs.ButtonHelper(optionsButton, "mapOptionsButtonUp", "mapOptionsButtonOver", "mapOptionsButtonDown", false);
         optionsButton.addEventListener("click", this.onOptions);
