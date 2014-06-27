@@ -2271,6 +2271,13 @@ var MemoryMatch = {
             userDataObject,
             earnedAchievement = false;
 
+
+
+
+
+        MemoryMatch.achievementDisplayQueue.push(MemoryMatch.ACHIEVEMENT.TRIPLECOMBO);
+
+
         if (matchTime - MemoryMatch.lastMatchTime < 1600 && MemoryMatch.gameType != MemoryMatch.GAMEPLAYTYPE.PATTERN) {
             earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.FASTMATCH);
         }
@@ -3148,6 +3155,8 @@ var MemoryMatch = {
         // TODO: Show text sprite, animate it
         var animator,
             bounds,
+            startX,
+            startY,
             width,
             height,
             groupDisplayObject = new createjs.Container(),
@@ -3172,6 +3181,7 @@ var MemoryMatch = {
             width = 0;
             height = 0;
         }
+        startX = 0;
         messageText = new createjs.Text(message, MemoryMatch.getScaledFontSize(64) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColor);
         messageText.textAlign = "left";
         if (height > 0) {
@@ -3183,6 +3193,11 @@ var MemoryMatch = {
         width += bounds.width;
         if (bounds.height > height) {
             height = bounds.height;
+        }
+        if (bounds.y < 0) {
+            startY = bounds.y;
+        } else {
+            startY = 0;
         }
         messageText.maxWidth = bounds.width;
         messageText.visible = true;
@@ -3201,10 +3216,11 @@ var MemoryMatch = {
             pointsText.shadow = messageText.shadow;
             groupDisplayObject.addChild(pointsText);
         }
-        width += (8 * MemoryMatch.stageScaleFactor); // need to account for shadows
-        groupDisplayObject.cache(0, 0, width, height);
+        width += (12 * MemoryMatch.stageScaleFactor); // need to account for shadows
+        height += (12 * MemoryMatch.stageScaleFactor);
         MemoryMatch.stage.addChild(groupDisplayObject);
         groupDisplayObject.setTransform(x, y, 1, 1, 0, 0, 0, width * 0.5, 0);
+        groupDisplayObject.cache(startX, startY, width, height);
         animator = MemoryMatch.AnimationHandler.addToAnimationQueue(groupDisplayObject, 250, 0, true, null, null);
         animator.showAtBegin = true;
         animator.vAlpha = -0.011;
