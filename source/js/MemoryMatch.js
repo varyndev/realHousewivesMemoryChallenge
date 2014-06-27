@@ -2352,17 +2352,17 @@ var MemoryMatch = {
                 break;
 
             case MemoryMatch.GAMEPLAYTYPE.MONTE:
-                if (MemoryMatch.gameNumber == 9) {
+                if (MemoryMatch.gameNumber == 10) {
                     earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.MONTE) | earnedAchievement;
                 }
                 break;
             case MemoryMatch.GAMEPLAYTYPE.EYESPY:
-                if (MemoryMatch.gameNumber == 14) {
+                if (MemoryMatch.gameNumber >= 14) {
                     earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.EAGLEEYE) | earnedAchievement;
                 }
                  break;
             case MemoryMatch.GAMEPLAYTYPE.PATTERN:
-                if (MemoryMatch.matchCount >= MemoryMatch.gameMatchCount && MemoryMatch.gameNumber == 9) {
+                if (MemoryMatch.matchCount >= MemoryMatch.gameMatchCount && MemoryMatch.gameNumber == 10) {
                     earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.PICASSO) | earnedAchievement;
                 }
                 break;
@@ -3013,7 +3013,7 @@ var MemoryMatch = {
         if (MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.CHAINS) {
             if (MemoryMatch.missCount == 0) {
                 MemoryMatch.chainsStreakCount ++;
-                if (MemoryMatch.gameNumber >= MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].length) { // is this the last chains game?
+                if (MemoryMatch.gameNumber >= MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].gameCount) { // is this the last chains game?
                     earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.CHAINTASTIC) | earnedAchievement;
                 }
             } else {
@@ -3598,13 +3598,12 @@ var MemoryMatch = {
     userEarnedAllStars: function () {
 
         // Logic assumes 3 stars per game.
-        // Returns true if user earned all stars in all games
+        // Returns true if user earned all stars in all games (except Challenge games)
 
         var allStarsEarned = true,
             levelIndex,
             levelNumber,
             i,
-            totalStarCount = 0,
             gamesInLevel,
             gameScoresCollection;
 
@@ -3615,7 +3614,7 @@ var MemoryMatch = {
             if (gameScoresCollection.length >= gamesInLevel) { // make sure user played all games in level
                 if (gameScoresCollection != null && gameScoresCollection.length > 0) {
                     for (i = 0; i < gameScoresCollection.length; i ++) {
-                        if (gameScoresCollection[i].starsEarned < 3) {
+                        if (gameScoresCollection[i].gameId < 99 && gameScoresCollection[i].starsEarned < 3) {
                             allStarsEarned = false;
                             break;
                         }
@@ -3870,7 +3869,7 @@ var MemoryMatch = {
                     accuracy = MemoryMatch.calculateLevelAccuracy();
                     possibleMatches = (MemoryMatch.rows * MemoryMatch.columns) * 0.5;
                     if (possibleMatches < 7) {
-                        if (accuracy > 54) {
+                        if (accuracy >= 54) {
                             starsEarned = 3;
                         } else if (accuracy > 44) {
                             starsEarned = 2;
