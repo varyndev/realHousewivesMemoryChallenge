@@ -118,7 +118,7 @@ MemoryMatch.LevelButton = function (parameters) {
     };
 
     levelButton.createBestScoreText = function () {
-        var bestScoreText = new createjs.Text(MemoryMatch.formatNumber("###,###", this.bestScore), MemoryMatch.getScaledFontSize(36) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.mapLevelColor);
+        var bestScoreText = new createjs.Text(MemoryMatch.formatNumberWithGroups(this.bestScore), MemoryMatch.getScaledFontSize(36) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.mapLevelColor);
         bestScoreText.textAlign = "center";
         bestScoreText.x = this.width * 0.5;
         bestScoreText.y = this.nextYPosition;
@@ -476,7 +476,7 @@ MemoryMatch.LevelButton = function (parameters) {
                     gameNumberText.visible = true;
                 }
                 bestScoreField.visible = true;
-                bestScoreField.text = MemoryMatch.formatNumber("###,###", this.bestScore);
+                bestScoreField.text = MemoryMatch.formatNumberWithGroups(this.bestScore);
                 buttonRing.visible = true;
                 if (this.isChallengeGame) {
                     showStarsFlag = ! this.isLocked && this.showStarsForChallenge;

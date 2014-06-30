@@ -168,6 +168,9 @@ MemoryMatch.SharePopup = {
         toEmail = document.getElementById('toemail').value;
         message = document.getElementById('message').value;
         if (fromEmail.length > 0 && toEmail.length > 0) {
+            MemoryMatch.UserData.updateUser(-1, name, null, fromEmail, null);
+            MemoryMatch.UserData.flush();
+            document.getElementById('toemail').value = '';
             this.closePopup("continue");
         }
     },
@@ -368,6 +371,7 @@ MemoryMatch.SharePopup = {
         var shareButton,
             shareButtonsCount,
             networkId,
+            userInfo,
             i;
 
         this.isEnabled = true;
@@ -386,6 +390,11 @@ MemoryMatch.SharePopup = {
         if (this.domElementEmailForm != null) {
             this.setupDOMElement(this.domElementEmailForm);
         }
+        userInfo = MemoryMatch.UserData.getById();
+        document.getElementById('fromname').value = userInfo.userName;
+        document.getElementById('fromemail').value = userInfo.email;
+        document.getElementById('toemail').value = '';
+        document.getElementById('message').value = 'Come play ' + MemoryMatch.GameSetup.gameTitle + '. I really enjoy this game, you will too!';
     },
 
     isShowing: function () {

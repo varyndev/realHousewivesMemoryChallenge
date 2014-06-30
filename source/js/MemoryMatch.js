@@ -3316,7 +3316,7 @@ var MemoryMatch = {
 
     initUserData: function () {
         // Create the first user and unlock first game for all levels
-        MemoryMatch.UserData.addUser(1, "Player One", "", "", true);
+        MemoryMatch.UserData.addUser(1, '', '', '', true);
         MemoryMatch.resetUserData();
     },
 
@@ -4177,6 +4177,10 @@ var MemoryMatch = {
         return hasSupport;
     },
 
+    isValidEmail: function (email) {
+        return /\S+@\S+\.\S+/.test(email.trim());
+    },
+
     getVendorPrefix: function () {
 
         // Return a prefix for the browser we are currently running on based on the document.hidden property being available.
@@ -4366,15 +4370,22 @@ var MemoryMatch = {
         return timeAsString;
     },
 
-    formatNumber: function (mask, value) {
+    formatNumberWithGroups: function (value) {
         var valueAsString = value.toString(),
+            isNegative = value < 0,
             i;
 
-        // Add commas.
-        if (value >= 1000) {
+        // Add commas to 3-digit groups
+        if (isNegative) {
+            valueAsString = valueAsString.substring(1, valueAsString.length);
+        }
+        if (valueAsString.length > 3) {
             for (i = valueAsString.length - 3; i >= 1; i -= 3) {
                 valueAsString = valueAsString.substring(0, i) + "," + valueAsString.substring(i, valueAsString.length);
             }
+        }
+        if (isNegative) {
+            valueAsString = '-' + valueAsString;
         }
         return valueAsString;
     },
@@ -5409,6 +5420,31 @@ function runTests() {
     MemoryMatch.debugLog("Test " + testNum + " Expect: " + 'false');
     MemoryMatch.debugLog("Test " + testNum + " Result: " + JSON.stringify(a));
 
+    testNum ++;
+    ri = MemoryMatch.formatNumberWithGroups(900);
+    MemoryMatch.debugLog("Test " + testNum + " Expect: 900");
+    MemoryMatch.debugLog("Test " + testNum + " Result: " + ri);
+    ri = MemoryMatch.formatNumberWithGroups(-900);
+    MemoryMatch.debugLog("Test " + testNum + " Expect: -900");
+    MemoryMatch.debugLog("Test " + testNum + " Result: " + ri);
+    ri = MemoryMatch.formatNumberWithGroups(900900900900);
+    MemoryMatch.debugLog("Test " + testNum + " Expect: 900,900,900,900");
+    MemoryMatch.debugLog("Test " + testNum + " Result: " + ri);
+    ri = MemoryMatch.formatNumberWithGroups(-900900900900);
+    MemoryMatch.debugLog("Test " + testNum + " Expect: -900,900,900,900");
+    MemoryMatch.debugLog("Test " + testNum + " Result: " + ri);
+    ri = MemoryMatch.formatNumberWithGroups(9009);
+    MemoryMatch.debugLog("Test " + testNum + " Expect: 9,009");
+    MemoryMatch.debugLog("Test " + testNum + " Result: " + ri);
+    ri = MemoryMatch.formatNumberWithGroups(-9009);
+    MemoryMatch.debugLog("Test " + testNum + " Expect: -9,009");
+    MemoryMatch.debugLog("Test " + testNum + " Result: " + ri);
+    ri = MemoryMatch.formatNumberWithGroups(90909);
+    MemoryMatch.debugLog("Test " + testNum + " Expect: 90,909");
+    MemoryMatch.debugLog("Test " + testNum + " Result: " + ri);
+    ri = MemoryMatch.formatNumberWithGroups(-90909);
+    MemoryMatch.debugLog("Test " + testNum + " Expect: -90,909");
+    MemoryMatch.debugLog("Test " + testNum + " Result: " + ri);
 };
 
 function onGooglePlusLoaded () {
@@ -5439,5 +5475,5 @@ function initApp() {
     MemoryMatch.setCanvasSize(null);
     MemoryMatch.loadAllAssets(false);
 
-//    runTests(); // run unit tests
+    runTests(); // run unit tests
 }

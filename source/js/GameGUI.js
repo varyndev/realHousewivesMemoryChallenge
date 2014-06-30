@@ -172,7 +172,7 @@ MemoryMatch.GameGUI = {
             newScoreValue = 0;
         }
         if (newScoreValue > 0) {
-            this.scoreField.text = MemoryMatch.formatNumber("###,###.", newScoreValue);
+            this.scoreField.text = MemoryMatch.formatNumberWithGroups(newScoreValue);
         } else {
             this.scoreField.text = "0";
         }

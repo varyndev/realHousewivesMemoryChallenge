@@ -298,7 +298,7 @@ MemoryMatch.AwardsPopup = {
         titleTextField.y = Y;
         titleTextField.maxWidth = fieldWidth;
         this.contentDisplayObject.addChild(titleTextField);
-        titleTextField = new createjs.Text(MemoryMatch.formatNumber('###,###', bestScore), fontSizeBold, fontColor);
+        titleTextField = new createjs.Text(MemoryMatch.formatNumberWithGroups(bestScore), fontSizeBold, fontColor);
         titleTextField.textAlign = "right";
         titleTextField.x = rightX;
         titleTextField.y = Y;

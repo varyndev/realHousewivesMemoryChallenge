@@ -614,7 +614,7 @@ MemoryMatch.GameResults = {
             this.addTextBackgroundSprite(groupDisplayObject, textBackgroundSpriteSource, levelTextField, rightX * 1.02);
             groupDisplayObject.addChild(levelTextField);
 
-            levelTextField = new createjs.Text(MemoryMatch.formatNumber("###,###.", this.timeBonus), fontSizeBold, fontColor);
+            levelTextField = new createjs.Text(MemoryMatch.formatNumberWithGroups(this.timeBonus), fontSizeBold, fontColor);
             levelTextField.textAlign = "right";
             levelTextField.textBaseline = "middle";
             levelTextField.x = rightX;
@@ -668,7 +668,7 @@ MemoryMatch.GameResults = {
         this.addTextBackgroundSprite(groupDisplayObject, textBackgroundSpriteSource, levelTextField, rightX * 1.02);
         groupDisplayObject.addChild(levelTextField);
 
-        levelTextField = new createjs.Text(MemoryMatch.formatNumber("###,###.", this.playerScore), fontSizeBestScore, fontColor);
+        levelTextField = new createjs.Text(MemoryMatch.formatNumberWithGroups(this.playerScore), fontSizeBestScore, fontColor);
         levelTextField.textAlign = "right";
         levelTextField.textBaseline = "middle";
         levelTextField.x = rightX;
@@ -699,7 +699,7 @@ MemoryMatch.GameResults = {
         this.addTextBackgroundSprite(groupDisplayObject, textBackgroundSpriteSource, levelTextField, rightX * 1.02);
         groupDisplayObject.addChild(levelTextField);
 
-        levelTextField = new createjs.Text(MemoryMatch.formatNumber("###,###.", this.playerBestScore), fontSizeBestScore, fontColor);
+        levelTextField = new createjs.Text(MemoryMatch.formatNumberWithGroups(this.playerBestScore), fontSizeBestScore, fontColor);
         levelTextField.textAlign = "right";
         levelTextField.textBaseline = "middle";
         levelTextField.x = rightX;
@@ -725,7 +725,7 @@ MemoryMatch.GameResults = {
     animateTextMisses: function (textSprite) {
         this.playerScore += this.movesRemainingBonus;
         if (this.currentScoreTextField !== null) {
-            this.currentScoreTextField.text = MemoryMatch.formatNumber("###,###.", this.playerScore);
+            this.currentScoreTextField.text = MemoryMatch.formatNumberWithGroups(this.playerScore);
         }
         this.groupDisplayObject.updateCache();
     },
@@ -733,7 +733,7 @@ MemoryMatch.GameResults = {
     animateTextComboBonus: function (textSprite) {
         this.playerScore += this.comboBonus;
         if (this.currentScoreTextField !== null) {
-            this.currentScoreTextField.text = MemoryMatch.formatNumber("###,###.", this.playerScore);
+            this.currentScoreTextField.text = MemoryMatch.formatNumberWithGroups(this.playerScore);
         }
         this.groupDisplayObject.updateCache();
     },
@@ -753,7 +753,7 @@ MemoryMatch.GameResults = {
             scoreFont = fontSizeBold;
         }
         if (this.currentScoreTextField !== null) {
-            this.currentScoreTextField.text = MemoryMatch.formatNumber("###,###.", this.playerScore);
+            this.currentScoreTextField.text = MemoryMatch.formatNumberWithGroups(this.playerScore);
             this.currentScoreTextField.font = scoreFont;
         }
         this.showBestScoreBurstIfBeatBestScore();
@@ -776,7 +776,7 @@ MemoryMatch.GameResults = {
         if (this.bestScoreTextField !== null) {
             if (this.playerScore >= this.playerBestScore && this.playerScore != 0) {
                 this.playerBestScore = this.playerScore;
-                this.bestScoreTextField.text = MemoryMatch.formatNumber("###,###.", this.playerBestScore);
+                this.bestScoreTextField.text = MemoryMatch.formatNumberWithGroups(this.playerBestScore);
                 if (MemoryMatch.levelComplete) {
                     globalTextPoint = this.groupDisplayObject.localToGlobal(this.bestScoreTextField.x, this.bestScoreTextField.y);
                     MemoryMatch.AnimationHandler.startSplatterParticles(Math.random() * 100 + 30, globalTextPoint.x, globalTextPoint.y);

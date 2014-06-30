@@ -7,6 +7,12 @@
  *
  * Features:
  *   userDataObject: an object of key/value pairs held on behalf of the userId.
+ *      .userId = internal, unique, id of the user
+ *      .userName = name assigned to the user
+ *      .password = users password to access the data record
+ *      .email = users email address
+ *      .ageCheck = true indicates use is over 13, false otherwise
+ *      .. the app will add additional data items to this object e.g. userDataObject['myItem'] = myValue;
  *   levelDataArray: an array of level data, the index being the level number (- 1, e.g. level 1 is index 0) the data being an object.
  *   userAchievements: an array of earned achievements
  *   userTips: an array of seen/unseen tips, each item is a flag (true=seen, false=unseen) indexed by tipId - 1 (e.g. tip # 1 is index 0)
@@ -24,6 +30,9 @@ MemoryMatch.UserData = {
 
         if (this.userDataCollection == null) {
             this.userDataCollection = [];
+        }
+        if (userId == null || userId < 1) {
+            userId = this.getNextUserId();
         }
         userDataObject = this.getById(userId);
         if (userDataObject == null) {
@@ -45,24 +54,48 @@ MemoryMatch.UserData = {
     },
 
     updateUser: function (userId, userName, password, email, ageCheck) {
-        var userDataObject = this.getById(userId);
+        var userDataObject;
 
+        if (userId == undefined || userId == null || userId < 1) {
+            userId = this.getCurrentUserId();
+        }
+        userDataObject = this.getById(userId);
         if (userDataObject == null) {
+            if (userName == null) {
+                userName = '';
+            }
+            if (password == null) {
+                password = '';
+            }
+            if (email == null) {
+                email = '';
+            }
+            if (ageCheck == null) {
+                ageCheck = false;
+            }
             userDataObject = this.addUser(userId, userName, password, email, ageCheck);
         } else {
-            userDataObject.userName = userName;
-            userDataObject.password = password;
-            userDataObject.email = email;
-            userDataObject.ageCheck = ageCheck;
+            if (userName != null) {
+                userDataObject.userName = userName;
+            }
+            if (password != null) {
+                userDataObject.password = password;
+            }
+            if (email != null) {
+                userDataObject.email = email;
+            }
+            if (ageCheck != null) {
+                userDataObject.ageCheck = ageCheck;
+            }
             this.dataUpdatedFlag = true;
         }
         return userDataObject;
     },
 
     deleteUser: function (userId) {
-        var i;
-        var userExists = false;
-        var userDataObject;
+        var i,
+            userExists = false,
+            userDataObject;
 
         if (this.currentUser === userDataObject) {
             this.currentUser = null;
@@ -87,10 +120,13 @@ MemoryMatch.UserData = {
     },
 
     getById: function (userId) {
-        var i;
-        var userDataObject;
-        var returnThisData = null;
+        var i,
+            userDataObject,
+            returnThisData = null;
 
+        if (userId == undefined || userId == null || userId < 1) {
+            userId = this.getCurrentUserId();
+        }
         if (this.userDataCollection != null && this.userDataCollection.length > 0 && userId != null) {
             for (i = 0; i < this.userDataCollection.length; i ++) {
                 userDataObject = this.userDataCollection[i];
@@ -104,9 +140,9 @@ MemoryMatch.UserData = {
     },
 
     getByName: function (userName) {
-        var i;
-        var userDataObject;
-        var returnThisData = null;
+        var i,
+            userDataObject,
+            returnThisData = null;
 
         if (this.userDataCollection != null && this.userDataCollection.length > 0 && userName != null) {
             for (i = 0; i < this.userDataCollection.length; i ++) {
@@ -120,6 +156,22 @@ MemoryMatch.UserData = {
         return returnThisData;
     },
 
+    getNextUserId: function () {
+        var i,
+            userId = 0,
+            userDataObject;
+
+        if (this.userDataCollection != null && this.userDataCollection.length > 0) {
+            for (i = 0; i < this.userDataCollection.length; i ++) {
+                userDataObject = this.userDataCollection[i];
+                if (userId < userDataObject.userId) {
+                    userId = userDataObject.userId;
+                }
+            }
+        }
+        return ++ userId;
+    },
+
     count: function () {
         return this.userDataCollection.length;
     },
@@ -129,7 +181,7 @@ MemoryMatch.UserData = {
         return this.currentUser;
     },
 
-    getCurrentUser: function () {
+    getCurrentUserId: function () {
         if (this.currentUser === null) {
             this.setCurrentUser(1);
         }
@@ -290,9 +342,7 @@ MemoryMatch.UserData = {
 
     isUserTipSeen: function (tipId) {
         var wasSeen = false,
-            tipIndex = tipId - 1,
-            i,
-            userTipsArray;
+            tipIndex = tipId - 1;
 
         if (this.currentUser !== null && this.currentUser.userTips !== null) {
             if (this.currentUser.userTips !== null && ! Array.isArray(this.currentUser.userTips)) {
@@ -331,8 +381,8 @@ MemoryMatch.UserData = {
 
     load: function () {
         // load the data from local storage or the server if connected
-        var gameSaveJson;
-        var wasLoaded = false;
+        var gameSaveJson,
+            wasLoaded = false;
 
         if (MemoryMatch.hasHTML5LocalStorage()) {
             gameSaveJson = window.localStorage[MemoryMatch.getGameKey('userData')];
