@@ -212,6 +212,9 @@ enginesis.ShareHelper = {
                 }
             );
         }
+        if (callbackWhenComplete != null) {
+            callbackWhenComplete('facebook');
+        }
     },
 
     GoogleFeed: function (parameters, callbackWhenComplete) {
@@ -233,6 +236,9 @@ enginesis.ShareHelper = {
         domElement = document.getElementById('googleSharePost');
         if (typeof domElement.onclick == "function") {
             domElement.onclick.apply(domElement);
+        }
+        if (callbackWhenComplete != null) {
+            callbackWhenComplete('googleplus');
         }
     },
 
@@ -282,10 +288,19 @@ enginesis.ShareHelper = {
             fullPost +='&hashtags=' + encodeURIComponent(this.replaceChar(hashTags, '#'));
         }
         window.open(fullPost, 'shareWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=yes,width=300,height=250');
+        if (callbackWhenComplete != null) {
+            callbackWhenComplete('twitter');
+        }
     },
 
     ShareByEmail: function (parameters, callbackWhenComplete) {
+        // Email parameters are From name, From email, To email list, Message
 
+        enginesis.gameDataCreate('bravotv.com', parameters.fromEmail, parameters.fromName, parameters.toEmail, '', parameters.Message, '', '', '', false, 0, overRideCallBackFunction);
+
+        if (callbackWhenComplete != null) {
+            callbackWhenComplete('email');
+        }
     },
 
     replaceChar: function (str, char) {

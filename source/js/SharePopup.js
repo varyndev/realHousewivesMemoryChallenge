@@ -161,17 +161,42 @@ MemoryMatch.SharePopup = {
         var name,
             fromEmail,
             toEmail,
-            message;
+            message,
+            parameters,
+            isOKToSend;
 
+        isOKToSend = false;
         name = document.getElementById('fromname').value;
         fromEmail = document.getElementById('fromemail').value;
         toEmail = document.getElementById('toemail').value;
         message = document.getElementById('message').value;
-        if (fromEmail.length > 0 && toEmail.length > 0) {
+        if (fromEmail.length < 4) {
+            message = 'Please provide your email address as the sender.';
+        } else if (toEmail.length < 4) {
+            message = 'Please provide the email address of a recipient.';
+        } else if (MemoryMatch.isValidEmail(fromEmail.length)) {
+            message = 'Please provide a valid sender email address.';
+        } else if (MemoryMatch.isValidEmail(toEmail.length)) {
+            message = 'Please provide a valid email address of a recipient.';
+        } else {
+            isOKToSend = true;
+        }
+        if (isOKToSend) {
+            document.getElementById('errorMessage').innerText = '';
             MemoryMatch.UserData.updateUser(-1, name, null, fromEmail, null);
             MemoryMatch.UserData.flush();
             document.getElementById('toemail').value = '';
-            this.closePopup("continue");
+            parameters = {
+                fromName: name,
+                fromEmail: fromEmail,
+                toEmail: toEmail,
+                message: message,
+                picture: null,
+                link: null
+            };
+            enginesis.ShareHelper.share('email', parameters, this.onNetworkShareComplete.bind(this));
+        } else {
+            document.getElementById('errorMessage').innerText = message;
         }
     },
 
@@ -181,25 +206,26 @@ MemoryMatch.SharePopup = {
 
     onNetworkInitializeComplete: function (networkId) {
         // the requested network was initialized now try to call it
-        var parameters = {
-            description: '',
-            title: MemoryMatch.GameSetup.gameTitle,
-            caption: MemoryMatch.GameSetup.gameSubTitle,
-            picture: MemoryMatch.GameSetup.promoImage,
-            socialHashTags: MemoryMatch.GameSetup.socialHashTag,
-            viaId: MemoryMatch.GameSetup.twitterId,
-            link: MemoryMatch.GameSetup.gameLink
-        };
+        var parameters;
 
-        if (this.shareMessage != null) {
-            parameters.description = this.shareMessage;
-        } else {
-            parameters.description = MemoryMatch.GameSetup.gameSubTitle;
-        }
-        enginesis.ShareHelper.share(networkId, parameters, this.onNetworkShareComplete.bind(this));
-        if (networkId != 'email') {
-            this.closePopup("continue"); // if user cancels we will never know!
-        } else {
+        if (networkId != 'email') { // hand off to the network to ask the user to share
+            parameters = {
+                description: '',
+                title: MemoryMatch.GameSetup.gameTitle,
+                caption: MemoryMatch.GameSetup.gameSubTitle,
+                picture: MemoryMatch.GameSetup.promoImage,
+                socialHashTags: MemoryMatch.GameSetup.socialHashTag,
+                viaId: MemoryMatch.GameSetup.twitterId,
+                link: MemoryMatch.GameSetup.gameLink
+            };
+            if (this.shareMessage != null) {
+                parameters.description = this.shareMessage;
+            } else {
+                parameters.description = MemoryMatch.GameSetup.gameSubTitle;
+            }
+            enginesis.ShareHelper.share(networkId, parameters, this.onNetworkShareComplete.bind(this));
+//            this.closePopup("continue"); // if user cancels we will never know!
+        } else { // we need to prompt the user for the share info
             this.showEmailForm();
         }
     },
@@ -443,12 +469,14 @@ MemoryMatch.SharePopup = {
         this.domElement = null;
         this.title = null;
         this.message = null;
-        this.groupDisplayObject.removeAllChildren();
-        this.parentDisplayObject.removeChild(this.groupDisplayObject);
+        if (this.groupDisplayObject != null) {
+            this.groupDisplayObject.removeAllChildren();
+            this.parentDisplayObject.removeChild(this.groupDisplayObject);
+            this.groupDisplayObject = null;
+        }
         this.parentDisplayObject.removeChild(this.backgroundCover);
         this.backgroundCover = null;
         this.stateCompleteCallback = null;
         this.parentDisplayObject = null;
-        this.groupDisplayObject = null;
     }
 };

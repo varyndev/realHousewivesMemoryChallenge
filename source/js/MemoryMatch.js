@@ -240,9 +240,9 @@ var MemoryMatch = {
         this.restoreUsers();
 
         // start the Enginesis session
-        this.enginesis = enginesis(this.GameSetup.siteId, this.GameSetup.gameId, 0, '', '', 'deaddead', 'en', this.enginesisCallBack.bind(this));
+        this.enginesis = enginesis(this.GameSetup.siteId, this.GameSetup.gameId, 0, '', '', this.GameSetup.developerKey, 'en', this.enginesisCallBack.bind(this));
         this.enginesis.gameTrackingRecord('game', 'load', '', '', null);
-        this.enginesis.sessionBegin('71309d2a30d163396418e775c5e58d05');
+        this.enginesis.sessionBegin(this.GameSetup.gameKey);
         // TODO: save authtoken, user id, user name, avatar
 
         // find canvas and perform the basic setup tasks to get everything in order to start the game
@@ -5475,5 +5475,5 @@ function initApp() {
     MemoryMatch.setCanvasSize(null);
     MemoryMatch.loadAllAssets(false);
 
-    runTests(); // run unit tests
+//    runTests(); // run unit tests
 }

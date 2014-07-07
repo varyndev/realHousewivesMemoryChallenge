@@ -239,6 +239,22 @@ var enginesis = function (siteId, gameId, gameGroupId, enginesisServerStage, aut
             return sendRequest("GameList", {first_item: firstItem, num_items: numItems, game_status_id: gameStatusId}, overRideCallBackFunction);
         },
 
+        gameDataCreate: function (referrer, fromAddress, fromName, toAddress, toName, userMessage, userFiles, gameData, nameTag, addToGallery, lastScore, overRideCallBackFunction) {
+            return sendRequest("GameDataCreate", {
+                referrer: referrer,
+                from_address: fromAddress,
+                from_name: fromName,
+                to_address: toAddress,
+                to_name: toName,
+                user_msg: userMessage,
+                user_files: userFiles,
+                game_data: gameData,
+                name_tag: nameTag,
+                add_to_gallery: addToGallery,
+                last_score: lastScore
+            }, overRideCallBackFunction);
+        },
+
         gameDataGet: function(gameDataId, overRideCallBackFunction) {
             return sendRequest("GameDataGet", {game_data_id: gameDataId}, overRideCallBackFunction);
         },
