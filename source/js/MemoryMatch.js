@@ -537,7 +537,14 @@ var MemoryMatch = {
         // we get here when the Game Paused popup is closed.
         // restore game state, unless we were previewing cards, then start over.
         if (MemoryMatch.isChallengeGame) {
-            MemoryMatch.restartCurrentChallengeGame(); // restart the current game keeping current streak in tact
+            if (MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.SIMON) {
+                // replay the simon pattern and reset user to beginning of current streak
+                MemoryMatch.restoreAllCards();
+                MemoryMatch.simonUserIndex = 0;
+                MemoryMatch.simonPlayback();
+            } else {
+                MemoryMatch.restartCurrentChallengeGame(); // restart the current game keeping current streak in tact
+            }
         } else if (MemoryMatch.gamePlayState == MemoryMatch.GAMEPLAYSTATE.BOARD_SETUP) {
             MemoryMatch.replayCurrentGame();
         } else {
