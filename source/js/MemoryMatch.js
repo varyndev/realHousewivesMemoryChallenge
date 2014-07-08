@@ -1304,6 +1304,7 @@ var MemoryMatch = {
                 numberOfCards = MemoryMatch.rows * MemoryMatch.columns;
                 MemoryMatch.simonBag = MemoryMatch.shuffleUniqueDeck(0, numberOfCards - 1); // indexes of items in allCardsOnBoard, not the card values
                 allCardsShuffled = MemoryMatch.shuffleAllCardsUniqueDeck(MemoryMatch.rows, MemoryMatch.columns, MemoryMatch.numCardsAvailable);
+                centerOfBoardX *= 0.9; // need to shift left a bit to accommodate the right side target card
                 break;
             case MemoryMatch.GAMEPLAYTYPE.PATTERN:
                 startCount = gameData.startMatchCount;
