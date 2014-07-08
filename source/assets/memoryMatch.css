@@ -253,6 +253,14 @@ body {
      top:1px;
  }
 
+.errorMessage {
+    color:#FF3030;
+    font-family: open_sanscondensed_light, Arial, sans-serif;
+    font-size:18px;
+    font-weight:normal;
+    font-style:normal;
+}
+
 .debug {
     font-size: 36px;
 }

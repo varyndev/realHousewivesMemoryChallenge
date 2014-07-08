@@ -1197,9 +1197,10 @@ var MemoryMatch = {
     buildBoard: function () {
         // Determine the board layout.
         var distanceBetweenCards = MemoryMatch.cardMargin * 2.0,
-            centerOfBoardX = MemoryMatch.playAreaWidth * 0.5,
-            centerOfBoardY = MemoryMatch.playAreaHeight * 0.648, // account for GUI
             halfCardWidth = MemoryMatch.cardWidth * 0.5,
+            halfCardHeight = MemoryMatch.cardHeight * 0.5,
+            centerOfBoardX = (MemoryMatch.playAreaWidth * 0.5),
+            centerOfBoardY = (MemoryMatch.playAreaHeight * 0.54), // a little extra to account for the HUD
             totalWidthNeeded = ((MemoryMatch.cardWidth + distanceBetweenCards) * MemoryMatch.columns),
             totalHeightNeeded = ((MemoryMatch.cardHeight + distanceBetweenCards) * MemoryMatch.rows),
             numberOfCards = 0,
@@ -1230,7 +1231,6 @@ var MemoryMatch = {
                 numberOfCards = (MemoryMatch.rows * MemoryMatch.columns) * 0.5;
                 allCardsShuffled = MemoryMatch.shuffleConcentrationDeck(numberOfCards + 1, MemoryMatch.numCardsAvailable); // one extra for the card back
                 MemoryMatch.gameMatchCount = numberOfCards;
-                centerOfBoardX += halfCardWidth;
                 startMatchCounter = MemoryMatch.getRandomNumberBetween(0, MemoryMatch.rows * MemoryMatch.columns - 1);
                 break;
             case MemoryMatch.GAMEPLAYTYPE.CHAINS:
@@ -1238,12 +1238,10 @@ var MemoryMatch = {
                 numberOfCards = (MemoryMatch.rows * MemoryMatch.columns) * 0.5;
                 allCardsShuffled = MemoryMatch.shuffleConcentrationDeck(numberOfCards + 1, MemoryMatch.numCardsAvailable); // one extra for the card back
                 MemoryMatch.gameMatchCount = numberOfCards;
-                totalWidthNeeded = ((MemoryMatch.cardWidth + distanceBetweenCards) * MemoryMatch.columns);
-                totalHeightNeeded = ((MemoryMatch.cardHeight + distanceBetweenCards) * MemoryMatch.rows);
-                centerOfBoardX += (halfCardWidth * 0.5);
                 if (MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.NEMESIS) {
                     startMatchCounter = MemoryMatch.getRandomNumberBetween(0, MemoryMatch.rows * MemoryMatch.columns - 1);
                 }
+                centerOfBoardX *= 0.9; // need to shift left a bit to accommodate the right side GUI sprites
                 break;
             case MemoryMatch.GAMEPLAYTYPE.HAYSTACK:
                 if (MemoryMatch.gameMatchCount < 1) {
@@ -1266,7 +1264,6 @@ var MemoryMatch = {
                 allCardsShuffled = MemoryMatch.shufflePatternDeck(MemoryMatch.rows, MemoryMatch.columns, numberOfCards, MemoryMatch.numCardsAvailable);
                 MemoryMatch.gameMatchCount = numberOfCards;
                 guiMatchCountLabel = 'Streak';
-                centerOfBoardX += halfCardWidth;
                 break;
             case MemoryMatch.GAMEPLAYTYPE.SIMON:
                 numberOfCards = MemoryMatch.rows * MemoryMatch.columns;
@@ -1276,7 +1273,6 @@ var MemoryMatch = {
                 MemoryMatch.simonPlaybackIndex = 0;
                 MemoryMatch.simonUserIndex = 0;
                 guiMatchCountLabel = 'Streak';
-                centerOfBoardX += halfCardWidth;
                 break;
             case MemoryMatch.GAMEPLAYTYPE.MONTE:
                 if (MemoryMatch.monteNumberOfMoves == 0) {
@@ -1294,7 +1290,6 @@ var MemoryMatch = {
                 allCardsShuffled = MemoryMatch.makeMonteDeck(MemoryMatch.rows, MemoryMatch.columns, MemoryMatch.numCardsAvailable);
                 MemoryMatch.gameMatchCount = 1;
                 guiMatchCountLabel = 'Streak';
-                centerOfBoardX += halfCardWidth;
                 MemoryMatch.playShuffleMusic(true);
                 break;
             case MemoryMatch.GAMEPLAYTYPE.EYESPY:
@@ -1305,7 +1300,7 @@ var MemoryMatch = {
                 totalWidthNeeded = ((MemoryMatch.cardWidth + distanceBetweenCards) * MemoryMatch.columns);
                 totalHeightNeeded = ((MemoryMatch.cardHeight + distanceBetweenCards) * (MemoryMatch.rows + 1));
                 guiMatchCountLabel = 'Streak';
-                centerOfBoardX += halfCardWidth * 0.75;
+                centerOfBoardY -= halfCardHeight;
                 break;
             default:
                 numberOfCards = MemoryMatch.rows * MemoryMatch.columns;
@@ -1342,22 +1337,39 @@ var MemoryMatch = {
                     if (cardIndex == startMatchCounter) {
                         card.setMatchCounter(Math.ceil((MemoryMatch.rows * MemoryMatch.columns) * 0.5) + 1); // TODO: need to determine where this value should come from
                     }
+                    totalWidthNeeded = (column * (MemoryMatch.cardWidth + distanceBetweenCards)) + MemoryMatch.cardWidth;
                     cardIndex ++;
                 }
+                totalHeightNeeded = (row * (MemoryMatch.cardHeight + distanceBetweenCards)) + MemoryMatch.cardHeight;
             }
+            // Scale the board based on how many rows/columns are showing so it fits the play area given the size of the cards.
             boardScaleSmallReduction = MemoryMatch.cardScaleFactor < 0.5 ? 0.08 : 0;
             if (MemoryMatch.rows > 4 || MemoryMatch.columns > 8) {
-                boardScale = 0.54 - boardScaleSmallReduction;
+                boardScale = 0.52 - boardScaleSmallReduction;
             } else if (MemoryMatch.rows > 3 || MemoryMatch.columns > 6) {
-                boardScale = 0.66 - boardScaleSmallReduction;
+                boardScale = 0.64 - boardScaleSmallReduction;
             } else if (MemoryMatch.rows > 2 || MemoryMatch.columns > 4) {
-                boardScale = 0.82 - boardScaleSmallReduction;
+                boardScale = 0.86 - boardScaleSmallReduction;
             } else {
                 boardScale = 1.0;
             }
             boardScale = Math.floor(boardScale * 100) * 0.01;
-            MemoryMatch.debugLog("Scaling board to " + boardScale.toString() + " center (" + centerOfBoardX + "," + centerOfBoardY + ")");
-            MemoryMatch.boardContainer.setTransform(centerOfBoardX, centerOfBoardY, boardScale, boardScale, 0, 0, 0, totalWidthNeeded * 0.5, totalHeightNeeded * 0.5);
+            MemoryMatch.debugLog("Scaling board to " + boardScale.toString() + "% H/W (" + totalWidthNeeded + "," + totalHeightNeeded + ") center (" + centerOfBoardX + "," + centerOfBoardY + ")");
+            MemoryMatch.boardContainer.setTransform(centerOfBoardX, centerOfBoardY, boardScale, boardScale, 0, 0, 0, totalWidthNeeded * 0.5 - halfCardWidth, totalHeightNeeded * 0.5 - halfCardHeight);
+
+
+// Debugging the board placement
+//            var bgColor = new createjs.Shape();
+//            bgColor.graphics.beginFill("#FF0").drawRoundRect(MemoryMatch.cardWidth * -0.5, MemoryMatch.cardHeight * -0.5, totalWidthNeeded, totalHeightNeeded, 8);
+//            bgColor.alpha = 0.3;
+//            MemoryMatch.boardContainer.addChild(bgColor);
+//            bgColor = new createjs.Shape();
+//            bgColor.graphics.beginFill("#F00").drawRect(totalWidthNeeded * 0.5 - halfCardWidth - 4, totalHeightNeeded * 0.5 - halfCardHeight - 4, 8, 8);
+//            MemoryMatch.boardContainer.addChild(bgColor);
+
+
+
+
             // perform post board setup tasks
             switch (MemoryMatch.gameType) {
                 case MemoryMatch.GAMEPLAYTYPE.HAYSTACK:
@@ -4970,7 +4982,7 @@ var MemoryMatch = {
         var supportedResolutions = [
             {width: 2048, height: 1536, scaleFactor: 1, cardScaleFactor: 1, assetPostfix: "100", cardsPostfix: "100"},
             {width: 1024, height: 768, scaleFactor: 0.5, cardScaleFactor: 0.5, assetPostfix: "50", cardsPostfix: "50"},
-            {width: 480, height: 360, scaleFactor: 0.234, cardScaleFactor: 0.26, assetPostfix: "24", cardsPostfix: "26"}],
+            {width: 480, height: 360, scaleFactor: 0.24, cardScaleFactor: 0.25, assetPostfix: "24", cardsPostfix: "26"}],
             currentWidth = window.innerWidth,
             currentHeight = window.innerHeight,
             windowAspectRatio = currentWidth / currentHeight,
