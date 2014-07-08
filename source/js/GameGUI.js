@@ -182,7 +182,7 @@ MemoryMatch.GameGUI = {
         var valueChanged = this.matchCountField.text != Number(newValue).toString();
         this.matchCountField.text = Number(newValue).toString();
         if ( ! MemoryMatch.isChallengeGame && newValue <= this.flashThreshold) {
-            this.matchCountField.color = '#FF0000';
+            this.matchCountField.color = MemoryMatch.GameSetup.guiAlertFontColor;
             if (valueChanged) {
                 if (newValue > 0) {
                     MemoryMatch.triggerSoundFx("soundMovesLast");

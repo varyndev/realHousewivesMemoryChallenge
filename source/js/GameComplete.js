@@ -15,7 +15,6 @@ MemoryMatch.GameComplete = {
     marginTop: 0,
     marginLeft: 0,
     isEnabled: false,
-    backgroundSoundInstance: null,
     primaryColorFilter: null,
     secondaryColorFilter: null,
     primaryColorValue: null,
@@ -55,11 +54,7 @@ MemoryMatch.GameComplete = {
         // begin animation, then wait for user event to end this state and alert callback
         this.isEnabled = true;
         MemoryMatch.stopBackgroundMusic();
-        if (this.backgroundSoundInstance !== null) {
-            this.backgroundSoundInstance.play({delay: 0, loop: 0});
-        } else {
-            this.backgroundSoundInstance = createjs.Sound.play("soundWin", {delay: 0, loop: 0});
-        }
+        MemoryMatch.playInterstitialMusic("soundWin");
     },
 
     closePopup: function (closeEventType) {
@@ -68,6 +63,7 @@ MemoryMatch.GameComplete = {
         if (MemoryMatch.GameComplete.stateCompleteCallback !== null) {
             MemoryMatch.GameComplete.stateCompleteCallback(closeEventType);
         }
+        MemoryMatch.stopInterstitialMusic();
         MemoryMatch.GameComplete.killScreen();
     },
 
@@ -279,8 +275,6 @@ MemoryMatch.GameComplete = {
             this.buttonInstances[i].removeAllEventListeners();
         }
         this.buttonInstances = null;
-        this.backgroundSoundInstance.stop();
-        this.backgroundSoundInstance = null;
         this.parentDisplayObject.removeChild(this.groupDisplayObject);
         this.stateCompleteCallback = null;
         this.levelData = null;

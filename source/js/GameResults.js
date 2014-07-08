@@ -45,7 +45,6 @@ MemoryMatch.GameResults = {
     streakCount: 0,
     starHalfWidth: 0,
     holdThirdStar: null,
-    backgroundSoundInstance: null,
     primaryColorFilter: null,
     secondaryColorFilter: null,
     primaryColorValue: null,
@@ -152,7 +151,7 @@ MemoryMatch.GameResults = {
         } else {
             playThisMusic = "soundLose";
         }
-        this.backgroundSoundInstance = createjs.Sound.play(playThisMusic, {delay: 0, loop: 0});
+        MemoryMatch.playInterstitialMusic(playThisMusic);
     },
 
     startAnimationPhaseTwo: function (sprite) {
@@ -179,10 +178,7 @@ MemoryMatch.GameResults = {
 
         animator.endYScale = animator.endXScale = 1.08;
         animator.vYScale = animator.vXScale = animator.endXScale / (duration * MemoryMatch.fps);
-        if (this.backgroundSoundInstance != null) {
-            this.backgroundSoundInstance.stop();
-            this.backgroundSoundInstance = null;
-        }
+        MemoryMatch.stopInterstitialMusic();
     },
 
     closeShrink: function () {

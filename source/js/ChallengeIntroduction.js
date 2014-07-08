@@ -16,7 +16,6 @@ MemoryMatch.ChallengeIntroduction = {
     marginLeft: 0,
     lineHeight: 0,
     isEnabled: false,
-    backgroundSoundInstance: null,
     primaryColorFilter: null,
     secondaryColorFilter: null,
     primaryColorValue: null,
@@ -56,11 +55,7 @@ MemoryMatch.ChallengeIntroduction = {
         // begin animation, then wait for user event to end this state and alert callback
         this.isEnabled = true;
         MemoryMatch.stopBackgroundMusic();
-        if (this.backgroundSoundInstance !== null) {
-            this.backgroundSoundInstance.play({delay: 0, loop: -1});
-        } else {
-            this.backgroundSoundInstance = createjs.Sound.play("soundChallenge", {delay: 0, loop: -1});
-        }
+        MemoryMatch.playInterstitialMusic("soundChallenge", true);
         if (this.stateCompleteCallback !== null) {
             // stateCompleteCallback();
         }
@@ -68,6 +63,7 @@ MemoryMatch.ChallengeIntroduction = {
 
     closePopup: function (closeEventType) {
         this.isEnabled = false;
+        MemoryMatch.stopInterstitialMusic();
         // begin animation, then once close is complete send notification
         if (MemoryMatch.ChallengeIntroduction.stateCompleteCallback !== null) {
             MemoryMatch.ChallengeIntroduction.stateCompleteCallback(closeEventType);
@@ -277,8 +273,6 @@ MemoryMatch.ChallengeIntroduction = {
             this.buttonInstances[i].removeAllEventListeners();
         }
         this.buttonInstances = null;
-        this.backgroundSoundInstance.stop();
-        this.backgroundSoundInstance = null;
         this.parentDisplayObject.removeChild(this.groupDisplayObject);
         this.stateCompleteCallback = null;
         this.levelData = null;

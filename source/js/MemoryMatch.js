@@ -192,7 +192,7 @@ var MemoryMatch = {
     timeLastFrame: 0,
     timeThisFrame: 0,
     backgroundSoundInstance: null,
-    shuffleSoundInstance: null,
+    interstitialSoundInstance: null,
     userName: '',
     userId: 1,
     enginesisUserId: 0,
@@ -329,9 +329,33 @@ var MemoryMatch = {
         if (MemoryMatch.backgroundSoundInstance != null) {
             if (MemoryMatch.backgroundSoundInstance.playState !== createjs.Sound.PLAY_SUCCEEDED) {
                 MemoryMatch.backgroundSoundInstance.play({delay: 0, loop: -1});
+                MemoryMatch.debugLog("playBackgroundMusic: restarting last music");
             }
         } else {
             MemoryMatch.backgroundSoundInstance = createjs.Sound.play("soundIntro", {delay: 0, loop: -1});
+            MemoryMatch.debugLog("playBackgroundMusic: starting soundIntro");
+        }
+    },
+
+    playInterstitialMusic: function (soundReference, looped) {
+        var loopCount;
+
+        if (looped == undefined || looped == null) {
+            looped = false;
+        }
+        if (looped) {
+            loopCount = -1;
+        } else {
+            loopCount = 0;
+        }
+        if (MemoryMatch.interstitialSoundInstance != null) {
+            if (MemoryMatch.interstitialSoundInstance.playState !== createjs.Sound.PLAY_SUCCEEDED) {
+                MemoryMatch.interstitialSoundInstance.play({delay: 0, loop: loopCount});
+                MemoryMatch.debugLog("playInterstitialMusic: restarting last " + soundReference);
+            }
+        } else {
+            MemoryMatch.interstitialSoundInstance = createjs.Sound.play(soundReference, {delay: 0, loop: loopCount});
+            MemoryMatch.debugLog("playInterstitialMusic: starting " + soundReference);
         }
     },
 
@@ -341,28 +365,42 @@ var MemoryMatch = {
         }
     },
 
+    stopInterstitialMusic: function () {
+        if (MemoryMatch.interstitialSoundInstance !== null) {
+            MemoryMatch.interstitialSoundInstance.stop();
+            MemoryMatch.interstitialSoundInstance = null;
+        }
+    },
+
     restartBackgroundMusic: function () {
         if (MemoryMatch.backgroundSoundInstance !== null) {
             if (MemoryMatch.backgroundSoundInstance.playState == createjs.Sound.PLAY_SUCCEEDED || MemoryMatch.backgroundSoundInstance.playState == createjs.Sound.PLAY_FINISHED) {
                 MemoryMatch.backgroundSoundInstance.play({delay: 0, loop: -1});
+                MemoryMatch.debugLog("restartBackgroundMusic: restarting last music");
             }
         }
     },
 
     playShuffleMusic: function (playFlag) {
         if (playFlag) {
-            if (MemoryMatch.shuffleSoundInstance != null) {
-                if (MemoryMatch.shuffleSoundInstance.playState !== createjs.Sound.PLAY_SUCCEEDED) {
-                    MemoryMatch.shuffleSoundInstance.play({delay: 0, loop: -1});
-                }
-            } else {
-                MemoryMatch.shuffleSoundInstance = createjs.Sound.play("soundShuffling", {delay: 0, loop: -1});
-            }
+            MemoryMatch.playInterstitialMusic("soundShuffling", true);
         } else {
-            if (MemoryMatch.shuffleSoundInstance !== null) {
-                MemoryMatch.shuffleSoundInstance.stop();
-            }
+            MemoryMatch.stopInterstitialMusic();
         }
+    },
+
+    triggerSoundFx: function (tag, params) {
+        MemoryMatch.debugLog("triggerSoundFx: " + tag);
+        createjs.Sound.play(tag, params);
+    },
+
+    playNote: function (noteNumber) {
+        if (noteNumber == null || noteNumber < 1) {
+            noteNumber = 1;
+        } else if (noteNumber > 8) {
+            noteNumber = 8;
+        }
+        MemoryMatch.triggerSoundFx("note" + noteNumber.toString(), {interrupt: createjs.Sound.INTERRUPT_NONE, delay: 0, offset:0, loop: false, volume: 1});
     },
 
     showMenuScreen: function () {
@@ -456,6 +494,7 @@ var MemoryMatch = {
         }
         if (pauseFlag && MemoryMatch.gameInProgress) {
             // app went from active to inactive, show GAME PAUSED popup
+            MemoryMatch.stopInterstitialMusic();
             MemoryMatch.pauseGameInProgress();
             if ( ! MemoryMatch.GameOptions.isShowing()) {
                 MemoryMatch.GameOptions.setup(MemoryMatch.stage, MemoryMatch.GameGUI.onOptionsClosed, true);
@@ -466,9 +505,10 @@ var MemoryMatch = {
         } else if (pauseFlag) {
             // stop music
             MemoryMatch.stopBackgroundMusic();
+            MemoryMatch.stopInterstitialMusic();
         } else {
             // app went from inactive to active. if we are on the home screen then restart the music
-            if ( ! MemoryMatch.gameInProgress) {
+            if (MemoryMatch.gameState == MemoryMatch.GAMESTATE.MENU) {
                 MemoryMatch.restartBackgroundMusic();
                 MemoryMatch.GameGUI.resume(null);
             }
@@ -519,14 +559,16 @@ var MemoryMatch = {
     startGameWithNumber: function (gameNumber) {
         var levelData = MemoryMatch.getLevelData(MemoryMatch.gameLevel);
 
+        MemoryMatch.gameId = levelData.gameId;
+        MemoryMatch.challengeGameId = levelData.challengeGameId;
+        MemoryMatch.challengeAdvanceStreak = levelData.challengeAdvanceStreak;
         if (MemoryMatch.shouldShowLevelIntroduction(MemoryMatch.gameLevel)) {
+            MemoryMatch.isChallengeGame = false;
+            MemoryMatch.gameNumber = 1;
             MemoryMatch.showLevelIntroduction(gameNumber);
         } else {
             MemoryMatch.changeGameState(MemoryMatch.GAMESTATE.PLAY);
             MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.GET_READY;
-            MemoryMatch.gameId = levelData.gameId;
-            MemoryMatch.challengeGameId = levelData.challengeGameId;
-            MemoryMatch.challengeAdvanceStreak = levelData.challengeAdvanceStreak;
             if (gameNumber == 99) {
                 MemoryMatch.isChallengeGame = true;
                 MemoryMatch.gameNumber = 1;
@@ -593,11 +635,8 @@ var MemoryMatch = {
 
     startNextGame: function () {
         var gameProgressionData = null,
-            cardSize,
             thisGameData,
-            cardAssetId,
-            guiFlashThreshold = 0,
-            cardSetIndex = 0;
+            guiFlashThreshold = 0;
 
         // Use to setup a game, reset all timers and counters for an individual game
         MemoryMatch.gameInProgress = true;
@@ -635,18 +674,8 @@ var MemoryMatch = {
             if (thisGameData.numCards != null) {
                 MemoryMatch.numCardsAvailable = thisGameData.numCards;
             }
-            cardSize = MemoryMatch.getCardSize(thisGameData);
-            if (MemoryMatch.gameType != MemoryMatch.GAMEPLAYTYPE.EYESPY) {
-                if (thisGameData.cardSprites != null) {
-                    cardSetIndex = 0;
-                    if (thisGameData.numberOfCardSets > 1) {
-                        cardSetIndex = MemoryMatch.getRandomNumberBetween(0, thisGameData.numberOfCardSets - 1);
-                    }
-                    cardAssetId = MemoryMatch.getSpriteAssetId(cardSetIndex);
-                } else {
-                    cardAssetId = "cards1";
-                }
-                MemoryMatch.setImageSheet(cardAssetId, cardSize.width, cardSize.height);
+            if (MemoryMatch.gameType != MemoryMatch.GAMEPLAYTYPE.EYESPY) { // EYESPY will do this itself
+                MemoryMatch.loadCardSetForCurrentLevel();
             }
         } else {
             MemoryMatch.moveCountDown = -1;
@@ -677,6 +706,26 @@ var MemoryMatch = {
         MemoryMatch.GameGUI.setFlashCountThreshold(guiFlashThreshold);
         MemoryMatch.updateMatchCountDisplay();
         MemoryMatch.buildBoard();
+    },
+
+    loadCardSetForCurrentLevel: function () {
+        var cardSize,
+            thisGameData,
+            cardAssetId,
+            cardSetIndex = 0;
+
+        thisGameData = MemoryMatch.getGameData(MemoryMatch.isChallengeGame);
+        cardSize = MemoryMatch.getCardSize(thisGameData);
+        if (thisGameData.cardSprites != null) {
+            cardSetIndex = 0;
+            if (thisGameData.numberOfCardSets > 1) {
+                cardSetIndex = MemoryMatch.getRandomNumberBetween(0, thisGameData.numberOfCardSets - 1);
+            }
+            cardAssetId = MemoryMatch.getSpriteAssetId(cardSetIndex);
+        } else {
+            cardAssetId = "cards1";
+        }
+        MemoryMatch.setImageSheet(cardAssetId, cardSize.width, cardSize.height);
     },
 
     startLevel: function (levelNumber) {
@@ -711,7 +760,7 @@ var MemoryMatch = {
         MemoryMatch.gameStartTime = 0;
         MemoryMatch.nextTimerUpdateTime = 0;
         MemoryMatch.gameEndTime = 0;
-        MemoryMatch.levelComplete = false; // TODO: this should come from prior user data
+        MemoryMatch.levelComplete = false;
         MemoryMatch.levelMatchCounter = 0;
         if (MemoryMatch.shouldShowLevelIntroduction(MemoryMatch.gameLevel)) {
             MemoryMatch.showLevelIntroduction(MemoryMatch.gameNumber);
@@ -748,22 +797,14 @@ var MemoryMatch = {
     },
 
     showLevelIntroduction: function (gameNumber) {
-        var thisGameData,
-            cardSize,
-            cardAssetId;
+        var thisGameData;
 
         if (MemoryMatch.imageSheetImage == null) {
             thisGameData = MemoryMatch.getGameData(MemoryMatch.isChallengeGame);
             MemoryMatch.gameNumber = gameNumber;
             MemoryMatch.gameId = thisGameData.gameId;
-            cardSize = MemoryMatch.getCardSize(thisGameData);
-            if (thisGameData.cardSprites != null) {
-                cardAssetId = MemoryMatch.getSpriteAssetId(0);
-            } else {
-                cardAssetId = "cards1";
-            }
-            MemoryMatch.setImageSheet(cardAssetId, cardSize.width, cardSize.height);
         }
+        MemoryMatch.loadCardSetForCurrentLevel();
         MemoryMatch.LevelIntroduction.setup(MemoryMatch.stage, MemoryMatch.levelIntroductionClosed.bind(MemoryMatch), MemoryMatch.gameId, MemoryMatch.gameLevel, gameNumber);
         MemoryMatch.LevelIntroduction.buildScreen(true);
         MemoryMatch.setUserTipSeenForLevel(MemoryMatch.gameLevel);
@@ -951,7 +992,7 @@ var MemoryMatch = {
                 MemoryMatch.monteMoves = null;
                 MemoryMatch.monteIndex = 0;
                 MemoryMatch.monteNumberOfMoves = 0;
-                MemoryMatch.shuffleSoundInstance = null;
+                MemoryMatch.interstitialSoundInstance = null;
                 break;
             case MemoryMatch.GAMEPLAYTYPE.SIMON:
                 MemoryMatch.simonBag = null;
@@ -1039,12 +1080,18 @@ var MemoryMatch = {
     },
 
     setImageSheet: function (spriteSheetAsset, spriteWidth, spriteHeight) {
-        MemoryMatch.debugLog("setImageSheet: loading card sprites " + spriteSheetAsset + " size (" + spriteWidth + "," + spriteHeight + ")");
-        MemoryMatch.imageSheetImage = assetLoader.getResult(spriteSheetAsset);
-        MemoryMatch.imageSheetSpriteWidth = spriteWidth;
-        MemoryMatch.imageSheetSpriteHeight = spriteHeight;
-        MemoryMatch.cardWidth = spriteWidth;
-        MemoryMatch.cardHeight = spriteHeight;
+        var loadedAsset = assetLoader.getResult(spriteSheetAsset);
+
+        if (MemoryMatch.imageSheetImage !== loadedAsset) {
+            MemoryMatch.debugLog("setImageSheet: loading card sprites " + spriteSheetAsset + " size (" + spriteWidth + "," + spriteHeight + ")");
+            MemoryMatch.imageSheetImage = loadedAsset;
+            MemoryMatch.imageSheetSpriteWidth = spriteWidth;
+            MemoryMatch.imageSheetSpriteHeight = spriteHeight;
+            MemoryMatch.cardWidth = spriteWidth;
+            MemoryMatch.cardHeight = spriteHeight;
+        } else {
+            MemoryMatch.debugLog("setImageSheet: card sprites " + spriteSheetAsset + " already loaded.");
+        }
         return MemoryMatch.imageSheetImage != null;
     },
 
@@ -1070,20 +1117,6 @@ var MemoryMatch = {
         bgImage.scaleY = yScale;
         MemoryMatch.stage.addChild(bgImage);
         MemoryMatch.stageUpdated = true;
-    },
-
-    triggerSoundFx: function (tag, params) {
-        MemoryMatch.debugLog("triggerSoundFx: " + tag);
-        createjs.Sound.play(tag, params);
-    },
-
-    playNote: function (noteNumber) {
-        if (noteNumber == null || noteNumber < 1) {
-            noteNumber = 1;
-        } else if (noteNumber > 8) {
-            noteNumber = 8;
-        }
-        MemoryMatch.triggerSoundFx("note" + noteNumber.toString(), {interrupt: createjs.Sound.INTERRUPT_NONE, delay: 0, offset:0, loop: false, volume: 1});
     },
 
     setBoardSize: function (numRows, numColumns) {
