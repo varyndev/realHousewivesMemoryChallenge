@@ -54,7 +54,7 @@ MemoryMatch.GameComplete = {
         // begin animation, then wait for user event to end this state and alert callback
         this.isEnabled = true;
         MemoryMatch.stopBackgroundMusic();
-        MemoryMatch.playInterstitialMusic("soundWin");
+        MemoryMatch.playInterstitialMusic("soundWin", false);
     },
 
     closePopup: function (closeEventType) {

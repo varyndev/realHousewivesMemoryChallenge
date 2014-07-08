@@ -151,7 +151,7 @@ MemoryMatch.GameResults = {
         } else {
             playThisMusic = "soundLose";
         }
-        MemoryMatch.playInterstitialMusic(playThisMusic);
+        MemoryMatch.playInterstitialMusic(playThisMusic, false);
     },
 
     startAnimationPhaseTwo: function (sprite) {
