@@ -533,14 +533,12 @@ var MemoryMatch = {
 
     resumePausedGame: function (event) {
         var pauseTime = Date.now() - MemoryMatch.gamePauseTime;
+
         // we get here when the Game Paused popup is closed.
         // restore game state, unless we were previewing cards, then start over.
-        if (  (MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.CHAINS
-            || MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.EYESPY
-            || MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.MONTE
-            || MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.PATTERN
-            || MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.HAYSTACK)
-        && MemoryMatch.gamePlayState == MemoryMatch.GAMEPLAYSTATE.BOARD_SETUP) {
+        if (MemoryMatch.isChallengeGame) {
+            MemoryMatch.restartCurrentChallengeGame(); // restart the current game keeping current streak in tact
+        } else if (MemoryMatch.gamePlayState == MemoryMatch.GAMEPLAYSTATE.BOARD_SETUP) {
             MemoryMatch.replayCurrentGame();
         } else {
             MemoryMatch.restoreGame();
@@ -882,6 +880,25 @@ var MemoryMatch = {
         MemoryMatch.gameEndTime = Date.now();
         MemoryMatch.gamePaused = false;
         MemoryMatch.removeAllCards(MemoryMatch.restartGameRemoveCardThenRestart); // calls replayLastGame after cards are removed
+    },
+
+    restartCurrentChallengeGame: function () {
+        MemoryMatch.gamePaused = false;
+        MemoryMatch.removeAllCards(MemoryMatch.restartChallengeGameRemoveCardThenReplay); // calls replayCurrentChallengeGame after cards are removed
+    },
+
+    replayCurrentChallengeGame: function () {
+        MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.GET_READY;
+        MemoryMatch.gameStartTime = 0;
+        MemoryMatch.nextTimerUpdateTime = 0;
+        MemoryMatch.gameEndTime = 0;
+        MemoryMatch.GameGUI.updateScoreDisplay(MemoryMatch.totalScore);
+        MemoryMatch.levelComplete = false;
+        if (MemoryMatch.isChallengeGame) {
+            MemoryMatch.startNextGame();
+        } else {
+            MemoryMatch.startGameWithNumber(MemoryMatch.gameNumber);
+        }
     },
 
     levelResultsClosed: function (nextRequest) {
@@ -3110,6 +3127,11 @@ var MemoryMatch = {
     restartGameRemoveCardThenRestart: function (card) {
         MemoryMatch.removeCardFromBoard(card);
         window.setTimeout(MemoryMatch.replayLastGame.bind(MemoryMatch), 600); // need a delay to wait for the card fade-out animation to complete
+    },
+
+    restartChallengeGameRemoveCardThenReplay: function (card) {
+        MemoryMatch.removeCardFromBoard(card);
+        window.setTimeout(MemoryMatch.replayCurrentChallengeGame.bind(MemoryMatch), 600); // need a delay to wait for the card fade-out animation to complete
     },
 
     gameOver: function () {
