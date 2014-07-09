@@ -326,7 +326,7 @@ var MemoryMatch = {
     },
 
     playBackgroundMusic: function () {
-        if (MemoryMatch.backgroundSoundInstance != null) {
+        if (MemoryMatch.backgroundSoundInstance !== null) {
             if (MemoryMatch.backgroundSoundInstance.playState !== createjs.Sound.PLAY_SUCCEEDED) {
                 MemoryMatch.backgroundSoundInstance.play({delay: 0, loop: -1});
                 MemoryMatch.debugLog("playBackgroundMusic: restarting last music");
@@ -348,7 +348,7 @@ var MemoryMatch = {
         } else {
             loopCount = 0;
         }
-        if (MemoryMatch.interstitialSoundInstance != null) {
+        if (MemoryMatch.interstitialSoundInstance !== null) {
             if (MemoryMatch.interstitialSoundInstance.playState !== createjs.Sound.PLAY_SUCCEEDED) {
                 MemoryMatch.interstitialSoundInstance.play({delay: 0, loop: loopCount});
                 MemoryMatch.debugLog("playInterstitialMusic: restarting last " + soundReference);
@@ -390,8 +390,10 @@ var MemoryMatch = {
     },
 
     triggerSoundFx: function (tag, params) {
-        MemoryMatch.debugLog("triggerSoundFx: " + tag);
-        createjs.Sound.play(tag, params);
+        if ( ! MemoryMatch.gamePaused) {
+            MemoryMatch.debugLog("triggerSoundFx: " + tag);
+            createjs.Sound.play(tag, params);
+        }
     },
 
     playNote: function (noteNumber) {
@@ -405,6 +407,7 @@ var MemoryMatch = {
 
     showMenuScreen: function () {
         MemoryMatch.gameCleanUp();
+        MemoryMatch.stopInterstitialMusic();
         MemoryMatch.playBackgroundMusic();
         MemoryMatch.changeGameState(MemoryMatch.GAMESTATE.MENU);
         MemoryMatch.MainMenu.setup(MemoryMatch.stage, MemoryMatch.getGameData(false), MemoryMatch.mainMenuCallback);
@@ -536,12 +539,17 @@ var MemoryMatch = {
 
         // we get here when the Game Paused popup is closed.
         // restore game state, unless we were previewing cards, then start over.
+        MemoryMatch.gamePauseTime = 0;
+        MemoryMatch.nextTimerUpdateTime = 0;
+        MemoryMatch.gamePaused = false;
+        createjs.Touch.enable(MemoryMatch.stage, true, false);
+        MemoryMatch.gameStartTime += pauseTime; // update the game timer
+        MemoryMatch.updateGameTimers();
         if (MemoryMatch.isChallengeGame) {
-            if (MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.SIMON) {
-                // replay the simon pattern and reset user to beginning of current streak
+            if (MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.SIMON) { // replay the simon pattern and reset user to beginning of current streak
                 MemoryMatch.restoreAllCards();
                 MemoryMatch.simonUserIndex = 0;
-                MemoryMatch.simonPlayback();
+                window.setTimeout(MemoryMatch.simonPlayback.bind(MemoryMatch), 800); // need a delay to wait for the card flip animation to complete
             } else {
                 MemoryMatch.restartCurrentChallengeGame(); // restart the current game keeping current streak in tact
             }
@@ -550,15 +558,7 @@ var MemoryMatch = {
         } else {
             MemoryMatch.restoreGame();
             MemoryMatch.restoreAllCards();
-
-            // update the game timer
-            MemoryMatch.gameStartTime += pauseTime;
         }
-        MemoryMatch.gamePauseTime = 0;
-        MemoryMatch.nextTimerUpdateTime = 0;
-        MemoryMatch.gamePaused = false;
-        createjs.Touch.enable(MemoryMatch.stage, true, false);
-        MemoryMatch.updateGameTimers();
     },
 
     startGameWithNumber: function (gameNumber) {
@@ -1016,7 +1016,6 @@ var MemoryMatch = {
                 MemoryMatch.monteMoves = null;
                 MemoryMatch.monteIndex = 0;
                 MemoryMatch.monteNumberOfMoves = 0;
-                MemoryMatch.interstitialSoundInstance = null;
                 break;
             case MemoryMatch.GAMEPLAYTYPE.SIMON:
                 MemoryMatch.simonBag = null;
@@ -1326,7 +1325,7 @@ var MemoryMatch = {
             case MemoryMatch.GAMEPLAYTYPE.SIMON:
                 numberOfCards = MemoryMatch.rows * MemoryMatch.columns;
                 allCardsShuffled = MemoryMatch.shuffleAllCardsUniqueDeck(MemoryMatch.rows, MemoryMatch.columns, MemoryMatch.numCardsAvailable);
-                MemoryMatch.simonBag = MemoryMatch.makeShuffledBag(99, 0, numberOfCards - 1, 3); // indexes of items in allCardsOnBoard, not the card values
+                MemoryMatch.simonBag = MemoryMatch.makeShuffledBag(99, 0, numberOfCards - 1, 2); // indexes of items in allCardsOnBoard, not the card values
                 MemoryMatch.gameMatchCount = 99;
                 MemoryMatch.simonPlaybackIndex = 0;
                 MemoryMatch.simonUserIndex = 0;
@@ -2856,6 +2855,9 @@ var MemoryMatch = {
         // state of the simon game when we playback the sequence
         var card;
 
+        if (MemoryMatch.gamePaused) {
+            return;
+        }
         if (MemoryMatch.gamePlayState != MemoryMatch.GAMEPLAYSTATE.PLAY_WAIT) {
             // first time in set everything up for the playback to start
             MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.PLAY_WAIT;
