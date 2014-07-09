@@ -14,7 +14,6 @@ MemoryMatch.AwardsPopup = {
     backgroundWidth: 0,
     backgroundHeight: 0,
     backgroundCover: null,
-    scrollMask: null,
     marginTop: 0,
     marginLeft: 0,
     lineHeight: 0,
@@ -26,11 +25,14 @@ MemoryMatch.AwardsPopup = {
     continueButton: false,
     stateCompleteCallback: null,
     startYAchievements: 0,
+    scrollMask: null,
+    scrollOffset: null,
     scrollLimitMin: 0,
     scrollLimitMax: 0,
-    scrollToLastRead: 0,
-    stageStartScrollY: 0,
-    skipEveryOtherRead: false,
+    scrollButtonSprite: null,
+    scrollButtonOffset: null,
+    scrollButtonMin: 0,
+    scrollButtonMax: 0,
     primaryColorFilter: null,
     secondaryColorFilter: null,
     primaryColorValue: null,
@@ -51,7 +53,7 @@ MemoryMatch.AwardsPopup = {
         this.setColorFilters();
         this.setupBackground();
         this.marginTop = this.backgroundHeight * 0.05;
-        this.marginLeft = this.backgroundWidth * 0.09;
+        this.marginLeft = this.backgroundWidth * 0.06;
         this.contentDisplayObject = new createjs.Container();
         this.setupMask();
         this.setupTitleText();
@@ -60,8 +62,9 @@ MemoryMatch.AwardsPopup = {
         this.setupInfoText();
         this.setupAchievements();
         this.setupButtons();
+        this.setupScrollBar();
         this.parentDisplayObject.addChild(this.groupDisplayObject);
-        this.contentDisplayObject.setTransform(0, this.backgroundHeight * 0.05);
+        this.contentDisplayObject.setTransform(this.backgroundWidth * -0.028, this.backgroundHeight * 0.05);
         this.groupDisplayObject.addChild(this.contentDisplayObject);
         this.scrollLimitMin = this.contentDisplayObject.y;
         if (autoStart === null) {
@@ -165,6 +168,25 @@ MemoryMatch.AwardsPopup = {
             newY = this.scrollLimitMax;
         }
         this.contentDisplayObject.y = newY;
+        this.scrollButtonSprite.y = this.scrollButtonMin + (((newY - this.scrollLimitMin) / (this.scrollLimitMax - this.scrollLimitMin)) * (this.scrollButtonMax - this.scrollButtonMin));
+    },
+
+    onScrollHandleDown: function (event) {
+        this.scrollButtonOffset = {x:this.scrollButtonSprite.x, y:this.scrollButtonSprite.y - event.stageY};
+    },
+
+    onScrollHandlePressMove: function (event) {
+        var newY = event.stageY + this.scrollButtonOffset.y,
+            percentScroll;
+
+        if (newY < this.scrollButtonMin) {
+            newY = this.scrollButtonMin;
+        } else if (newY > this.scrollButtonMax) {
+            newY = this.scrollButtonMax;
+        }
+        this.scrollButtonSprite.y = newY;
+        percentScroll = (newY - this.scrollButtonMin) / (this.scrollButtonMax - this.scrollButtonMin);
+        this.contentDisplayObject.y = this.scrollLimitMin + ((this.scrollLimitMax - this.scrollLimitMin) * percentScroll);
     },
 
     setupBackground: function () {
@@ -191,7 +213,6 @@ MemoryMatch.AwardsPopup = {
         bgImage.scaleY = yScale;
 
         backgroundCover = new createjs.Shape();
-        // backgroundCover.graphics.beginFill("#CCCCCC").drawRect((canvas.width - popupImageAsset.width) * -0.5, (canvas.height - popupImageAsset.height) * -0.5, canvas.width, canvas.height);
         backgroundCover.graphics.beginFill("#CCCCCC").drawRect(0, 0, canvas.width, canvas.height);
         backgroundCover.alpha = 0.1;
         backgroundCover.addEventListener("click", this.onClickBackground);
@@ -211,7 +232,7 @@ MemoryMatch.AwardsPopup = {
             startY = this.marginTop * 3,
             height = this.backgroundHeight - (4 * this.marginTop);
 
-        maskShape.graphics.beginFill("#521852").drawRoundRect(this.marginLeft, startY, this.backgroundWidth - (1.75 * this.marginLeft), height, 8);
+        maskShape.graphics.beginFill("#521852").drawRoundRect(this.marginLeft, startY, this.backgroundWidth - (2.5 * this.marginLeft), height, 8);
         maskShape.alpha = 0.3333;
         maskShape.visible = true;
         maskShape.on("mousedown", this.onScrollMouseDownHandler.bind(this));
@@ -219,6 +240,37 @@ MemoryMatch.AwardsPopup = {
         this.scrollMask = maskShape;
         this.contentDisplayObject.mask = maskShape;
         this.scrollLimitMax = height - startY;
+    },
+
+    setupScrollBar: function () {
+        var spriteFrames = MemoryMatch.GameSetup.guiSpritesheet1Frames,
+            scrollBarHandle = 'awardsHandle',
+            scrollBarBackground = 'awardsSlider',
+            scrollBarSprite,
+            scrollButtonSprite,
+            spriteData = new createjs.SpriteSheet(spriteFrames),
+            barSpriteSize,
+            handleSpriteSize,
+            x,
+            y;
+
+        x = this.marginLeft + this.backgroundWidth - (2.3 * this.marginLeft);
+        y = this.marginTop * 3;
+        scrollBarSprite = new createjs.Sprite(spriteData, scrollBarBackground);
+        barSpriteSize = MemoryMatch.getSpriteFrameSize(spriteFrames, scrollBarBackground);
+        scrollBarSprite.setTransform(x, y);
+        this.groupDisplayObject.addChild(scrollBarSprite);
+
+        scrollButtonSprite = new createjs.Sprite(spriteData, scrollBarHandle);
+        handleSpriteSize = MemoryMatch.getSpriteFrameSize(spriteFrames, scrollBarHandle);
+        scrollButtonSprite.setTransform(x - ((handleSpriteSize.width - barSpriteSize.width) * 0.5), y);
+        scrollButtonSprite.cursor = 'pointer';
+        scrollButtonSprite.on("mousedown", this.onScrollHandleDown.bind(this));
+        scrollButtonSprite.on("pressmove", this.onScrollHandlePressMove.bind(this));
+        this.groupDisplayObject.addChild(scrollButtonSprite);
+        this.scrollButtonSprite = scrollButtonSprite;
+        this.scrollButtonMin = y;
+        this.scrollButtonMax = y + barSpriteSize.height - handleSpriteSize.height;
     },
 
     setupTitleText: function () {
@@ -459,6 +511,8 @@ MemoryMatch.AwardsPopup = {
         // remove all display objects and object references:
         this.primaryColorFilter = null;
         this.secondaryColorFilter = null;
+        this.scrollButtonSprite.removeAllEventListeners();
+        this.scrollButtonSprite = null;
         this.closeButtonInstance.removeAllEventListeners();
         this.closeButtonInstance = null;
         this.scrollMask.removeAllEventListeners();
