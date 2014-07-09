@@ -90,9 +90,9 @@ MemoryMatch.Nemesis = {
         bottleNeckSprite.gotoAndStop(this.bottleNeckFilled);
         tileSize = MemoryMatch.getSpriteFrameSize(this.spriteFrameData, this.bottleNeckFilled);
         groupWidth = tileSize.width; // all remaining pieces have the same width
-        groupCenterX = groupWidth * 0.5;
+        groupCenterX = (groupWidth * 0.5) | 0;
 
-        bottleTopSprite.setTransform(groupCenterX, nextY, 1, 1, 0, 0, 0, topPieceSize.width * 0.5, 0);
+        bottleTopSprite.setTransform(groupCenterX, nextY, 1, 1, 0, 0, 0, (topPieceSize.width * 0.5) | 0, 0);
         nextY += topPieceSize.height;
         bottleNeckSprite.setTransform(groupCenterX, nextY, 1, 1, 0, 0, 0, groupCenterX, 0);
         nextY += tileSize.height;
@@ -111,7 +111,7 @@ MemoryMatch.Nemesis = {
                 bottleMiddleSpriteCloned = bottleMiddleSprite.clone();
             }
             this.nemesisGroupDisplayObject.addChild(bottleMiddleSpriteCloned);
-            bottleMiddleSpriteCloned.setTransform(groupCenterX, nextY, 1, 1, 0, 0, 0, middlePieceSize.width * 0.5, 0);
+            bottleMiddleSpriteCloned.setTransform(groupCenterX, nextY, 1, 1, 0, 0, 0, (middlePieceSize.width * 0.5) | 0, 0);
             bottleMiddleSpriteCloned.name = 'miss' + missCounter.toString();
             nextY += middlePieceSize.height;
         }
@@ -122,11 +122,11 @@ MemoryMatch.Nemesis = {
         bottleBottomSprite.name = 'miss' + missCounter.toString();
         bottleBottomSprite.gotoAndStop(this.bottleBottomFilled);
         tileSize = MemoryMatch.getSpriteFrameSize(this.spriteFrameData, this.bottleBottomFilled);
-        bottleBottomSprite.setTransform(groupCenterX, nextY, 1, 1, 0, 0, 0, tileSize.width * 0.5, 0);
+        bottleBottomSprite.setTransform(groupCenterX, nextY, 1, 1, 0, 0, 0, (tileSize.width * 0.5) | 0, 0);
         nextY += tileSize.height;
         this.nemesisGroupDisplayObject.addChild(bottleBottomSprite);
 
-        this.nemesisGroupDisplayObject.setTransform(MemoryMatch.stageWidth - tileSize.width - (tileSize.width * 0.14), (MemoryMatch.stageHeight - nextY) * 0.5, 1, 1, 0, 0, 0, 0, 0);
+        this.nemesisGroupDisplayObject.setTransform((MemoryMatch.stageWidth - tileSize.width - (tileSize.width * 0.14)) | 0, ((MemoryMatch.stageHeight - nextY) * 0.5) | 0, 1, 1, 0, 0, 0, 0, 0);
         this.moveNemesisCharacter();
         MemoryMatch.stageUpdated = true;
     },
@@ -194,9 +194,9 @@ MemoryMatch.Nemesis = {
         bottleNeckSprite.gotoAndStop(this.bottleNeckFilled);
         tileSize = MemoryMatch.getSpriteFrameSize(spriteFrameData, this.bottleNeckFilled);
         groupWidth = tileSize.width; // all remaining pieces have the same width
-        groupCenterX = groupWidth * 0.5;
+        groupCenterX = (groupWidth * 0.5) | 0;
 
-        bottleTopSprite.setTransform(groupCenterX, nextY, 1, 1, 0, 0, 0, topPieceSize.width * 0.5, 0);
+        bottleTopSprite.setTransform(groupCenterX, nextY, 1, 1, 0, 0, 0, (topPieceSize.width * 0.5) | 0, 0);
         nextY += topPieceSize.height;
         bottleNeckSprite.setTransform(groupCenterX, nextY, 1, 1, 0, 0, 0, groupCenterX, 0);
         nextY += tileSize.height;
@@ -215,7 +215,7 @@ MemoryMatch.Nemesis = {
                 bottleMiddleSpriteCloned = bottleMiddleSprite.clone();
             }
             groupDisplayObject.addChild(bottleMiddleSpriteCloned);
-            bottleMiddleSpriteCloned.setTransform(groupCenterX, nextY, 1, 1, 0, 0, 0, middlePieceSize.width * 0.5, 0);
+            bottleMiddleSpriteCloned.setTransform(groupCenterX, nextY, 1, 1, 0, 0, 0, (middlePieceSize.width * 0.5) | 0, 0);
             bottleMiddleSpriteCloned.name = 'miss' + missCounter.toString();
             nextY += middlePieceSize.height;
         }
@@ -225,11 +225,11 @@ MemoryMatch.Nemesis = {
         bottleBottomSprite.name = 'miss' + missCounter.toString();
         bottleBottomSprite.gotoAndStop(this.bottleBottomFilled);
         tileSize = MemoryMatch.getSpriteFrameSize(spriteFrameData, this.bottleBottomFilled);
-        bottleBottomSprite.setTransform(groupCenterX, nextY, 1, 1, 0, 0, 0, tileSize.width * 0.5, 0);
+        bottleBottomSprite.setTransform(groupCenterX, nextY, 1, 1, 0, 0, 0, (tileSize.width * 0.5) | 0, 0);
         nextY += tileSize.height;
         groupDisplayObject.addChild(bottleBottomSprite);
 
-        groupDisplayObject.setTransform(x - tileSize.width - (tileSize.width * 0.14), y, scale, scale, 0, 0, 0, 0, nextY * 0.5);
+        groupDisplayObject.setTransform((x - tileSize.width - (tileSize.width * 0.14)) | 0, y, scale, scale, 0, 0, 0, 0, nextY * 0.5);
         parentDisplayObject.addChild(groupDisplayObject);
     },
 

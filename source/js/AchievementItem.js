@@ -62,17 +62,17 @@ MemoryMatch = MemoryMatch || {};
             if (parameters.width != null) {
                 this.width = parameters.width;
             } else if (this.width < 1) {
-                this.width = 920 * MemoryMatch.stageScaleFactor;
+                this.width = (920 * MemoryMatch.stageScaleFactor) | 0;
             }
             if (parameters.height != null) {
                 this.height = parameters.height;
             } else if (this.height < 1) {
-                this.height = 290 * MemoryMatch.stageScaleFactor;
+                this.height = (290 * MemoryMatch.stageScaleFactor) | 0;
             }
             if (parameters.x != null) {
                 this.x = parameters.x;
             } else if (this.x < 1) {
-                this.x = this.width * 0.5;
+                this.x = (this.width * 0.5) | 0;
             }
             if (parameters.y != null) {
                 this.y = parameters.y;
@@ -129,15 +129,15 @@ MemoryMatch = MemoryMatch || {};
         }
         // layout the screen
         this.groupDisplayObject = new createjs.Container();
-        this.marginTop = 8 * MemoryMatch.stageScaleFactor;
-        this.marginLeft = 8 * MemoryMatch.stageScaleFactor;
+        this.marginTop = (8 * MemoryMatch.stageScaleFactor) | 0;
+        this.marginLeft = (8 * MemoryMatch.stageScaleFactor) | 0;
         this.drawBackground();
         this.setupIcon();
         this.setupTitleText();
         this.setupDescriptionText();
         this.setupValueText();
         this.parentDisplayObject.addChild(this.groupDisplayObject);
-        this.groupDisplayObject.setTransform(this.x, this.y, 1, 1, 0, 0, 0, this.width * 0.5, this.height * 0.5);
+        this.groupDisplayObject.setTransform(this.x, this.y, 1, 1, 0, 0, 0, (this.width * 0.5) | 0, (this.height * 0.5) | 0);
         this.groupDisplayObject.visible = true;
         if (this.autoClose) {
 //            this.closeStartAnimation();
@@ -171,7 +171,7 @@ MemoryMatch = MemoryMatch || {};
             spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.guiSpritesheet1Frames);
             iconSize = MemoryMatch.getSpriteFrameSize(MemoryMatch.GameSetup.guiSpritesheet1Frames, this.icon);
             iconSprite = new createjs.Sprite(spriteData, this.icon);
-            iconSprite.setTransform(this.width * 0.005, this.height * 0.5, iconScale, iconScale, 0, 0, 0, 0, iconSize.height * 0.5);
+            iconSprite.setTransform((this.width * 0.005) | 0, (this.height * 0.5) | 0, iconScale, iconScale, 0, 0, 0, 0, (iconSize.height * 0.5) | 0);
             iconSprite.framerate = 1;
             iconSprite.name = "icon";
             if ( ! this.earned) {
@@ -187,10 +187,10 @@ MemoryMatch = MemoryMatch || {};
         var titleTextField;
         titleTextField = new createjs.Text(this.title, MemoryMatch.getScaledFontSize(42) + " " + MemoryMatch.GameSetup.guiBoldFontName, (this.earned ? this.fontColorEarned : this.fontColorUnearned));
         titleTextField.textAlign = "center";
-        titleTextField.x = this.width * 0.5;
-        titleTextField.y = this.height * 0.1;
-        titleTextField.lineWidth = this.width * 0.8;
-        titleTextField.maxWidth = this.width * 0.8;
+        titleTextField.x = (this.width * 0.5) | 0;
+        titleTextField.y = (this.height * 0.1) | 0;
+        titleTextField.lineWidth = (this.width * 0.8) | 0;
+        titleTextField.maxWidth = (this.width * 0.8) | 0;
         titleTextField.name = "title";
         this.groupDisplayObject.addChild(titleTextField);
     };
@@ -206,10 +206,10 @@ MemoryMatch = MemoryMatch || {};
         }
         titleTextField = new createjs.Text(message, MemoryMatch.getScaledFontSize(36) + " " + MemoryMatch.GameSetup.guiMediumFontName, (this.earned ? this.fontColorEarned : this.fontColorUnearned));
         titleTextField.textAlign = "left";
-        titleTextField.x = this.width * 0.28;
-        titleTextField.y = this.height * 0.36;
-        titleTextField.lineWidth = this.width * 0.72;
-        titleTextField.maxWidth = this.width * 0.72;
+        titleTextField.x = (this.width * 0.28) | 0;
+        titleTextField.y = (this.height * 0.36) | 0;
+        titleTextField.lineWidth = (this.width * 0.72) | 0;
+        titleTextField.maxWidth = (this.width * 0.72) | 0;
         titleTextField.name = "description";
         this.groupDisplayObject.addChild(titleTextField);
     };
@@ -219,10 +219,10 @@ MemoryMatch = MemoryMatch || {};
         if (this.value != null) {
             valueTextField = new createjs.Text(this.value.toString(), MemoryMatch.getScaledFontSize(56) + " " + MemoryMatch.GameSetup.guiMediumFontName, (this.earned ? this.fontColorEarned : this.fontColorUnearned));
             valueTextField.textAlign = "right";
-            valueTextField.x = this.width * 0.96;
-            valueTextField.y = this.height * 0.6;
-            valueTextField.lineWidth = this.width * 0.8;
-            valueTextField.maxWidth = this.width * 0.8;
+            valueTextField.x = (this.width * 0.96) | 0;
+            valueTextField.y = (this.height * 0.6) | 0;
+            valueTextField.lineWidth = (this.width * 0.8) | 0;
+            valueTextField.maxWidth = (this.width * 0.8) | 0;
             valueTextField.name = "value";
             this.groupDisplayObject.addChild(valueTextField);
         }

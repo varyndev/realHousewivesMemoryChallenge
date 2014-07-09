@@ -144,11 +144,11 @@ MemoryMatch.MainMenu = {
             numberOfLevels = MemoryMatch.GameSetup.levels.length;
 
         if (awardPosition == null) {
-            position = {x: (this.width - spriteSize.width) * 0.5, y: (this.height - spriteSize.height) * 0.5};
+            position = {x: ((this.width - spriteSize.width) * 0.5) | 0, y: ((this.height - spriteSize.height) * 0.5) | 0};
         } else {
-            position = {x: awardPosition.x * MemoryMatch.stageScaleFactor, y: awardPosition.y * MemoryMatch.stageScaleFactor};
+            position = {x: (awardPosition.x * MemoryMatch.stageScaleFactor) | 0, y: (awardPosition.y * MemoryMatch.stageScaleFactor) | 0};
         }
-        imageSprite.setTransform(position.x, position.y, 1, 1, 0, 0, 0, spriteSize.width * 0.5, spriteSize.height * 0.5);
+        imageSprite.setTransform(position.x, position.y, 1, 1, 0, 0, 0, (spriteSize.width * 0.5) | 0, (spriteSize.height * 0.5) | 0);
         imageSprite.framerate = 0;
         imageSprite.cursor = 'pointer';
         imageSprite.addEventListener('click', this.onClickedAward.bind(this));
@@ -157,14 +157,14 @@ MemoryMatch.MainMenu = {
 
         // position gems relative to award position, accounting for the center registration of the award sprite
         spriteFrame = 'mapAwardLand';
-        position.x -= spriteSize.width * 0.5;
-        position.y -= spriteSize.height * 0.5;
+        position.x -= (spriteSize.width * 0.5) | 0;
+        position.y -= (spriteSize.height * 0.5) | 0;
         for (i = 0; i < numberOfLevels; i ++) {
             landNumber = i + 1;
             gemName = spriteFrame + landNumber.toString();
             imageSprite = new createjs.Sprite(this.spriteData, gemName);
             gemPosition = MemoryMatch.GameSetup.levels[i].gemPosition;
-            imageSprite.setTransform(position.x + (gemPosition.x * MemoryMatch.stageScaleFactor), position.y + (gemPosition.y * MemoryMatch.stageScaleFactor));
+            imageSprite.setTransform((position.x + (gemPosition.x * MemoryMatch.stageScaleFactor)) | 0, (position.y + (gemPosition.y * MemoryMatch.stageScaleFactor)) | 0);
             imageSprite.name = gemName;
             imageSprite.visible = MemoryMatch.didUserBeatChallenge(landNumber);
             this.groupDisplayObject.addChild(imageSprite);
