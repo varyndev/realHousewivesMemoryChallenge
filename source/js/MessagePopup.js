@@ -125,12 +125,17 @@ MemoryMatch.MessagePopup = {
     },
 
     closePopup: function (closeEventType) {
-        var domElement = this.groupDisplayObject.getChildByName('text');
+        var domElement = this.groupDisplayObject.getChildByName('text'),
+            pageElement;
 
         this.isEnabled = false;
         this.closeEventType = closeEventType;
         if (domElement != null) {
             domElement.visible = false;
+            pageElement = document.getElementById(this.domElement);
+            if (pageElement != null) {
+                pageElement.style.display = 'none';
+            }
         }
         // begin animation, then once close is complete send notification
         this.closeStartAnimation();
@@ -226,8 +231,8 @@ MemoryMatch.MessagePopup = {
                 x = (this.backgroundWidth * positionOffset) | 0;
                 y = (this.backgroundHeight * positionOffset) | 0;
             } else {
-                x = (this.backgroundWidth * -0.54) | 0;
-                y = (this.backgroundHeight * -0.54) | 0;
+                x = (this.backgroundWidth * -0.52) | 0;
+                y = (this.backgroundHeight * -0.48) | 0;
             }
             this.groupDisplayObject.addChild(domElement);
             pageElement.style.display = 'block';
