@@ -232,13 +232,15 @@ var ShareHelper = {
         // Call the render method when appropriate within your app to display
         // the button.
         gapi.interactivepost.render('googleSharePost', options);
-        domElement = document.getElementById('googleSharePost');
-        if (typeof domElement.onclick == "function") {
-            domElement.onclick.apply(domElement);
-        }
-        if (callbackWhenComplete != null) {
-            callbackWhenComplete('googleplus');
-        }
+        window.setTimeout(function(){
+            domElement = document.getElementById('googleSharePost');
+            if (typeof domElement.onclick == "function") {
+                domElement.onclick.apply(domElement);
+            }
+            if (callbackWhenComplete != null) {
+                callbackWhenComplete('googleplus');
+            }
+        }, 250);
     },
 
     TwitterStatus: function (parameters, callbackWhenComplete) {
