@@ -2,9 +2,9 @@
 "images": ["shareicons-100.png"],
 "frames": [
 
-    [384, 0, 128, 128], 
-    [256, 0, 128, 128], 
-    [128, 0, 128, 128], 
+    [387, 0, 128, 128], 
+    [258, 0, 128, 128], 
+    [129, 0, 128, 128], 
     [0, 0, 128, 128]
 ],
 "animations": {
@@ -15,7 +15,7 @@
         "twitter-icon":[3]
 },
 "texturepacker": [
-        "SmartUpdateHash: $TexturePacker:SmartUpdate:23fb637257c038052915bc109925e1c3:b3d7092b4196f868243fd39c0379d615:0ae438a6da19424d42ff18f6049f4f0a$",
+        "SmartUpdateHash: $TexturePacker:SmartUpdate:8808c15bf34fed74124835e03d5dd112:e510fb94fb03cb0c8116555c5dcab684:3ba55044ab7ebd3ae80b12058c3eafbf$",
         "Created with TexturePacker (http://www.texturepacker.com) for EaselJS"
 ]
 }
