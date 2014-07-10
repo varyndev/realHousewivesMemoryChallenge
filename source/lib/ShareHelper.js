@@ -11,11 +11,10 @@
  *
  */
 
-// namespace under enginesis object
-enginesis = enginesis || {};
+var enginesis = enginesis || {};
 "use strict";
 
-enginesis.ShareHelper = {
+var ShareHelper = {
 
     networks: null,
     serverResponse: '',
@@ -296,11 +295,18 @@ enginesis.ShareHelper = {
     ShareByEmail: function (parameters, callbackWhenComplete) {
         // Email parameters are From name, From email, To email list, Message
 
-        enginesis.gameDataCreate('bravotv.com', parameters.fromEmail, parameters.fromName, parameters.toEmail, '', parameters.Message, '', '', '', false, 0, overRideCallBackFunction);
+        enginesis.gameDataCreate('bravotv.com', parameters.fromEmail, parameters.fromName, parameters.toEmail, '', parameters.message, '', '', '', false, 0,
+            function(enginesisResponse) {
+                if (enginesisResponse != null && enginesisResponse.fn != null && enginesisResponse.fn == 'GameDataCreate') {
+                    // see if it was sent or we got an error
+                } else {
+                    // unknown or unexpected reply
+                }
+                if (callbackWhenComplete != null) {
+                    callbackWhenComplete('email');
+                }
+            });
 
-        if (callbackWhenComplete != null) {
-            callbackWhenComplete('email');
-        }
     },
 
     replaceChar: function (str, char) {

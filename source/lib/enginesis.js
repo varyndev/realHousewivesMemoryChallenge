@@ -8,6 +8,9 @@
  * git $Header$
  *
  **/
+// namespace under enginesis object
+enginesis = enginesis || {};
+"use strict";
 
 var enginesis = function (siteId, gameId, gameGroupId, enginesisServerStage, authToken, developerKey, languageCode, callBackFunction) {
 
@@ -33,8 +36,13 @@ var enginesis = function (siteId, gameId, gameGroupId, enginesisServerStage, aut
 
 
     var requestComplete = function (enginesisResponseData, overRideCallBackFunction) {
+        var enginesisResponseObject;
         debugLog("CORS request complete " + enginesisResponseData);
-        var enginesisResponseObject = JSON.parse(enginesisResponseData);
+        try {
+            enginesisResponseObject = JSON.parse(enginesisResponseData);
+        } catch (exception) {
+            enginesisResponseObject = {results:{status:{success:0,message:"Error: " + exception.message,extended_info:enginesisResponseData.toString()},passthru:{fn:"unknown",state_seq:"0"}}};
+        }
         enginesisResponseObject.fn = enginesisResponseObject.results.passthru.fn;
         if (overRideCallBackFunction != null) {
             overRideCallBackFunction(enginesisResponseObject);
@@ -54,7 +62,7 @@ var enginesis = function (siteId, gameId, gameGroupId, enginesisServerStage, aut
             }
 
             crossOriginRequest.onerror = function(e) {
-                debugLog("CORS request error " + e);
+                debugLog("CORS request error " + crossOriginRequest.status + " " + e.toString());
                 // TODO: Enginesis.requestError(errorMessage); generate a canned error response (see PHP code)
             }
 
@@ -138,6 +146,8 @@ var enginesis = function (siteId, gameId, gameGroupId, enginesisServerStage, aut
     // this is the public interface
     //
     return {
+
+        ShareHelper: ShareHelper,
 
         versionGet: function () {
             return VERSION;
@@ -250,7 +260,7 @@ var enginesis = function (siteId, gameId, gameGroupId, enginesisServerStage, aut
                 user_files: userFiles,
                 game_data: gameData,
                 name_tag: nameTag,
-                add_to_gallery: addToGallery,
+                add_to_gallery: addToGallery ? 1 : 0,
                 last_score: lastScore
             }, overRideCallBackFunction);
         },
