@@ -9,7 +9,7 @@ MemoryMatch.GameSetup = {
     gameSubTitle: "Think you have a good memory? See if you can win the award in this memory challenge game.",
     gameId: 1084,
     siteId: 108,
-    enginesisStage: '-q',
+    enginesisStage: '',
     developerKey: 'deaddaeddeaddaed',
     gameKey: 'e86cf3754cbd83700639e16eee0583c4',
     twitterId: '@bravotv',

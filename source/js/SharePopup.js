@@ -153,7 +153,7 @@ MemoryMatch.SharePopup = {
             parameters = {
                 facebookAppId: MemoryMatch.GameSetup.facebookAppId
             };
-            enginesis.ShareHelper.initialize(networkId, parameters, this.onNetworkInitializeComplete.bind(this));
+            enginesisSession.ShareHelper.initialize(networkId, parameters, this.onNetworkInitializeComplete.bind(this));
         }
     },
 
@@ -194,7 +194,7 @@ MemoryMatch.SharePopup = {
                 picture: null,
                 link: null
             };
-            enginesis.ShareHelper.share('email', parameters, this.onNetworkShareComplete.bind(this));
+            enginesisSession.ShareHelper.share('email', parameters, this.onNetworkShareComplete.bind(this));
         } else {
             document.getElementById('errorMessage').innerText = message;
         }
@@ -223,7 +223,7 @@ MemoryMatch.SharePopup = {
             } else {
                 parameters.description = MemoryMatch.GameSetup.gameSubTitle;
             }
-            enginesis.ShareHelper.share(networkId, parameters, this.onNetworkShareComplete.bind(this));
+            enginesisSession.ShareHelper.share(networkId, parameters, this.onNetworkShareComplete.bind(this));
 //            this.closePopup("continue"); // if user cancels we will never know!
         } else { // we need to prompt the user for the share info
             this.showEmailForm();

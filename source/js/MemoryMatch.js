@@ -7,7 +7,7 @@
 var assetLoader;
 
 // namespace under enginesis object
-enginesis = enginesis || {};
+var enginesisSession = enginesis || {};
 
 'use strict';
 
@@ -243,9 +243,9 @@ var MemoryMatch = {
         this.restoreUsers();
 
         // start the Enginesis session
-        enginesis = enginesis(this.GameSetup.siteId, this.GameSetup.gameId, 0, this.GameSetup.enginesisStage, '', this.GameSetup.developerKey, 'en', this.enginesisCallBack.bind(this));
-        enginesis.gameTrackingRecord('game', 'load', '', '', null);
-        enginesis.sessionBegin(this.GameSetup.gameKey);
+        enginesisSession = enginesis(this.GameSetup.siteId, this.GameSetup.gameId, 0, this.GameSetup.enginesisStage, '', this.GameSetup.developerKey, 'en', this.enginesisCallBack.bind(this));
+        enginesisSession.gameTrackingRecord('game', 'load', '', '', null);
+        enginesisSession.sessionBegin(this.GameSetup.gameKey);
         // TODO: save authtoken, user id, user name, avatar
 
         // find canvas and perform the basic setup tasks to get everything in order to start the game
