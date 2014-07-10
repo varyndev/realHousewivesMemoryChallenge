@@ -5529,8 +5529,8 @@ function runTests() {
 };
 
 function onGooglePlusLoaded () {
-    if (enginesis != null && enginesis.ShareHelper != null) {
-        enginesis.ShareHelper.onGooglePlusLoaded(null);
+    if (enginesisSession != null && enginesisSession.ShareHelper != null) {
+        enginesisSession.ShareHelper.onGooglePlusLoaded(null);
     }
 };
 
