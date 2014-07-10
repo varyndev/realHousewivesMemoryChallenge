@@ -7,7 +7,7 @@
  */
 
 MemoryMatch.SharePopup = {
-    shareNetworks: [{id: 'email', icon: 'email-icon'}, {id: 'facebook', icon: 'facebook-icon'}, {id: 'twitter', icon: 'twitter-icon'}, {id: 'googleplus', icon: 'googleplus-icon'}],
+    shareNetworks: [{id: 'facebook', icon: 'facebook-icon'}, {id: 'twitter', icon: 'twitter-icon'}, {id: 'googleplus', icon: 'googleplus-icon'}],
     stateCompleteCallback: null,
     parentDisplayObject: null,
     groupDisplayObject: null,
@@ -174,9 +174,9 @@ MemoryMatch.SharePopup = {
             message = 'Please provide your email address as the sender.';
         } else if (toEmail.length < 4) {
             message = 'Please provide the email address of a recipient.';
-        } else if (MemoryMatch.isValidEmail(fromEmail.length)) {
+        } else if ( ! MemoryMatch.isValidEmail(fromEmail)) {
             message = 'Please provide a valid sender email address.';
-        } else if (MemoryMatch.isValidEmail(toEmail.length)) {
+        } else if ( ! MemoryMatch.isValidEmail(toEmail)) {
             message = 'Please provide a valid email address of a recipient.';
         } else {
             isOKToSend = true;
@@ -381,7 +381,7 @@ MemoryMatch.SharePopup = {
             if (shareButtonsWidth == 0) {
                 // we are assuming all share buttons are the exact same size, otherwise this logic is incorrect.
                 buttonSize = gameButton.getSize();
-                shareButtonsMargin = Math.floor(buttonSize.width * 0.2);
+                shareButtonsMargin = Math.floor(buttonSize.width * 0.3333);
                 shareButtonsWidth = ((buttonSize.width + shareButtonsMargin) * shareButtonsCount) - shareButtonsMargin;
                 shareButtonsStartX = (this.backgroundWidth - shareButtonsWidth) * 0.5;
             }

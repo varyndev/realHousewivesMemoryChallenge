@@ -5,6 +5,10 @@
  */
 
 var assetLoader;
+
+// namespace under enginesis object
+enginesis = enginesis || {};
+
 'use strict';
 
 
@@ -15,7 +19,6 @@ var MemoryMatch = {
     debugMode: true,
     isTouchDevice: false,
     minimumSplashScreenDisplayTime: 2000,
-    enginesis: null,
     debugQueue: [],
 
     GAMESTATE: {
@@ -240,9 +243,9 @@ var MemoryMatch = {
         this.restoreUsers();
 
         // start the Enginesis session
-        this.enginesis = enginesis(this.GameSetup.siteId, this.GameSetup.gameId, 0, '', '', this.GameSetup.developerKey, 'en', this.enginesisCallBack.bind(this));
-        this.enginesis.gameTrackingRecord('game', 'load', '', '', null);
-        this.enginesis.sessionBegin(this.GameSetup.gameKey);
+        enginesis = enginesis(this.GameSetup.siteId, this.GameSetup.gameId, 0, this.GameSetup.enginesisStage, '', this.GameSetup.developerKey, 'en', this.enginesisCallBack.bind(this));
+        enginesis.gameTrackingRecord('game', 'load', '', '', null);
+        enginesis.sessionBegin(this.GameSetup.gameKey);
         // TODO: save authtoken, user id, user name, avatar
 
         // find canvas and perform the basic setup tasks to get everything in order to start the game
@@ -4255,7 +4258,8 @@ var MemoryMatch = {
     },
 
     isValidEmail: function (email) {
-        return /\S+@\S+\.\S+/.test(email.trim());
+        var re = /\S+@\S+\.\S+/;
+        return re.test(email);
     },
 
     getVendorPrefix: function () {
@@ -5526,7 +5530,7 @@ function runTests() {
 
 function onGooglePlusLoaded () {
     if (enginesis != null && enginesis.ShareHelper != null) {
-        enginesis.ShareHelper.onGooglePlusLoaded();
+        enginesis.ShareHelper.onGooglePlusLoaded(null);
     }
 };
 
