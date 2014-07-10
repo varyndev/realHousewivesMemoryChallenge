@@ -104,31 +104,66 @@ body {
 #loaderProgressBottom {
     color: #36c2dd;
 }
+@media all and (min-device-width: 620px) { /* 100% */
+    #helpArea { /* fits inside 1596x1226 background */
+        width: 1300px;
+        height: 1020px;
+        margin-top: 32px;
+        margin-bottom: 60px;
+    }
+
+    #helpContent {
+        padding-left: 20px;
+        font-size: 32px;
+        height: 1020px;
+    }
+
+    #helpContent p {
+        font-size: 36px;
+        margin-left: 22px;
+    }
+}
+@media all and (max-device-width: 629px) { /* 25% */
+    #helpArea {
+        width: 1300px;
+        height: 1020px;
+        margin-top: 8px;
+        margin-bottom: 0px;
+    }
+
+    #helpContent {
+        padding-left: 0px;
+        font-size: 52px;
+        height: 1020px;
+    }
+
+    #helpContent p {
+        font-size: 64px;
+        margin-left: 0px;
+    }
+
+    .emailtablelabel {
+        font-size: 14px;
+    }
+}
 
 #helpArea { /* fits inside 1596x1226 background */
     overflow: auto;
     z-index: 1;
     position: fixed;
-    visibility: hidden;
-    width: 1300px;
-    height: 1020px;
-    margin-top: 32px;
-    margin-bottom: 60px;
-/*    background-color: #aad4dc; */
+    display: none;
     left:       50%;
     top:        50%;
     align:      center;
     text-align: center;
+    /*    background-color: #aad4dc; */
 }
 
 #helpContent {
-    height: 1020px;
     position: absolute;
     overflow-y: scroll;
-    padding-left: 20px;
     font-family: SohoStd-BoldItalic, Arial, sans-serif;
     text-align: left;
-    font-size: 32px;
     color: #ffffff;
 }
 
@@ -150,8 +185,6 @@ body {
 #helpContent p {
     color: #ffffff;
     font-family: open_sanscondensed_light, Arial, sans-serif;
-    font-size: 36px;
-    margin-left: 22px;
 }
 
 #sharearea {
@@ -180,12 +213,12 @@ body {
 }
 
 #emailform {
-    width:      50%;
+    width:      64%;
     height:     50%;
     align:      center;
     text-align: center;
     margin: 0 auto;
-/*    background-color: #aad4dc; */
+    /*background-color: #aad4dc;*/
 }
 
 #emailtable {

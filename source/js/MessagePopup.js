@@ -219,12 +219,19 @@ MemoryMatch.MessagePopup = {
             scaleFactorY = MemoryMatch.stageScaleFactor * (MemoryMatch.cssScaledHeight / MemoryMatch.stageHeight);
             if (MemoryMatch.stageScaleFactor == 0.5) {
                 positionOffset = -0.5;
+                x = (this.backgroundWidth * positionOffset) | 0;
+                y = (this.backgroundHeight * positionOffset) | 0;
+            } else if (MemoryMatch.stageScaleFactor > 0.5) {
+                positionOffset = -0.415;
+                x = (this.backgroundWidth * positionOffset) | 0;
+                y = (this.backgroundHeight * positionOffset) | 0;
             } else {
-                positionOffset = -0.57;
+                x = (this.backgroundWidth * -0.54) | 0;
+                y = (this.backgroundHeight * -0.54) | 0;
             }
-            x = Math.floor(this.backgroundWidth * positionOffset);
-            y = Math.floor(this.backgroundHeight * positionOffset);
             this.groupDisplayObject.addChild(domElement);
+            pageElement.style.display = 'block';
+            MemoryMatch.debugLog("Transforming to " + x + "," + y + ', scale ' + scaleFactorX + ',' + scaleFactorY);
             domElement.setTransform(x, y, scaleFactorX, scaleFactorY, 0, 0, 0, 0, 0);
         }
     },
