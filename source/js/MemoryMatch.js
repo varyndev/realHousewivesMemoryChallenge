@@ -5542,11 +5542,6 @@ function initApp() {
         document.getElementById(MemoryMatch.loaderElement).style.display = "block";
         document.getElementById(MemoryMatch.stageCanvasElement).style.display = "block";
     }
-    document.addEventListener("touchstart",
-        function() {
-            return false;
-        },
-        false); // eat the touch event to prevent scrolling on touchscreens
 
     // Determine canvas size, it will determine which assets need to be loaded
     MemoryMatch.setCanvasSize(null);

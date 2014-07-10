@@ -160,7 +160,7 @@ body {
 }
 
 #helpContent {
-    position: absolute;
+    position: fixed;
     overflow-y: scroll;
     font-family: SohoStd-BoldItalic, Arial, sans-serif;
     text-align: left;

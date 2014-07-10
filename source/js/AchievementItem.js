@@ -204,12 +204,13 @@ MemoryMatch = MemoryMatch || {};
         } else {
             message = '???';
         }
-        titleTextField = new createjs.Text(message, MemoryMatch.getScaledFontSize(36) + " " + MemoryMatch.GameSetup.guiMediumFontName, (this.earned ? this.fontColorEarned : this.fontColorUnearned));
+        titleTextField = new createjs.Text(message, MemoryMatch.getScaledFontSize(40) + " " + MemoryMatch.GameSetup.guiMediumFontName, (this.earned ? this.fontColorEarned : this.fontColorUnearned));
         titleTextField.textAlign = "left";
         titleTextField.x = (this.width * 0.28) | 0;
         titleTextField.y = (this.height * 0.36) | 0;
         titleTextField.lineWidth = (this.width * 0.72) | 0;
         titleTextField.maxWidth = (this.width * 0.72) | 0;
+        titleTextField.lineHeight = titleTextField.getMeasuredLineHeight() * 1.2;
         titleTextField.name = "description";
         this.groupDisplayObject.addChild(titleTextField);
     };
