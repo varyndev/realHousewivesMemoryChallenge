@@ -1907,6 +1907,7 @@ var MemoryMatch = {
         if (MemoryMatch.gameNumber > 15) {
             MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.MOZART);
         }
+        MemoryMatch.awardChallengeStreakMilestone();
     },
 
     checkBoardIsReadyForPlay: function () {
@@ -2169,6 +2170,7 @@ var MemoryMatch = {
                 MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.WIN;
                 MemoryMatch.triggerSoundFx("soundCorrect", {delay: 250});
                 MemoryMatch.removeAllCards(MemoryMatch.gameCompleteRemoveCardThenAdvance); // user completed the game, but wait for cards to dissolve before advancing
+                MemoryMatch.awardChallengeStreakMilestone();
             } else {
                 MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.CHOOSE_SECOND_CARD;
             }
@@ -2279,6 +2281,7 @@ var MemoryMatch = {
             MemoryMatch.matchEffectsStars(globalCardPoint.x, globalCardPoint.y, 1);
             MemoryMatch.gameEndTime = Date.now();
             MemoryMatch.removeAllCards(MemoryMatch.gameCompleteNextGameOrLevel); // user completed the game, but wait for cards to dissolve before advancing
+            MemoryMatch.awardChallengeStreakMilestone();
         } else {
             MemoryMatch.cardsDoNotMatch();
             MemoryMatch.triggerSoundFx("soundMiss", {delay: 500});
@@ -2317,6 +2320,7 @@ var MemoryMatch = {
             MemoryMatch.gameEndTime = Date.now();
             MemoryMatch.cardSelected.flip(); // Show user the card briefly before moving on
             MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.cardSelected, 1000, 0, false, null, MemoryMatch.onCardFlipCompleteEyeSpy);
+            MemoryMatch.awardChallengeStreakMilestone();
         } else {
             MemoryMatch.cardsDoNotMatch();
             MemoryMatch.triggerSoundFx("soundMiss", {delay: 500});
@@ -2456,16 +2460,12 @@ var MemoryMatch = {
     },
 
     updateMatchCountDisplay: function () {
-        var newValue,
-            isChallenge = false,
-            bonusPoints = 0;
+        var newValue;
 
         if (MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.SIMON) {
             newValue = MemoryMatch.simonPlaybackIndex;
-            isChallenge = true;
         } else if (MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.PATTERN || MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.MONTE || MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.EYESPY) {
             newValue = MemoryMatch.gameNumber - 1;
-            isChallenge = true;
         } else {
             if (MemoryMatch.moveCountDown >= 0) {
                 newValue = MemoryMatch.moveCountDown;
@@ -2474,13 +2474,34 @@ var MemoryMatch = {
             }
         }
         MemoryMatch.GameGUI.updateMatchCountDisplay(newValue);
-        if (isChallenge && MemoryMatch.gameState != MemoryMatch.GAMESTATE.LOSE && newValue > 0 && newValue % 5 == 0) {
-            bonusPoints = 500;
-            MemoryMatch.triggerSoundFx("soundBonus");
-            MemoryMatch.GameGUI.flashMatchCountDisplay(true, 6);
-            MemoryMatch.updateScoreDisplay(bonusPoints);
-            MemoryMatch.showScoreBalloon(bonusPoints, {x: MemoryMatch.stageWidth * 0.8, y: MemoryMatch.stageHeight * 0.94});
+    },
+
+    awardChallengeStreakMilestone: function () {
+
+        // Determine if the player has crossed the streak milestone. Note in this case the gameNumber has not yet been
+        // incremented so we need to credit the player with one more as she just completed a board.
+
+        var streakMilestoneValue = 5, // TODO: This number may be game dependent
+            streakValue;
+
+        if (MemoryMatch.isChallengeGame && MemoryMatch.gameState != MemoryMatch.GAMESTATE.LOSE) {
+            if (MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.SIMON) {
+                streakValue = MemoryMatch.simonPlaybackIndex;
+            } else if (MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.PATTERN || MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.MONTE || MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.EYESPY) {
+                streakValue = MemoryMatch.gameNumber;
+            }
+            if (streakValue > 0 && streakValue % streakMilestoneValue == 0) {
+                window.setTimeout(MemoryMatch.showChallengeStreakMilestone.bind(MemoryMatch), 1000);
+            }
         }
+    },
+
+    showChallengeStreakMilestone: function () {
+        var bonusPoints = 500;
+        MemoryMatch.triggerSoundFx("soundBonus");
+        MemoryMatch.GameGUI.flashMatchCountDisplay(true, 6);
+        MemoryMatch.updateScoreDisplay(bonusPoints);
+        MemoryMatch.showScoreBalloon(bonusPoints, {x: MemoryMatch.stageWidth * 0.8, y: MemoryMatch.stageHeight * 0.94});
     },
 
     matchEffects: function (x, y, level) {
@@ -2911,7 +2932,11 @@ var MemoryMatch = {
             thisGameData = MemoryMatch.getGameData(MemoryMatch.isChallengeGame);
             MemoryMatch.monteMoves = [];
             MemoryMatch.monteIndex = 0;
-            for (i = 0; i < MemoryMatch.monteNumberOfMoves; i ++) {
+            // force target card as first shuffle
+            firstCardIndex = Math.floor(MemoryMatch.allCardsOnBoard.length * 0.5);
+            secondCardIndex = MemoryMatch.getRandomNumberBetweenButNot(0, MemoryMatch.allCardsOnBoard.length - 1, firstCardIndex);
+            MemoryMatch.monteMoves.push([firstCardIndex, secondCardIndex]);
+            for (i = 0; i < MemoryMatch.monteNumberOfMoves - 1; i ++) {
                 firstCardIndex = MemoryMatch.getRandomNumberBetween(0, MemoryMatch.allCardsOnBoard.length - 1);
                 secondCardIndex = MemoryMatch.getRandomNumberBetweenButNot(0, MemoryMatch.allCardsOnBoard.length - 1, firstCardIndex);
                 MemoryMatch.monteMoves.push([firstCardIndex, secondCardIndex]);

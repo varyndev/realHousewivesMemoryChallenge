@@ -160,7 +160,7 @@ MemoryMatch.GameSetup = {
             levelName:"Follow Your Card",
             levelIntro: "A shell game: you are shown a card, follow the cards as they are moved and when they stop, pick only that card. You must complete at least 5 to advance.",
             cardShowTime: 1000,
-            shuffleCount: 3,
+            shuffleCount: 4,
             cardAdvance: 5,
             advanceToColumns: 5
         },

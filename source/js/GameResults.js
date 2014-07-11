@@ -98,7 +98,7 @@ MemoryMatch.GameResults = {
             eventDataValue = this.totalMisses;
         }
         this.isEnabled = false;
-        MemoryMatch.enginesis.gameTrackingRecord('level', winOrLose, 'Level ' + displayGameNumber.toString(), eventDataValue, null);
+        enginesisSession.gameTrackingRecord('level', winOrLose, 'Level ' + displayGameNumber.toString(), eventDataValue, null);
     },
 
     buildScreen: function (autoStart) {
