@@ -13,7 +13,7 @@ var enginesisSession = enginesis || {};
 
 
 var MemoryMatch = {
-    GameVersion: "1.0.65",
+    GameVersion: "1.0.66",
     platform: "unknown",
     locale: "en-US",
     debugMode: true,
