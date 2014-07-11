@@ -150,7 +150,7 @@ MemoryMatch.CreditsPopup = {
     showCredits: function () {
         var titleTextField,
             text1 = 'This game was made by JumpyDot using the EaselJS HTML5 framework.',
-            text2 = 'Julia Deter-Keren: Game Design & Art Direction\n\nJohn Foster:     Programming & Audio\n\nDan Hart:  Game Design & Product Management\n\nRobert Prescott:     Quality Assurance';
+            text2 = 'Dan Hart:  Game Design & Product Management\n\nJohn Foster:     Programming & Audio\n\nJulia Deter-Keren: Game Design & Art Direction\n\nRobert Prescott:     Quality Assurance';
 
         titleTextField = new createjs.Text(text1, MemoryMatch.getScaledFontSize(52) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         titleTextField.textAlign = "left";
