@@ -64,7 +64,7 @@ MemoryMatch.GameResults = {
         this.spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.guiSpritesheet1Frames);
         this.levelData = nextLevelData;
         this.gameNumber = MemoryMatch.isChallengeGame ? 99 : MemoryMatch.gameNumber;
-        this.streakCount = MemoryMatch.gameNumber - 1;
+        this.streakCount = 0;
         this.priorGameData = MemoryMatch.getPriorScoreDataForGameNumber(this.gameNumber, null);
         this.stateCompleteCallback = stateCompleteCallbackFunction;
         this.parentDisplayObject = displayObject;
@@ -82,7 +82,6 @@ MemoryMatch.GameResults = {
         this.totalGameTime = MemoryMatch.formatTimeAsString(this.totalGameTime, false, false);
         this.accuracy = MemoryMatch.calculateLevelAccuracy();
         this.gameStarsEarned = MemoryMatch.starsEarnedInCurrentGame();
-
         this.buttonInstances = [];
         this.playerBestScore = MemoryMatch.priorBestGameScore;
         if (MemoryMatch.levelComplete) {
@@ -91,6 +90,11 @@ MemoryMatch.GameResults = {
             winOrLose = "lose";
         }
         if (MemoryMatch.isChallengeGame) {
+            if (MemoryMatch.playerBeatChallenge && MemoryMatch.gameType != MemoryMatch.GAMEPLAYTYPE.SIMON) {
+                this.streakCount = MemoryMatch.gameNumber;
+            } else {
+                this.streakCount = MemoryMatch.gameNumber - 1;
+            }
             displayGameNumber = MemoryMatch.gameLevel * 100;
             eventDataValue = this.streakCount;
         } else {

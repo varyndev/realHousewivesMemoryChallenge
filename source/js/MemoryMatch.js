@@ -140,6 +140,7 @@ var MemoryMatch = {
     userBeatAllChallengesFirstTime: false,
     gameNumber: 1,
     isChallengeGame: false,
+    playerBeatChallenge: false,
     gameType: 0,
     numberOfGamesInLevel: 1,
     gameScore: 0,
@@ -201,6 +202,7 @@ var MemoryMatch = {
     enginesisUserId: 0,
     authToken: '',
     unlockAllLevelsCounter: 0,
+    cheatChallengeNoMiss: false,
 
 
     configureGame: function () {
@@ -702,6 +704,7 @@ var MemoryMatch = {
         if (MemoryMatch.isChallengeGame) {
             MemoryMatch.priorBestGameScore = MemoryMatch.getPriorBestScoreForGameNumber(MemoryMatch.gameLevel, 99);
             guiFlashThreshold = 0;
+            MemoryMatch.playerBeatChallenge = false;
         } else {
             MemoryMatch.priorBestGameScore = MemoryMatch.getPriorBestScoreForGameNumber(MemoryMatch.gameLevel, MemoryMatch.gameNumber);
         }
@@ -1371,6 +1374,7 @@ var MemoryMatch = {
         if (allCardsShuffled == null) {
             // Player Wins (special case for EYESPY after we showed all possible boards). Instead of showing a new board, show the Game Results popup
             MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.WIN;
+            MemoryMatch.playerBeatChallenge = true;
             MemoryMatch.levelCleanUp();
             MemoryMatch.gameCompleteUpdateUserStats();
             MemoryMatch.levelResults();
@@ -2163,12 +2167,13 @@ var MemoryMatch = {
         // if a miss? flip it back
         // if a hit, check if game over
         cardSelected.select();
-        if (cardSelected.value == MemoryMatch.cardTargetValue) {
+        if (cardSelected.value == MemoryMatch.cardTargetValue || MemoryMatch.cheatChallengeNoMiss) {
             MemoryMatch.cardsMatch(cardSelected, null);
             if (MemoryMatch.matchCount >= MemoryMatch.gameMatchCount) {
                 MemoryMatch.gameEndTime = Date.now();
                 MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.WIN;
                 MemoryMatch.triggerSoundFx("soundCorrect", {delay: 250});
+                MemoryMatch.GameGUI.updateMatchCountDisplay(MemoryMatch.gameNumber);
                 MemoryMatch.removeAllCards(MemoryMatch.gameCompleteRemoveCardThenAdvance); // user completed the game, but wait for cards to dissolve before advancing
                 MemoryMatch.awardChallengeStreakMilestone();
             } else {
@@ -2221,7 +2226,8 @@ var MemoryMatch = {
 
     onCardClickedSimon: function (cardClicked) {
         // state of the simon game when we wait for the user to tap in the sequence
-        var globalCardPoint;
+        var globalCardPoint,
+            thisGameData;
 
         if (MemoryMatch.gamePlayState != MemoryMatch.GAMEPLAYSTATE.CHOOSE_FIRST_CARD && MemoryMatch.gamePlayState != MemoryMatch.GAMEPLAYSTATE.CHOOSE_SECOND_CARD) {
             return; // we are not ready for clicks yet
@@ -2230,7 +2236,8 @@ var MemoryMatch = {
         cardClicked.specialSelect(1, false);
         MemoryMatch.playNote(cardClicked.cardNum + 1);
         if (MemoryMatch.gamePlayState == MemoryMatch.GAMEPLAYSTATE.CHOOSE_FIRST_CARD) {
-            if (cardClicked.value == MemoryMatch.allCardsOnBoard[MemoryMatch.simonBag[MemoryMatch.simonUserIndex]].value) {
+            if (cardClicked.value == MemoryMatch.allCardsOnBoard[MemoryMatch.simonBag[MemoryMatch.simonUserIndex]].value || MemoryMatch.cheatChallengeNoMiss) {
+                MemoryMatch.lastMatchTime = Date.now();
                 if (MemoryMatch.simonUserIndex >= MemoryMatch.simonPlaybackIndex) {
                     MemoryMatch.simonUserIndex = 0;
                     MemoryMatch.simonPlaybackIndex ++;
@@ -2243,9 +2250,15 @@ var MemoryMatch = {
                     MemoryMatch.updateScoreForSimonGameAdvance();
                     globalCardPoint = MemoryMatch.boardContainer.localToGlobal(cardClicked.x, cardClicked.y);
                     MemoryMatch.matchEffectsStars(globalCardPoint.x, globalCardPoint.y, MemoryMatch.simonPlaybackIndex);
+                    thisGameData = MemoryMatch.getGameData(MemoryMatch.isChallengeGame);
+                    if (MemoryMatch.simonPlaybackIndex >= thisGameData.games) { // user beat the challenge!
+                        MemoryMatch.gameEndTime = Date.now();
+                        MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.WIN;
+                        MemoryMatch.playerBeatChallenge = true;
+                        MemoryMatch.removeAllCards(MemoryMatch.gameCompleteNextGameOrLevel);
+                    }
                 } else {
                     MemoryMatch.simonUserIndex ++;
-                    MemoryMatch.lastMatchTime = Date.now();
                     MemoryMatch.updateScoreForSimon();
                 }
             } else {
@@ -2273,13 +2286,14 @@ var MemoryMatch = {
             return; // do not allow clicking a card that is not down
         }
         cardSelected.select();
-        if (cardSelected.value == MemoryMatch.cardTargetValue) {
+        if (cardSelected.value == MemoryMatch.cardTargetValue || MemoryMatch.cheatChallengeNoMiss) {
             MemoryMatch.cardsMatch(cardSelected, null);
             MemoryMatch.gamePlayState = priorState;
+            MemoryMatch.gameEndTime = Date.now();
             MemoryMatch.triggerSoundFx("soundCorrect", {delay: 250});
             globalCardPoint = MemoryMatch.boardContainer.localToGlobal(cardSelected.x, cardSelected.y);
             MemoryMatch.matchEffectsStars(globalCardPoint.x, globalCardPoint.y, 1);
-            MemoryMatch.gameEndTime = Date.now();
+            MemoryMatch.GameGUI.updateMatchCountDisplay(MemoryMatch.gameNumber);
             MemoryMatch.removeAllCards(MemoryMatch.gameCompleteNextGameOrLevel); // user completed the game, but wait for cards to dissolve before advancing
             MemoryMatch.awardChallengeStreakMilestone();
         } else {
@@ -2309,16 +2323,16 @@ var MemoryMatch = {
         if (cardSelected.state != MemoryMatch.CARDSTATE.UP) {
             return; // do not allow clicking a card that is not up
         }
-
         matchCardValue = MemoryMatch.eyeSpyMatchCardValue;
-        if (cardSelected.value == matchCardValue) {
+        if (cardSelected.value == matchCardValue || MemoryMatch.cheatChallengeNoMiss) {
             MemoryMatch.cardsMatch(cardSelected, null);
             MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.WIN;
+            MemoryMatch.gameEndTime = Date.now();
+            MemoryMatch.cardSelected.flip(); // Show user the card briefly before moving on
             MemoryMatch.triggerSoundFx("soundCorrect", {delay: 250});
             globalCardPoint = MemoryMatch.boardContainer.localToGlobal(cardSelected.x, cardSelected.y);
             MemoryMatch.matchEffectsStars(globalCardPoint.x, globalCardPoint.y, 1);
-            MemoryMatch.gameEndTime = Date.now();
-            MemoryMatch.cardSelected.flip(); // Show user the card briefly before moving on
+            MemoryMatch.GameGUI.updateMatchCountDisplay(MemoryMatch.gameNumber);
             MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.cardSelected, 1000, 0, false, null, MemoryMatch.onCardFlipCompleteEyeSpy);
             MemoryMatch.awardChallengeStreakMilestone();
         } else {
@@ -2484,7 +2498,7 @@ var MemoryMatch = {
         var streakMilestoneValue = 5, // TODO: This number may be game dependent
             streakValue;
 
-        if (MemoryMatch.isChallengeGame && MemoryMatch.gameState != MemoryMatch.GAMESTATE.LOSE) {
+        if (MemoryMatch.isChallengeGame && MemoryMatch.gamePlayState != MemoryMatch.GAMESTATE.LOSE) {
             if (MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.SIMON) {
                 streakValue = MemoryMatch.simonPlaybackIndex;
             } else if (MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.PATTERN || MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.MONTE || MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.EYESPY) {
@@ -2879,7 +2893,7 @@ var MemoryMatch = {
         // state of the simon game when we playback the sequence
         var card;
 
-        if (MemoryMatch.gamePaused) {
+        if (MemoryMatch.gamePaused || MemoryMatch.simonBag == null) {
             return;
         }
         if (MemoryMatch.gamePlayState != MemoryMatch.GAMEPLAYSTATE.PLAY_WAIT) {
@@ -2925,6 +2939,9 @@ var MemoryMatch = {
             cardAnimator,
             cardSpeed;
 
+        if (MemoryMatch.gamePaused) {
+            return;
+        }
         if (MemoryMatch.gamePlayState != MemoryMatch.GAMEPLAYSTATE.PLAY_WAIT) {
             // first time in set everything up for the shuffle (game state should be BOARD_SETUP)
             // 1. build the animation sequence
@@ -3040,7 +3057,9 @@ var MemoryMatch = {
             showLevelResults = true,
             finalScore,
             earnedAchievement = false,
-            updateUserStats = false;
+            updateUserStats = false,
+            gameNumber,
+            thisGameData;
 
         if (MemoryMatch.isChallengeGame) {
             canUserAdvance = true;
@@ -3049,6 +3068,7 @@ var MemoryMatch = {
             updateUserStats = true;
         }
         if (canUserAdvance) {
+            gameNumber = MemoryMatch.gameNumber;
             if (MemoryMatch.gamePlayState == MemoryMatch.GAMEPLAYSTATE.LOSE) {
                 // user finished a game but was in the lose state, in this case force a Results screen to appear. Clicking Next on that will determine what to do next.
                 if (MemoryMatch.isChallengeGame) {
@@ -3056,14 +3076,26 @@ var MemoryMatch = {
                 }
                 MemoryMatch.levelCleanUp();
             } else if (MemoryMatch.gameData != null) {
-                if ( ! MemoryMatch.isChallengeGame && MemoryMatch.gameNumber >= MemoryMatch.numberOfGamesInLevel) {
+                if ( ! MemoryMatch.isChallengeGame && gameNumber >= MemoryMatch.numberOfGamesInLevel) {
                     // User beat the level, show a level results screen
                     MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.WIN;
                     MemoryMatch.levelCleanUp();
                 } else if (MemoryMatch.isChallengeGame) {
-                    showLevelResults = false;
-                    MemoryMatch.gameNumber ++;
-                    MemoryMatch.startNextGame();
+                    thisGameData = MemoryMatch.getGameData(MemoryMatch.isChallengeGame);
+                    if (MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.SIMON) {
+                        gameNumber = MemoryMatch.simonPlaybackIndex;
+                    }
+                    if (gameNumber >= thisGameData.games) { // user beat the challenge!
+                        MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.WIN;
+                        MemoryMatch.playerBeatChallenge = true;
+                        MemoryMatch.levelCleanUp();
+                        updateUserStats = true;
+                        showLevelResults = true;
+                    } else {
+                        showLevelResults = false;
+                        MemoryMatch.gameNumber ++;
+                        MemoryMatch.startNextGame();
+                    }
                 }
             }
         } else {

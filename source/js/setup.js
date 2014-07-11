@@ -102,7 +102,7 @@ MemoryMatch.GameSetup = {
             secondaryColor: "#a93370",
             liteColor: "#f850a7"}],
     games: [
-        {gameId: 1, gameType: 2, games:1, tolerance: 0, columns:2, rows:2,
+        {gameId: 1, gameType: 2, games:7, tolerance: 0, columns:2, rows:2,
             cardSprites: ["NY1.png", "NY2.png"],
             cardWidth: 384,
             cardHeight: 512,
@@ -122,7 +122,7 @@ MemoryMatch.GameSetup = {
             cardShowTime: 5000,
             progression: [{tolerance: 2, matchCount: 3, columns:2, rows:2}, {tolerance: 2, matchCount: 3, columns:2, rows:2}, {tolerance: 5, matchCount: 5, columns:2, rows:3}, {tolerance: 4, matchCount: 5, columns:3, rows:2}, {tolerance: 4, matchCount: 4, columns:3, rows:2}, {tolerance: 5, matchCount: 5, columns:3, rows:3}]
         },
-        {gameId: 3, gameType: 3, games:6, tolerance: 1, columns:6, rows:4,
+        {gameId: 3, gameType: 3, games:7, tolerance: 1, columns:7, rows:4,
             cardSprites: ["OC1.png", "OC2.png", "BH1.png", "BH2.png"],
             cardWidth: 384,
             cardHeight: 512,
@@ -152,7 +152,7 @@ MemoryMatch.GameSetup = {
             progression: [{tolerance: 2, columns:4, rows:2}, {tolerance: 2, columns:4, rows:2}, {tolerance: 3, columns:5, rows:2}, {tolerance: 3, columns:5, rows:2}, {tolerance: 3, columns:4, rows:3}, {tolerance: 3, columns:4, rows:3}],
             cardShowTime: 5000
         },
-        {gameId: 6, gameType: 6, games:6, tolerance: 1, columns:3, rows:1,
+        {gameId: 6, gameType: 6, games:7, tolerance: 1, columns:3, rows:1,
             cardSprites: ["ATL1.png", "ATL2.png"],
             cardWidth: 384,
             cardHeight: 512,
@@ -173,7 +173,7 @@ MemoryMatch.GameSetup = {
             levelIntro: "Make matches to stop your nemesis from drinking all your wine! You miss, she drinks your wine. You match, you keep your wine. Now match!",
             progression: [{tolerance: 5, columns:4, rows:2}, {tolerance: 5, columns:4, rows:2}, {tolerance: 9, columns:4, rows:3}, {tolerance: 9, columns:4, rows:3}, {tolerance: 8, columns:4, rows:3}, {tolerance: 8, columns:4, rows:3}]
         },
-        {gameId: 8, gameType: 8, games:6, tolerance: 1, columns:5, rows:1,
+        {gameId: 8, gameType: 8, games:7, tolerance: 1, columns:5, rows:1,
             levelName:"Parts vs. Whole",
             levelIntro: "You are shown a set of cards, only one is part of the target card. Pick the correct card to advance. You must complete 5 boards to advance.",
             cardSprites: ["NJ3.png"],
