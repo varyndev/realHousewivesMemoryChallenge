@@ -234,10 +234,10 @@ MemoryMatch.MessagePopup = {
                 x = (this.backgroundWidth * -0.52) | 0;
                 y = (this.backgroundHeight * -0.48) | 0;
             }
-            this.groupDisplayObject.addChild(domElement);
+            this.parentDisplayObject.addChild(domElement);
             pageElement.style.display = 'block';
-            MemoryMatch.debugLog("Transforming to " + x + "," + y + ', scale ' + scaleFactorX + ',' + scaleFactorY);
-            domElement.setTransform(x, y, scaleFactorX, scaleFactorY, 0, 0, 0, 0, 0);
+            pageElement.width = this.parentDisplayObject.width;
+            pageElement.height = this.parentDisplayObject.height;
         }
     },
 

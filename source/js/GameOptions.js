@@ -200,8 +200,8 @@ MemoryMatch.GameOptions = {
                 MemoryMatch.LevelIntroduction.setup(MemoryMatch.stage, MemoryMatch.GameOptions.onHelpCallback.bind(MemoryMatch.GameOptions), MemoryMatch.gameId, MemoryMatch.gameLevel, MemoryMatch.gameNumber);
                 MemoryMatch.LevelIntroduction.buildScreen(true, false);
             } else {
-                MemoryMatch.MessagePopup.setup(MemoryMatch.stage, {domElement: "helpArea", title: "Help!", message: "", callback: MemoryMatch.GameOptions.onMessagePopupCallback.bind(MemoryMatch.GameOptions), closeButton: true, continueButton: false, noscale: false});
-                MemoryMatch.MessagePopup.buildScreen(true);
+                this.showHelp();
+                this.closePopupFromPopup(null);
             }
         }
     },
@@ -507,6 +507,13 @@ MemoryMatch.GameOptions = {
             this.secondaryColorFilter = null;
         }
     },
+
+    showHelp: function () {
+        // Position a DOM element and close. DOM element is responsible to close itself.
+        var pageElement = document.getElementById('helpArea');
+        pageElement.style.display = 'block';
+    },
+
 
     killScreen: function () {
         // remove all display objects and object references:
