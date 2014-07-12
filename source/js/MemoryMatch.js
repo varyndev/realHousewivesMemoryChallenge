@@ -99,6 +99,7 @@ var MemoryMatch = {
         EAGLEEYE:          21
     },
 
+    gameWasInitialized: false,
     gameData: null,
     rows: 0,
     columns: 0,
@@ -267,6 +268,7 @@ var MemoryMatch = {
         this.stage.addChild(this.boardContainer);
         this.GameGUI.build(this.stage);
         MemoryMatch.AnimationHandler.init(canvas, this.stage);
+        MemoryMatch.gameWasInitialized = true;
 
         createjs.Ticker.setFPS(this.fps);
         createjs.Ticker.addEventListener("tick", this.onEnterFrame.bind(this));
@@ -282,6 +284,22 @@ var MemoryMatch = {
         } else {
             this.showMenuScreen();
         }
+    },
+
+    reinitializeGame: function () {
+        var canvas = document.getElementById(this.stageCanvasElement);
+        this.playAreaWidth = canvas.width;
+        this.playAreaHeight = canvas.height;
+        this.configureGame();
+        this.showBackgroundImage(canvas);
+        if (this.boardContainer != null) {
+            this.boardContainer.removeAllChildren();
+            this.boardContainer = new createjs.Container();
+            this.stage.addChild(this.boardContainer);
+        }
+        this.GameGUI.build(this.stage);
+        MemoryMatch.AnimationHandler.init(canvas, this.stage);
+        this.showMenuScreen();
     },
 
     stopGame: function () {
@@ -1164,11 +1182,30 @@ var MemoryMatch = {
     },
 
     readyToStart: function () {
+        MemoryMatch.hideLoader();
+        if ( ! MemoryMatch.gameWasInitialized) {
+            this.initializeGame();
+        } else {
+            this.reinitializeGame();
+        }
+    },
+
+    showLoader: function () {
+        if (document.getElementById(this.loaderElement) != null) {
+            document.getElementById(this.loaderElement).style.display = "block";
+            document.getElementById(this.stageCanvasElement).style.display = "none";
+            MemoryMatch.stage.visible = false;
+        }
+    },
+
+    hideLoader: function () {
         if (document.getElementById(this.loaderElement) != null) {
             document.getElementById(this.loaderElement).style.display = "none";
             document.getElementById(this.stageCanvasElement).style.display = "block";
+            if (MemoryMatch.stage != null) {
+                MemoryMatch.stage.visible = true;
+            }
         }
-        this.initializeGame();
     },
 
     assetLoadError: function (event) {
@@ -5092,12 +5129,24 @@ var MemoryMatch = {
     //====================================================================================
 
     stageSizeChanged: function (event) {
+        // if a game is in progress you need to reload the assets and redraw
+
         var priorAssetPostfix = MemoryMatch.assetFileNamePostfix;
 
         MemoryMatch.closeAllPopups();
+        if (MemoryMatch.gameState != MemoryMatch.GAMESTATE.MENU) {
+            MemoryMatch.goToHomeScreen();
+        }
         MemoryMatch.setCanvasSize(null);
-        // if a game is in progress you need to reload the assets and redraw
-        if (MemoryMatch.assetFileNamePostfix != priorAssetPostfix) {
+        if (MemoryMatch.assetFileNamePostfix != priorAssetPostfix) { // Oh-boy! The size changed and our current assets won't fit. Need to reload everything!
+            MemoryMatch.AnimationHandler.clearAllParticles();
+            MemoryMatch.AnimationHandler.clearAllAnimations();
+            MemoryMatch.MainMenu.killScreen();
+            MemoryMatch.GameGUI.destroy();
+            MemoryMatch.stage.removeAllChildren();
+            MemoryMatch.changeGameState(MemoryMatch.GAMESTATE.LOADING);
+            MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.IDLE;
+            MemoryMatch.showLoader();
             MemoryMatch.loadAllAssets(true);
         }
     },

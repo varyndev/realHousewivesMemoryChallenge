@@ -25,9 +25,11 @@ MemoryMatch.GameGUI = {
     gameTimerField: null,
     messageField: null,
     timerCountdownGroup: null,
+    timerCountdownTimer: null,
     comboMultiplierSprite: null,
     matchCountFieldFlash: false,
     matchCountFieldFlashCount: 0,
+    matchCountFlashTimer: null,
     optionsButton: null,
     optionsButtonHelper: null,
     gameOptionsButton: null,
@@ -69,7 +71,15 @@ MemoryMatch.GameGUI = {
     },
 
     destroy: function () {
-        // Kill all display objects and remove from stage
+        // Kill all events, display objects and remove from stage
+        if (this.matchCountFlashTimer != null) {
+            window.clearTimeout(this.matchCountFlashTimer);
+            this.matchCountFlashTimer = null;
+        }
+        if (this.timerCountdownTimer != null) {
+            window.clearTimeout(this.timerCountdownTimer);
+            this.timerCountdownTimer = null;
+        }
         this.parentDisplayObject.removeChild(this.optionsButton);
         if (this.timerCountdownGroup != null) {
             this.parentDisplayObject.removeChild(this.timerCountdownGroup);
@@ -88,11 +98,13 @@ MemoryMatch.GameGUI = {
         this.optionsButtonHelper = null;
         this.gameOptionsButton = null;
         this.gameOptionsButtonHelper = null;
+        this.groupDisplayObject.removeAllChildren();
         this.parentDisplayObject.removeChild(this.groupDisplayObject);
         this.groupDisplayObject = null;
         this.parentDisplayObject = null;
         this.primaryColorFilter = null;
         this.secondaryColorFilter = null;
+        this.isAnimating = false;
     },
 
     pause: function (event) {
@@ -106,9 +118,12 @@ MemoryMatch.GameGUI = {
 
     show: function (showFlag) {
         // show or hide the HUD. This triggers the animation so it will take some time before it is in a ready state.
-        var finalY;
-        var distance;
+        var finalY,
+            distance;
 
+        if (this.groupDisplayObject == null) {
+            return;
+        }
         if (showFlag) {
             if (this.showingGameLevel != MemoryMatch.gameLevel) {
                 this.setColorFilters();
@@ -207,9 +222,13 @@ MemoryMatch.GameGUI = {
         this.matchCountFieldFlash = flashFlag;
         this.matchCountFieldFlashCount = flashCount;
         if (flashFlag) {
-            window.setTimeout(this.flashMatchCountDisplayUpdate.bind(this), 500);
+            this.matchCountFlashTimer = window.setTimeout(this.flashMatchCountDisplayUpdate.bind(this), 500);
         } else {
             this.matchCountField.alpha = 1;
+            if (this.matchCountFlashTimer != null) {
+                window.clearTimeout(this.matchCountFlashTimer);
+                this.matchCountFlashTimer = null;
+            }
         }
     },
 
@@ -217,6 +236,9 @@ MemoryMatch.GameGUI = {
         var stillFlashing = true;
         var newAlpha = 1;
 
+        if (this.matchCountField == null) {
+            return;
+        }
         if (this.matchCountFieldFlash) {
             if (this.matchCountField.alpha < 1) {
                 newAlpha = 1;
@@ -232,7 +254,9 @@ MemoryMatch.GameGUI = {
             }
             this.matchCountField.alpha = newAlpha;
             if (stillFlashing) {
-                window.setTimeout(this.flashMatchCountDisplayUpdate.bind(this), 500);
+                this.matchCountFlashTimer = window.setTimeout(this.flashMatchCountDisplayUpdate.bind(this), 500);
+            } else {
+                this.matchCountFlashTimer = null;
             }
         }
     },
@@ -254,6 +278,9 @@ MemoryMatch.GameGUI = {
     updateGameTimerDisplay: function (newValue) {
         var timeToShow;
 
+        if (this.gameTimerField == null) {
+            return;
+        }
         if (newValue == null) {
             timeToShow = '';
         } else if (newValue == 0) {
@@ -412,7 +439,7 @@ MemoryMatch.GameGUI = {
                 animator.endXScale = 1.5;
                 animator.vYScale = 0.0093;
                 animator.endYScale = 1.5;
-                window.setTimeout(this.onTimerCountdownTick.bind(this), 1000);
+                this.timerCountdownTimer = window.setTimeout(this.onTimerCountdownTick.bind(this), 1000);
                 this.lastUpdateTime = Date.now();
             }
         }
@@ -425,8 +452,8 @@ MemoryMatch.GameGUI = {
             timeValue,
             lastUpdate;
 
-        updateTimeDelta = Date.now() - this.lastUpdateTime;
         if (this.timerCountdownGroup != null) {
+            updateTimeDelta = Date.now() - this.lastUpdateTime;
             timerTextFieldAnimate = this.timerCountdownGroup.getChildByName('timerAnimate');
             if (timerTextFieldAnimate != null) {
                 timerTextFieldAnimate.alpha = 1.0;
@@ -448,6 +475,7 @@ MemoryMatch.GameGUI = {
                     this.updateTimerCountdown();
                 } else {
                     this.timerCountdownStarted = false;
+                    this.timerCountdownTimer = null;
                 }
             }
         }
