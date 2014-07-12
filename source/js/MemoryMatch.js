@@ -700,6 +700,7 @@ var MemoryMatch = {
             MemoryMatch.gameStartTime = 0;
             MemoryMatch.nextTimerUpdateTime = 0;
             MemoryMatch.lastMatchTime = 0;
+            MemoryMatch.chainsStreakCount = 0;
         }
         if (MemoryMatch.isChallengeGame) {
             MemoryMatch.priorBestGameScore = MemoryMatch.getPriorBestScoreForGameNumber(MemoryMatch.gameLevel, 99);
