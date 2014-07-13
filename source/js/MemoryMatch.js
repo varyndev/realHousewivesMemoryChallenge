@@ -3555,6 +3555,7 @@ var MemoryMatch = {
         userDataObject['totalTimePlayed'] = 0;
         userDataObject['bestScore'] = 0;
         userDataObject['lastPlayedDate'] = null;
+        userDataObject['askBookmark'] = 0;
         MemoryMatch.UserData.flush();
     },
 
