@@ -20,6 +20,7 @@ MemoryMatch.GameSetup = {
     assetsFolder: "assets",
     backgroundImage: "background.jpg",
     popupBackground: "gamePopup.png",
+    orientationIcon: "rotate-device.png",
     guiSprites: ["guiSpriteSheet1.png", "guiSpriteSheet2.png", "mapSpriteSheet.png", "shareicons.png"],
     particleSprite: "sparkle_21x23.png",
     guiBoldFontName: "SohoStd-BoldItalic",
@@ -302,6 +303,7 @@ MemoryMatch.GameSetup = {
     mapSpecialMarkers: [{x: 650, y: 1306, icon: 'planeRouteCa'}, {x: 1270, y: 1190, icon: 'planeRouteGa'}, {x: 1712, y: 662, icon: 'bridge'}],
     GUIStrings: {
         bookmarkTitle: 'Did you know?',
-        bookmarkMessage: 'For a better playing experience you can bookmark this app by tapping the Share icon then select Add to Home Screen.'
+        bookmarkMessage: 'For a better playing experience you can bookmark this app by tapping the Share icon then select Add to Home Screen.',
+        orientationMessage: 'This game is best played in landscape orientation.'
     }
 };

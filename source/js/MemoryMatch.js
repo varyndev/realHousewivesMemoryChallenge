@@ -279,10 +279,16 @@ var MemoryMatch = {
         document.addEventListener('pause', MemoryMatch.onPauseGame.bind(this), false);
         document.addEventListener('resume', MemoryMatch.unPauseGame.bind(this), false);
         document.addEventListener(MemoryMatch.getVisibilityChangeEvent(), MemoryMatch.onVisibilityChange.bind(MemoryMatch));
-        if (this.getQueryStringValue('level') != null) {
-            this.processDeepLink();
+
+        if (MemoryMatch.isDesiredOrientation()) {
+            MemoryMatch.showOrientationMessage(false);
+            if (this.getQueryStringValue('level') != null) {
+                this.processDeepLink();
+            } else {
+                this.showMenuScreen();
+            }
         } else {
-            this.showMenuScreen();
+            MemoryMatch.showOrientationMessage(true);
         }
     },
 
@@ -299,7 +305,12 @@ var MemoryMatch = {
         }
         this.GameGUI.build(this.stage);
         MemoryMatch.AnimationHandler.init(canvas, this.stage);
-        this.showMenuScreen();
+        if (MemoryMatch.isDesiredOrientation()) {
+            MemoryMatch.showOrientationMessage(false);
+            this.showMenuScreen();
+        } else {
+            MemoryMatch.showOrientationMessage(true);
+        }
     },
 
     stopGame: function () {
@@ -5138,6 +5149,66 @@ var MemoryMatch = {
     //
     //====================================================================================
 
+    showOrientationMessage: function (showFlag) {
+
+        // we detected the device is not in the orientation we want, prompt the user to rotate the device
+
+        var backgroundGroup,
+            groupName = 'orientationMessage',
+            backgroundCover,
+            icon,
+            iconImageAsset,
+            textMessage,
+            canvas,
+            stageWidth,
+            stageHeight,
+            backgroundColor;
+
+        backgroundGroup = MemoryMatch.stage.getChildByName(groupName);
+        if (showFlag) {
+            if (backgroundGroup != null) {
+                return;
+            }
+            canvas = MemoryMatch.stage.canvas;
+            stageWidth = canvas.width;
+            stageHeight = canvas.height;
+            backgroundColor = MemoryMatch.GameSetup.achievementBackgroundColor;
+
+            backgroundGroup = new createjs.Container();
+            backgroundGroup.name = groupName;
+
+            backgroundCover = new createjs.Shape();
+            backgroundCover.graphics.beginFill(backgroundColor).drawRect(0, 0, stageWidth, stageHeight);
+            backgroundCover.alpha = 1;
+            backgroundCover.addEventListener("click", this.onClickIgnore);
+            backgroundGroup.addChild(backgroundCover);
+
+            textMessage = new createjs.Text(MemoryMatch.GameSetup.GUIStrings.orientationMessage, MemoryMatch.getScaledFontSize(56) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
+            textMessage.textAlign = "center";
+            textMessage.x = stageWidth * 0.5;
+            textMessage.y = stageHeight * 0.5;
+            textMessage.lineWidth = stageWidth * 0.9;
+            textMessage.maxWidth = stageWidth * 0.9;
+            textMessage.lineHeight = textMessage.getMeasuredLineHeight() * 1.5;
+            backgroundGroup.addChild(textMessage);
+
+            iconImageAsset = assetLoader.getResult("orientationIcon");
+            icon = new createjs.Bitmap(iconImageAsset);
+            icon.setTransform(stageWidth * 0.5, (stageHeight - iconImageAsset.height) * 0.5, 1, 1, 0, 0, 0, iconImageAsset.width * 0.5, iconImageAsset.height * 0.5);
+            backgroundGroup.addChild(icon);
+
+            MemoryMatch.stage.addChild(backgroundGroup);
+        } else {
+            if (backgroundGroup != null) {
+                backgroundGroup.removeAllChildren();
+                MemoryMatch.stage.removeChild(backgroundGroup);
+            }
+        }
+    },
+
+    onClickIgnore: function (event) {
+    },
+
     stageSizeChanged: function (event) {
         // if a game is in progress you need to reload the assets and redraw
 
@@ -5158,6 +5229,12 @@ var MemoryMatch = {
             MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.IDLE;
             MemoryMatch.showLoader();
             MemoryMatch.loadAllAssets(true);
+        } else {
+            if (MemoryMatch.isDesiredOrientation()) {
+                MemoryMatch.showOrientationMessage(false);
+            } else {
+                MemoryMatch.showOrientationMessage(true);
+            }
         }
     },
 
@@ -5220,11 +5297,26 @@ var MemoryMatch = {
     },
 
     isPortrait: function () {
-        return MemoryMatch.stageAspectRatio <= 1.0;
+        return (window.innerWidth / window.innerHeight) < 1.0;
     },
 
     isLandscape: function () {
-        return MemoryMatch.stageAspectRatio >= 1.0;
+        return (window.innerWidth / window.innerHeight) >= 1.0;
+    },
+
+    isDesiredOrientation: function () {
+        var orientationRequired = MemoryMatch.GameSetup.orientation,
+            correctOrientation = false;
+
+        if ( ! MemoryMatch.isTouchDevice) {
+            correctOrientation = true;
+        } else if (orientationRequired == undefined || orientationRequired == null || orientationRequired == '') {
+            correctOrientation = true;
+        } else {
+            orientationRequired = orientationRequired.toLowerCase();
+            correctOrientation = (orientationRequired == 'landscape' && MemoryMatch.isLandscape()) || (orientationRequired == 'portrait' && MemoryMatch.isPortrait());
+        }
+        return correctOrientation;
     },
 
     shouldAskUserToBookmarkApp: function () {
@@ -5409,6 +5501,7 @@ var MemoryMatch = {
             assetManifest = [
                 {src:MemoryMatch.makeResolutionBasedFileNameFromFileName(assetsFolder + MemoryMatch.GameSetup.backgroundImage), id:"background"},
                 {src:MemoryMatch.makeResolutionBasedFileNameFromFileName(assetsFolder + MemoryMatch.GameSetup.popupBackground), id:"popup-bg"},
+                {src:MemoryMatch.makeResolutionBasedFileNameFromFileName(assetsFolder + MemoryMatch.GameSetup.orientationIcon), id:"orientationIcon"},
                 {src:assetsFolder + MemoryMatch.GameSetup.particleSprite, id:"particles"}
             ];
 

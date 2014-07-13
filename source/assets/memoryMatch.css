@@ -106,6 +106,10 @@ body {
 }
 
 @media all and (min-width: 1024px) { /* 100% */
+    #loaderProgress {
+        font-size: 16px;
+    }
+
     #helpContent {
         margin-top: 40px;
         margin-bottom: 60px;
@@ -125,6 +129,10 @@ body {
 }
 
 @media all and (min-width: 501px) and (max-width: 1023px) { /* 50% */
+    #loaderProgress {
+        font-size: 14px;
+    }
+
     #helpContent {
         margin-top: 40px;
         margin-bottom: 60px;
@@ -144,6 +152,10 @@ body {
 }
 
 @media all and (max-width: 500px) { /* 25% */
+    #loaderProgress {
+        font-size: 12px;
+    }
+
     #helpContent {
         margin-top: 20px;
         margin-bottom: 8px;
