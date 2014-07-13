@@ -299,5 +299,9 @@ MemoryMatch.GameSetup = {
         [{x:1746, y:498}, {x:1720, y:270}, {x:1718, y:48}, {x:1548, y:114}, {x:1498, y:304}, {x:1328, y:316}, {x:1140, y:228}]
     ],
     mapPathColor: 'rgba(102,102,102,0.5)',
-    mapSpecialMarkers: [{x: 650, y: 1306, icon: 'planeRouteCa'}, {x: 1270, y: 1190, icon: 'planeRouteGa'}, {x: 1712, y: 662, icon: 'bridge'}]
+    mapSpecialMarkers: [{x: 650, y: 1306, icon: 'planeRouteCa'}, {x: 1270, y: 1190, icon: 'planeRouteGa'}, {x: 1712, y: 662, icon: 'bridge'}],
+    GUIStrings: {
+        bookmarkTitle: 'Did you know?',
+        bookmarkMessage: 'For a better playing experience you can bookmark this app by tapping the Share icon then select Add to Home Screen.'
+    }
 };

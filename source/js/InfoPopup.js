@@ -36,8 +36,9 @@ MemoryMatch = MemoryMatch || {};
     p.icon = null;
     p.sound = null;
     p.displayDuration = 2.5;
-    p.borderColor = '#d640d6';
-    p.backgroundColor = '#521852';
+    p.fadeTime = 1;
+    p.borderColor = MemoryMatch.GameSetup.achievementBorderColor; // '#d640d6';
+    p.backgroundColor = MemoryMatch.GameSetup.achievementBackgroundColor; // '#521852';
 
     p.setParameters = function (displayObject, parameters) {
         this.parentDisplayObject = displayObject;
@@ -88,6 +89,9 @@ MemoryMatch = MemoryMatch || {};
             if (parameters.sound != null) {
                 this.sound = parameters.sound;
             }
+            if (parameters.duration != null) {
+                this.displayDuration = parameters.duration;
+            }
             if (parameters.callback !== null) {
                 this.stateCompleteCallback = parameters.callback;
             }
@@ -121,7 +125,7 @@ MemoryMatch = MemoryMatch || {};
         this.setupMessageText();
         this.parentDisplayObject.addChild(this.groupDisplayObject);
         this.groupDisplayObject.setTransform(this.x, this.y, 1, 1, 0, 0, 0, this.width * 0.5, this.height * 0.5);
-        this.groupDisplayObject.visible = false;
+        this.groupDisplayObject.visible = true;
         if (autoStart === null) {
             autoStart = false;
         }
@@ -139,9 +143,9 @@ MemoryMatch = MemoryMatch || {};
     };
 
     p.closeStartAnimation = function () {
-        var animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.groupDisplayObject, 0, this.displayDuration * 1000, true, null, this.closeComplete.bind(this));
+        var animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.groupDisplayObject, this.displayDuration * 1000, this.fadeTime * 1000, true, null, this.closeComplete.bind(this));
         animator.showAtBegin = true;
-        animator.vAlpha = -1 / (this.displayDuration * MemoryMatch.fps);
+        animator.vAlpha = -1 / (this.fadeTime * MemoryMatch.fps);
         animator.endAlpha = 0;
     };
 
@@ -185,6 +189,7 @@ MemoryMatch = MemoryMatch || {};
         titleTextField.y = this.height * 0.4;
         titleTextField.lineWidth = this.width * 0.8;
         titleTextField.maxWidth = this.width * 0.8;
+        titleTextField.lineHeight = titleTextField.getMeasuredLineHeight() * 1.5;
         titleTextField.name = "message";
         this.groupDisplayObject.addChild(titleTextField);
     };

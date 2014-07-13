@@ -4357,6 +4357,15 @@ var MemoryMatch = {
         return re.test(email);
     },
 
+    isAppBookmarked: function () {
+        var isBookmarked = ("standalone" in window.navigator) && window.navigator.standalone;
+        return isBookmarked;
+    },
+
+    isDeviceiOS: function () {
+        return ['iPad', 'iPhone', 'iPod'].indexOf(navigator.platform) >= 0;
+    },
+
     getVendorPrefix: function () {
 
         // Return a prefix for the browser we are currently running on based on the document.hidden property being available.
@@ -5217,9 +5226,25 @@ var MemoryMatch = {
         return MemoryMatch.stageAspectRatio >= 1.0;
     },
 
+    shouldAskUserToBookmarkApp: function () {
+        var isAppBookmarked = MemoryMatch.isAppBookmarked(),
+            isIosDevice = MemoryMatch.isDeviceiOS(),
+            userDataObject = this.UserData.getUserDataObject(),
+            askedUserToBookmark = userDataObject['askBookmark'] | 0,
+            shouldAsk = false;
+
+        if (isIosDevice && ! isAppBookmarked && askedUserToBookmark < 5) {
+            askedUserToBookmark ++;
+            userDataObject['askBookmark'] = askedUserToBookmark;
+            this.UserData.flush();
+            shouldAsk = true;
+        }
+        return shouldAsk;
+    },
+
     captureDebugInformation: function () {
-        var debugData = '';
-        var canvas = document.getElementById(this.stageCanvasElement);
+        var debugData = '',
+            canvas = document.getElementById(this.stageCanvasElement);
 
         debugData += '<div class="debug">';
         debugData += '<p>Stage: (' + MemoryMatch.stageWidth + ',' + MemoryMatch.stageHeight + '); Canvas:  (' + canvas.width + ',' + canvas.height + '); CSS: (' + MemoryMatch.cssScaledWidth + ',' + MemoryMatch.cssScaledHeight + '); Scale factor: ' + MemoryMatch.stageScaleFactor + '; Aspect Ratio: ' + MemoryMatch.stageAspectRatio + '</p>';

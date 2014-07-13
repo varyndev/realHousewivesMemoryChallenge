@@ -66,12 +66,18 @@ MemoryMatch.MainMenu = {
 
         if (this.animate) {
             duration = 1; // seconds of animation
-            animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.groupDisplayObject, 0, 0, false, null, null);
+            animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.groupDisplayObject, 0, 0, false, null, this.onStartFadeInComplete.bind(this));
             animator.endAlpha = 1;
             animator.vAlpha = duration / MemoryMatch.fps;
         }
         if (this.stateCompleteCallback != null) {
             // stateCompleteCallback();
+        }
+    },
+
+    onStartFadeInComplete: function () {
+        if (MemoryMatch.shouldAskUserToBookmarkApp()) {
+            var infoPopup = new MemoryMatch.InfoPopup(MemoryMatch.stage, true, {title: MemoryMatch.GameSetup.GUIStrings.bookmarkTitle, message: MemoryMatch.GameSetup.GUIStrings.bookmarkMessage, x: MemoryMatch.stageWidth * 0.5, y: MemoryMatch.stageHeight * 0.09, duration: 5.5, backgroundColor: MemoryMatch.GameSetup.achievementBackgroundColor, borderColor: MemoryMatch.GameSetup.achievementBorderColor});
         }
     },
 
