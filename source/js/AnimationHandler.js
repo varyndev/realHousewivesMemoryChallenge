@@ -23,7 +23,7 @@ MemoryMatch.AnimationHandler = {
 
     init: function (_canvas, _stage) {
         var spriteDataParticles = {
-            images: [assetLoader.getResult("particles")],
+            images: [MemoryMatch.assetLoader.getResult("particles")],
             frames: MemoryMatch.GameSetup.particleFrames
             },
             spriteSize;

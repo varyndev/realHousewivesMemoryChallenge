@@ -192,7 +192,7 @@ MemoryMatch.AwardsPopup = {
     setupBackground: function () {
         // This method will scale the background image to fit the current stage if it is too big.
         var canvas = this.parentDisplayObject.canvas,
-            popupImageAsset = assetLoader.getResult("popup-bg"),
+            popupImageAsset = MemoryMatch.assetLoader.getResult("popup-bg"),
             bgImage = new createjs.Bitmap(popupImageAsset),
             xScale,
             yScale,

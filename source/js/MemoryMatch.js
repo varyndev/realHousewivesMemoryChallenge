@@ -4,8 +4,6 @@
 
  */
 
-var assetLoader;
-
 // namespace under enginesis object
 var enginesisSession = enginesis || {};
 
@@ -19,7 +17,8 @@ var MemoryMatch = {
     debugMode: true,
     isTouchDevice: false,
     minimumSplashScreenDisplayTime: 2000,
-    debugQueue: [],
+    assetLoader: null,
+    secondaryAssetManifest: null,
 
     GAMESTATE: {
         INIT:                0,
@@ -204,11 +203,14 @@ var MemoryMatch = {
     authToken: '',
     unlockAllLevelsCounter: 0,
     cheatChallengeNoMiss: false,
+    secondaryAssetLoaderProgress: 0,
 
 
     configureGame: function () {
         // setup the game parameters from the configuration file assets/setup.js
-        var loaderObject;
+        var loaderObject,
+            assetLoader = MemoryMatch.assetLoader;
+
         loaderObject = assetLoader.getResult("guiSprites1json");
         if (loaderObject != null) {
             this.GameSetup.guiSpritesheet1Frames = loaderObject;
@@ -766,7 +768,12 @@ var MemoryMatch = {
         } else {
             cardAssetId = "cards1";
         }
-        MemoryMatch.setImageSheet(cardAssetId, cardSize.width, cardSize.height);
+        if ( ! MemoryMatch.setImageSheet(cardAssetId, cardSize.width, cardSize.height)) {
+            // if the asset is not available then get the first asset
+            cardSetIndex = 0;
+            cardAssetId = MemoryMatch.getSpriteAssetId(cardSetIndex);
+            MemoryMatch.setImageSheet(cardAssetId, cardSize.width, cardSize.height);
+        }
     },
 
     startLevel: function (levelNumber) {
@@ -1139,9 +1146,12 @@ var MemoryMatch = {
     },
 
     setImageSheet: function (spriteSheetAsset, spriteWidth, spriteHeight) {
-        var loadedAsset = assetLoader.getResult(spriteSheetAsset);
+        var loadedAsset = MemoryMatch.assetLoader.getResult(spriteSheetAsset);
 
-        if (MemoryMatch.imageSheetImage !== loadedAsset) {
+        if (loadedAsset == null) {
+            MemoryMatch.debugLog("setImageSheet: card sprites " + spriteSheetAsset + " not loaded.");
+            MemoryMatch.imageSheetImage = null;
+        } else if (MemoryMatch.imageSheetImage !== loadedAsset) {
             MemoryMatch.debugLog("setImageSheet: loading card sprites " + spriteSheetAsset + " size (" + spriteWidth + "," + spriteHeight + ")");
             MemoryMatch.imageSheetImage = loadedAsset;
             MemoryMatch.imageSheetSpriteWidth = spriteWidth;
@@ -1185,10 +1195,15 @@ var MemoryMatch = {
 
     allAssetsLoaded: function () {
         var totalLoadTime = Date.now() - this.gameStartTime;
+
+        MemoryMatch.assetLoader.removeAllEventListeners();
         if (totalLoadTime < this.minimumSplashScreenDisplayTime) {
             window.setTimeout(this.readyToStart.bind(this), this.minimumSplashScreenDisplayTime - totalLoadTime);
         } else {
             this.readyToStart();
+        }
+        if (MemoryMatch.secondaryAssetManifest != null && MemoryMatch.secondaryAssetManifest.length > 0) {
+            MemoryMatch.beginLoadSecondaryAssets();
         }
     },
 
@@ -1303,6 +1318,45 @@ var MemoryMatch = {
             }
             document.getElementById("loaderProgress").innerText = progressText;
         }
+    },
+
+    beginLoadSecondaryAssets: function () {
+        var assetLoader = MemoryMatch.assetLoader,
+            secondaryAssetManifest = MemoryMatch.secondaryAssetManifest;
+
+        if (secondaryAssetManifest.length > 0) {
+            assetLoader.addEventListener("complete", MemoryMatch.secondaryAssetsLoaded.bind(MemoryMatch));
+            assetLoader.addEventListener("progress", MemoryMatch.secondaryAssetLoadProgress);
+            assetLoader.addEventListener("error", MemoryMatch.secondaryAssetLoadError);
+            assetLoader.loadManifest(secondaryAssetManifest);
+            MemoryMatch.secondaryAssetManifest = null;
+            MemoryMatch.secondaryAssetLoaderProgress = 0;
+        }
+    },
+
+    secondaryAssetLoadProgress: function (event) {
+        var progressPercent = event.progress,
+            progress = Math.floor(progressPercent * 100);
+        MemoryMatch.secondaryAssetLoaderProgress = progress;
+        MemoryMatch.debugLog("Secondary progress " + progress.toString());
+    },
+
+    secondaryAssetLoadError: function (event) {
+        var item = event.item,
+            error = event.error;
+
+        if (item != null) {
+            if (error == null) {
+                error = "unknown error";
+            }
+        }
+        MemoryMatch.debugLog("Secondary error " + item.toString() + " " + error);
+    },
+
+    secondaryAssetsLoaded: function () {
+        var assetLoader = MemoryMatch.assetLoader;
+        assetLoader.removeAllEventListeners();
+        MemoryMatch.debugLog("Secondary load complete!");
     },
 
     buildBoard: function () {
@@ -5194,7 +5248,7 @@ var MemoryMatch = {
             textMessage.lineHeight = textMessage.getMeasuredLineHeight() * 1.5;
             backgroundGroup.addChild(textMessage);
 
-            iconImageAsset = assetLoader.getResult("orientationIcon");
+            iconImageAsset = MemoryMatch.assetLoader.getResult("orientationIcon");
             icon = new createjs.Bitmap(iconImageAsset);
             icon.setTransform(stageWidth * 0.5, (stageHeight - iconImageAsset.height) * 0.5, 1, 1, 0, 0, 0, iconImageAsset.width * 0.5, iconImageAsset.height * 0.5);
             backgroundGroup.addChild(icon);
@@ -5488,14 +5542,18 @@ var MemoryMatch = {
     },
 
     loadAllAssets: function (reloadFlag) {
+
         // assetManifest array defines all the assets we require to load before the game starts.
         // We are loading everything required by the game before we start. This way a user can "deep-link"
         // to any level and we don't have to worry about those assets being ready.
+        // Note some assets are based on resolution, which could change.
+
         var soundAssetName,
             gameLevelIndex,
             gameData,
             imageArray,
             imageIndex,
+            assetLoader,
             assetsFolder = MemoryMatch.qualifiedFolder(MemoryMatch.GameSetup.assetsFolder),
             guiSpritesArray,
             i,
@@ -5505,7 +5563,9 @@ var MemoryMatch = {
                 {src:MemoryMatch.makeResolutionBasedFileNameFromFileName(assetsFolder + MemoryMatch.GameSetup.popupBackground), id:"popup-bg"},
                 {src:MemoryMatch.makeResolutionBasedFileNameFromFileName(assetsFolder + MemoryMatch.GameSetup.orientationIcon), id:"orientationIcon"},
                 {src:assetsFolder + MemoryMatch.GameSetup.particleSprite, id:"particles"}
-            ];
+            ],
+            secondaryAssetManifest = [],
+            chosenManifest = null;
 
         guiSpritesArray = MemoryMatch.GameSetup.guiSprites;
         if (guiSpritesArray != null && guiSpritesArray.length > 0) {
@@ -5525,14 +5585,20 @@ var MemoryMatch = {
                     assetManifest.push({src: "assets/" + MemoryMatch.makeResolutionBasedFileNameFromFileName(gameData.cardSprites, true), id: 'cards' + gameData.gameId.toString() + '-0'});
                 } else {
                     gameData.numberOfCardSets = gameData.cardSprites.length;
+                    chosenManifest = assetManifest;
                     for (i = 0; i < gameData.numberOfCardSets; i ++) {
-                        assetManifest.push({src: "assets/" + MemoryMatch.makeResolutionBasedFileNameFromFileName(gameData.cardSprites[i], true), id: 'cards' + gameData.gameId.toString() + '-' + i.toString()});
+                        chosenManifest.push({src: "assets/" + MemoryMatch.makeResolutionBasedFileNameFromFileName(gameData.cardSprites[i], true), id: 'cards' + gameData.gameId.toString() + '-' + i.toString()});
+                        // First time through add the asset to load immediately. All remaining assets set to load later.
+                        chosenManifest = secondaryAssetManifest;
                     }
                 }
             }
             if (gameData.images != null) {
+
                 // If images property exists, it is an array of image objects {image:x, cardSprites: y}.
                 // To reference them later, use makeLevelImageAssetName() and makeLevelCardDeckAssetName().
+                // We are going to load only the first asset immediately, then all the other assets after the game begins.
+
                 imageArray = gameData.images;
                 for (imageIndex = 0; imageIndex < imageArray.length; imageIndex ++) {
                     if (imageArray[imageIndex].image != null && imageArray[imageIndex].image.length > 0) {
@@ -5545,7 +5611,7 @@ var MemoryMatch = {
             }
         }
         assetLoader = new createjs.LoadQueue(false, '', 'Anonymous');
-        if ( ! reloadFlag) {
+        if ( ! reloadFlag) { // these assets are not resolution dependent and only need to be loaded once
             // All sounds are located in the structure GameSetup.Sounds
             for (soundAssetName in MemoryMatch.GameSetup.Sounds) {
                 if (MemoryMatch.GameSetup.Sounds.hasOwnProperty(soundAssetName)) {
@@ -5562,10 +5628,15 @@ var MemoryMatch = {
             createjs.Sound.registerPlugins([createjs.HTMLAudioPlugin, createjs.WebAudioPlugin, createjs.FlashPlugin]);
             createjs.Sound.alternateExtensions = ["mp3"];
         }
+        MemoryMatch.assetLoader = assetLoader;
         assetLoader.addEventListener("complete", MemoryMatch.allAssetsLoaded.bind(MemoryMatch));
         assetLoader.addEventListener("progress", MemoryMatch.assetLoadProgress);
         assetLoader.addEventListener("error", MemoryMatch.assetLoadError);
         assetLoader.loadManifest(assetManifest);
+        assetLoader.setMaxConnections(4);
+        if (secondaryAssetManifest.length > 0) {
+            MemoryMatch.secondaryAssetManifest = secondaryAssetManifest;
+        }
     }
 };
 
