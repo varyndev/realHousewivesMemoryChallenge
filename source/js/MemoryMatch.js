@@ -3183,22 +3183,24 @@ var MemoryMatch = {
             longestStreak = 0;
         }
         gameTime = MemoryMatch.gameEndTime - MemoryMatch.gameStartTime;
-        if (gameTime <= 5999 && ! MemoryMatch.isChallengeGame) { // finished game in 5 seconds or less
-            earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.QUICKDRAW) | earnedAchievement;
-        }
         finalScore = MemoryMatch.gameCompleteTallyFinalScore();
         starsEarned = MemoryMatch.getGameStarsEarned();
-        if (MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.CHAINS) {
-            if (MemoryMatch.missCount == 0) {
-                MemoryMatch.chainsStreakCount ++;
-                if (MemoryMatch.gameNumber >= MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].gameCount) { // is this the last chains game?
-                    earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.CHAINTASTIC) | earnedAchievement;
-                }
-            } else {
-                MemoryMatch.chainsStreakCount = 0;
+        if (MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.WIN) {
+            if (gameTime <= 5999 && ! MemoryMatch.isChallengeGame) { // finished game in 5 seconds or less
+                earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.QUICKDRAW) | earnedAchievement;
             }
-            if (MemoryMatch.chainsStreakCount > 1) { // two chains in a row without a miss?
-                earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.CHAINGANG) | earnedAchievement;
+            if (MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.CHAINS) {
+                if (MemoryMatch.missCount == 0) {
+                    MemoryMatch.chainsStreakCount ++;
+                    if (MemoryMatch.gameNumber >= MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].gameCount) { // is this the last chains game?
+                        earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.CHAINTASTIC) | earnedAchievement;
+                    }
+                } else {
+                    MemoryMatch.chainsStreakCount = 0;
+                }
+                if (MemoryMatch.chainsStreakCount > 1) { // two chains in a row without a miss?
+                    earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.CHAINGANG) | earnedAchievement;
+                }
             }
         }
         MemoryMatch.updateUserDataStatsForCompletedGamePlay(finalScore, MemoryMatch.matchCount, MemoryMatch.numberOfCombos, gameTime, MemoryMatch.luckyGuessCount);
