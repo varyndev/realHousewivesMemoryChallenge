@@ -474,9 +474,11 @@ MemoryMatch.SharePopup = {
             this.parentDisplayObject.removeChild(this.groupDisplayObject);
             this.groupDisplayObject = null;
         }
-        this.parentDisplayObject.removeChild(this.backgroundCover);
-        this.backgroundCover = null;
-        this.stateCompleteCallback = null;
-        this.parentDisplayObject = null;
+        if (this.parentDisplayObject != null) {
+            this.parentDisplayObject.removeChild(this.backgroundCover);
+            this.backgroundCover = null;
+            this.stateCompleteCallback = null;
+            this.parentDisplayObject = null;
+        }
     }
 };

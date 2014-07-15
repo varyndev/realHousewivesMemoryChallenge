@@ -10,7 +10,7 @@ var enginesisSession = enginesis || {};
 'use strict';
 
 
-var MemoryMatch = {
+this.MemoryMatch = {
     GameVersion: "1.0.66",
     platform: "unknown",
     locale: "en-US",
@@ -306,12 +306,12 @@ var MemoryMatch = {
             this.stage.addChild(this.boardContainer);
         }
         this.GameGUI.build(this.stage);
-        MemoryMatch.AnimationHandler.init(canvas, this.stage);
-        if (MemoryMatch.isDesiredOrientation()) {
-            MemoryMatch.showOrientationMessage(false);
+        this.AnimationHandler.init(canvas, this.stage);
+        if (this.isDesiredOrientation()) {
+            this.showOrientationMessage(false);
             this.showMenuScreen();
         } else {
-            MemoryMatch.showOrientationMessage(true);
+            this.showOrientationMessage(true);
         }
     },
 
@@ -365,11 +365,11 @@ var MemoryMatch = {
         if (MemoryMatch.backgroundSoundInstance !== null) {
             if (MemoryMatch.backgroundSoundInstance.playState !== createjs.Sound.PLAY_SUCCEEDED) {
                 MemoryMatch.backgroundSoundInstance.play({delay: 0, loop: -1});
-                MemoryMatch.debugLog("playBackgroundMusic: restarting last music");
+//                MemoryMatch.debugLog("playBackgroundMusic: restarting last music");
             }
         } else {
             MemoryMatch.backgroundSoundInstance = createjs.Sound.play("soundIntro", {delay: 0, loop: -1});
-            MemoryMatch.debugLog("playBackgroundMusic: starting soundIntro");
+//            MemoryMatch.debugLog("playBackgroundMusic: starting soundIntro");
         }
     },
 
@@ -387,11 +387,11 @@ var MemoryMatch = {
         if (MemoryMatch.interstitialSoundInstance !== null) {
             if (MemoryMatch.interstitialSoundInstance.playState !== createjs.Sound.PLAY_SUCCEEDED) {
                 MemoryMatch.interstitialSoundInstance.play({delay: 0, loop: loopCount});
-                MemoryMatch.debugLog("playInterstitialMusic: restarting last " + soundReference);
+//                MemoryMatch.debugLog("playInterstitialMusic: restarting last " + soundReference);
             }
         } else {
             MemoryMatch.interstitialSoundInstance = createjs.Sound.play(soundReference, {delay: 0, loop: loopCount});
-            MemoryMatch.debugLog("playInterstitialMusic: starting " + soundReference);
+//            MemoryMatch.debugLog("playInterstitialMusic: starting " + soundReference);
         }
     },
 
@@ -412,7 +412,7 @@ var MemoryMatch = {
         if (MemoryMatch.backgroundSoundInstance !== null) {
             if (MemoryMatch.backgroundSoundInstance.playState == createjs.Sound.PLAY_SUCCEEDED || MemoryMatch.backgroundSoundInstance.playState == createjs.Sound.PLAY_FINISHED) {
                 MemoryMatch.backgroundSoundInstance.play({delay: 0, loop: -1});
-                MemoryMatch.debugLog("restartBackgroundMusic: restarting last music");
+//                MemoryMatch.debugLog("restartBackgroundMusic: restarting last music");
             }
         }
     },
@@ -427,7 +427,7 @@ var MemoryMatch = {
 
     triggerSoundFx: function (tag, params) {
         if ( ! MemoryMatch.gamePaused) {
-            MemoryMatch.debugLog("triggerSoundFx: " + tag);
+//            MemoryMatch.debugLog("triggerSoundFx: " + tag);
             createjs.Sound.play(tag, params);
         }
     },
@@ -1149,17 +1149,17 @@ var MemoryMatch = {
         var loadedAsset = MemoryMatch.assetLoader.getResult(spriteSheetAsset);
 
         if (loadedAsset == null) {
-            MemoryMatch.debugLog("setImageSheet: card sprites " + spriteSheetAsset + " not loaded.");
+//            MemoryMatch.debugLog("setImageSheet: card sprites " + spriteSheetAsset + " not loaded.");
             MemoryMatch.imageSheetImage = null;
         } else if (MemoryMatch.imageSheetImage !== loadedAsset) {
-            MemoryMatch.debugLog("setImageSheet: loading card sprites " + spriteSheetAsset + " size (" + spriteWidth + "," + spriteHeight + ")");
+//            MemoryMatch.debugLog("setImageSheet: loading card sprites " + spriteSheetAsset + " size (" + spriteWidth + "," + spriteHeight + ")");
             MemoryMatch.imageSheetImage = loadedAsset;
             MemoryMatch.imageSheetSpriteWidth = spriteWidth;
             MemoryMatch.imageSheetSpriteHeight = spriteHeight;
             MemoryMatch.cardWidth = spriteWidth;
             MemoryMatch.cardHeight = spriteHeight;
-        } else {
-            MemoryMatch.debugLog("setImageSheet: card sprites " + spriteSheetAsset + " already loaded.");
+//        } else {
+//            MemoryMatch.debugLog("setImageSheet: card sprites " + spriteSheetAsset + " already loaded.");
         }
         return MemoryMatch.imageSheetImage != null;
     },
@@ -1196,20 +1196,20 @@ var MemoryMatch = {
     allAssetsLoaded: function () {
         var totalLoadTime = Date.now() - this.gameStartTime;
 
-        MemoryMatch.assetLoader.removeAllEventListeners();
+        this.assetLoader.removeAllEventListeners();
         if (totalLoadTime < this.minimumSplashScreenDisplayTime) {
             window.setTimeout(this.readyToStart.bind(this), this.minimumSplashScreenDisplayTime - totalLoadTime);
         } else {
             this.readyToStart();
         }
-        if (MemoryMatch.secondaryAssetManifest != null && MemoryMatch.secondaryAssetManifest.length > 0) {
-            MemoryMatch.beginLoadSecondaryAssets();
+        if (this.secondaryAssetManifest != null && this.secondaryAssetManifest.length > 0) {
+            this.beginLoadSecondaryAssets();
         }
     },
 
     readyToStart: function () {
-        MemoryMatch.hideLoader();
-        if ( ! MemoryMatch.gameWasInitialized) {
+        this.hideLoader();
+        if ( ! this.gameWasInitialized) {
             this.initializeGame();
         } else {
             this.reinitializeGame();
@@ -1219,7 +1219,7 @@ var MemoryMatch = {
     showLoader: function () {
         if (document.getElementById(this.loaderElement) != null) {
             document.getElementById(this.loaderElement).style.display = "block";
-            document.getElementById(this.stageCanvasElement).style.display = "none";
+            document.getElementById(this.stageCanvasElement).style.display = "block";
             MemoryMatch.stage.visible = false;
         }
     },
@@ -1314,7 +1314,7 @@ var MemoryMatch = {
             } else if (progress > 50) {
                 progressText = "It's getting amazing!... " + progress + "%";
             } else {
-                progressText = "We're loading awesomeness... " + progress + "%";
+                progressText = "We're loading... " + progress + "%";
             }
             document.getElementById("loaderProgress").innerText = progressText;
         }
@@ -1338,7 +1338,7 @@ var MemoryMatch = {
         var progressPercent = event.progress,
             progress = Math.floor(progressPercent * 100);
         MemoryMatch.secondaryAssetLoaderProgress = progress;
-        MemoryMatch.debugLog("Secondary progress " + progress.toString());
+//        MemoryMatch.debugLog("Secondary progress " + progress.toString());
     },
 
     secondaryAssetLoadError: function (event) {
@@ -1356,7 +1356,7 @@ var MemoryMatch = {
     secondaryAssetsLoaded: function () {
         var assetLoader = MemoryMatch.assetLoader;
         assetLoader.removeAllEventListeners();
-        MemoryMatch.debugLog("Secondary load complete!");
+//        MemoryMatch.debugLog("Secondary load complete!");
     },
 
     buildBoard: function () {
@@ -1521,7 +1521,7 @@ var MemoryMatch = {
                 boardScale = 1.0;
             }
             boardScale = Math.floor(boardScale * 100) * 0.01;
-            MemoryMatch.debugLog("Scaling board to " + boardScale.toString() + "% H/W (" + totalWidthNeeded + "," + totalHeightNeeded + ") center (" + centerOfBoardX + "," + centerOfBoardY + ")");
+//            MemoryMatch.debugLog("Scaling board to " + boardScale.toString() + "% H/W (" + totalWidthNeeded + "," + totalHeightNeeded + ") center (" + centerOfBoardX + "," + centerOfBoardY + ")");
             MemoryMatch.boardContainer.setTransform(centerOfBoardX, centerOfBoardY, boardScale, boardScale, 0, 0, 0, totalWidthNeeded * 0.5 - halfCardWidth, totalHeightNeeded * 0.5 - halfCardHeight);
 
 
@@ -1709,14 +1709,14 @@ var MemoryMatch = {
                 }
                 if ( ! foundUnplayedData && difficulty == 4) { // User played all available combinations, this player beat the game
                     playerWins = true;
-                    MemoryMatch.debugLog("Game " + MemoryMatch.gameNumber + " Difficulty " + difficulty + " index " + eyeSpyIndex + " PLAYER WINS");
+//                    MemoryMatch.debugLog("Game " + MemoryMatch.gameNumber + " Difficulty " + difficulty + " index " + eyeSpyIndex + " PLAYER WINS");
                 } else if ( ! foundUnplayedData) { // Some type of data error
                     eyeSpyIndex = imageGroups.length - 1;
                     gameData = imageGroups[eyeSpyIndex];
                 }
             }
             if ( ! playerWins) {
-                MemoryMatch.debugLog("Game " + MemoryMatch.gameNumber + " Difficulty " + difficulty + " index " + eyeSpyIndex + " set " + gameData.sprites + " target " + gameData.targetCard + " played? " + (foundUnplayedData ? "NO" : "YES"));
+//                MemoryMatch.debugLog("Game " + MemoryMatch.gameNumber + " Difficulty " + difficulty + " index " + eyeSpyIndex + " set " + gameData.sprites + " target " + gameData.targetCard + " played? " + (foundUnplayedData ? "NO" : "YES"));
                 if (gameData !== null && gameData.matchCard !== null && gameData.badCards !== null && gameData.badCardCount !== null) {
                     gameData.played = true;
                     allCards = [gameData.matchCard];
@@ -3239,7 +3239,7 @@ var MemoryMatch = {
         gameTime = MemoryMatch.gameEndTime - MemoryMatch.gameStartTime;
         finalScore = MemoryMatch.gameCompleteTallyFinalScore();
         starsEarned = MemoryMatch.getGameStarsEarned();
-        if (MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.WIN) {
+        if (MemoryMatch.gamePlayState == MemoryMatch.GAMEPLAYSTATE.WIN) {
             if (gameTime <= 5999 && ! MemoryMatch.isChallengeGame) { // finished game in 5 seconds or less
                 earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.QUICKDRAW) | earnedAchievement;
             }
@@ -5349,7 +5349,7 @@ var MemoryMatch = {
         containerDiv.style.marginLeft = (currentWidth * -0.5) + 'px';
         MemoryMatch.cssScaledWidth = currentWidth;
         MemoryMatch.cssScaledHeight = currentHeight;
-        MemoryMatch.debugLog("setCanvasSize: Width: " + MemoryMatch.stageWidth + ", Height: " + MemoryMatch.stageHeight +  ", prefix: " + MemoryMatch.assetFileNamePostfix +  ", aspect: " + MemoryMatch.stageAspectRatio +  ", scale: " + MemoryMatch.stageScaleFactor);
+//        MemoryMatch.debugLog("setCanvasSize: Width: " + MemoryMatch.stageWidth + ", Height: " + MemoryMatch.stageHeight +  ", prefix: " + MemoryMatch.assetFileNamePostfix +  ", aspect: " + MemoryMatch.stageAspectRatio +  ", scale: " + MemoryMatch.stageScaleFactor);
     },
 
     isPortrait: function () {
@@ -5404,7 +5404,7 @@ var MemoryMatch = {
 
     onVisibilityChange: function (event) {
         var isHidden = MemoryMatch.isDocumentHidden();
-        MemoryMatch.debugLog("onVisibilityChange: hidden? " + (isHidden ? 'YES' : 'NO'));
+//        MemoryMatch.debugLog("onVisibilityChange: hidden? " + (isHidden ? 'YES' : 'NO'));
         MemoryMatch.onPauseGame(isHidden);
     },
 
@@ -5638,193 +5638,6 @@ var MemoryMatch = {
             MemoryMatch.secondaryAssetManifest = secondaryAssetManifest;
         }
     }
-};
-
-function runTests() {
-    // Use this method to perform all unit tests
-
-    // return; // tests are off for now.
-
-    var testNum = 0,
-        testData,
-        a,
-        ri,
-        i;
-
-    testNum ++;
-    testData = MemoryMatch.queryStringToObject('http://www.xyz.com/test.php?test=1&value=2&reg=this+is+a+test&grip=supercalofraga');
-    MemoryMatch.debugLog("Test", testNum, "Expect:", '{"test":"1","value":"2","reg":"this+is+a+test","grip":"supercalofraga"}');
-    MemoryMatch.debugLog("Test", testNum, "Result:", JSON.stringify(testData));
-
-    testNum ++;
-    testData = MemoryMatch.tokenReplace("This is %TEST% on object %OBJ% for real.", {TEST: "a test", OBJ: "my object"});
-    MemoryMatch.debugLog("Test", testNum, "Expect:", 'This is a test on object my object for real.');
-    MemoryMatch.debugLog("Test", testNum, "Result:", testData);
-
-    testNum ++;
-    ri = MemoryMatch.getRandomNumberBetweenButNot(1,3,2);
-    MemoryMatch.debugLog("Test " + testNum + " Expect: " + '{%d} number between 1 and 3 but not 2');
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + ri);
-
-    testNum ++;
-    a = MemoryMatch.shuffleAllCardsUniqueDeck(1, 8, 8);
-    MemoryMatch.debugLog("Test " + testNum + " Expect: " + '{%a} array of 8 numbers, no duplicates');
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + JSON.stringify(a));
-
-    testNum ++;
-    a = MemoryMatch.makeMonteDeck(1, 3, 3);
-    MemoryMatch.debugLog("Test " + testNum + " Expect: " + '[2,1,2]');
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + JSON.stringify(a));
-    a = MemoryMatch.makeMonteDeck(1, 5, 5);
-    MemoryMatch.debugLog("Test " + testNum + " Expect: " + '[2,2,1,2,2]');
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + JSON.stringify(a));
-    a = MemoryMatch.makeMonteDeck(3, 3, 9);
-    MemoryMatch.debugLog("Test " + testNum + " Expect: " + '[2,2,2,2,1,2,2,2,2]');
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + JSON.stringify(a));
-
-    testNum ++;
-    a = MemoryMatch.makeShuffledBag(150, 1, 4, 3);
-    MemoryMatch.debugLog("Test " + testNum + " makeShuffledBag Expect: " + '[array of 150 items 1-4 no more than 3 repeat]');
-    MemoryMatch.debugLog("Test " + testNum + " makeShuffledBag Result: " + JSON.stringify(a));
-
-    testNum ++;
-    for (i=0; i < 10; i ++) {
-        a = MemoryMatch.shuffleUniqueDeck(i, i+12);
-        MemoryMatch.debugLog("Test " + testNum + " Expect: " + '{%a} array of 13 numbers, ' + i + '-' + (i+12) + ', no duplicates');
-        MemoryMatch.debugLog("Test " + testNum + " Result: " + JSON.stringify(a));
-    }
-
-    testNum ++;
-    testData = MemoryMatch.makeResolutionBasedFileNameFromFileName("file1.jpg");
-    MemoryMatch.debugLog("Test " + testNum + " Expect: " + 'file1-50.jpg');
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + testData);
-    testData = MemoryMatch.makeResolutionBasedFileNameFromFileName("file");
-    MemoryMatch.debugLog("Test " + testNum + " Expect: " + 'file-50');
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + testData);
-    testData = MemoryMatch.makeResolutionBasedFileNameFromFileName("file.file.file.png");
-    MemoryMatch.debugLog("Test " + testNum + " Expect: " + 'file.file.file-50.png');
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + testData);
-    testData = MemoryMatch.makeResolutionBasedJsonFileFromFileName("file.png");
-    MemoryMatch.debugLog("Test " + testNum + " Expect: " + 'file-50.json');
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + testData);
-
-    // Validate our Min/Max logic
-    testNum ++;
-    i = 0;
-    testData = Math.min(i || 1, 10);
-    MemoryMatch.debugLog("Test " + testNum + " Expect: " + '1');
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + testData);
-    i = null;
-    testData = Math.min(i || 1, 10);
-    MemoryMatch.debugLog("Test " + testNum + " Expect: " + '1');
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + testData);
-    i = 7;
-    testData = Math.min(i || 1, 10);
-    MemoryMatch.debugLog("Test " + testNum + " Expect: " + '7');
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + testData);
-    i = 99;
-    testData = Math.min(i || 1, 10);
-    MemoryMatch.debugLog("Test " + testNum + " Expect: " + '10');
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + testData);
-
-    // Achievements unit tests
-    testNum ++;
-    MemoryMatch.restoreUsers();
-    testData = MemoryMatch.achievementEarned(5);
-    i = MemoryMatch.achievementEarned(7);
-    ri = MemoryMatch.achievementEarned(19);
-    MemoryMatch.debugLog("Test " + testNum + " Expect: " + '[true,true,true]');
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + JSON.stringify([testData,i,ri]));
-    testNum ++;
-    testData = MemoryMatch.didUserEarnAchievement(5);
-    i = MemoryMatch.didUserEarnAchievement(19);
-    ri = MemoryMatch.didUserEarnAchievement(20);
-    MemoryMatch.debugLog("Test " + testNum + " Expect: " + '[true,true,false]');
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + JSON.stringify([testData,i,ri]));
-    testNum ++;
-    a = MemoryMatch.getUserAchievements();
-    MemoryMatch.debugLog("Test " + testNum + " Expect: " + '[5,7,19]');
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + JSON.stringify(a));
-
-    testNum ++;
-    a = MemoryMatch.getVendorPrefix();
-    MemoryMatch.debugLog("Test " + testNum + " Expect: " + '<string> or null');
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + a);
-    a = MemoryMatch.isDocumentHidden();
-    MemoryMatch.debugLog("Test " + testNum + " Expect: " + 'false');
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + JSON.stringify(a));
-    a = MemoryMatch.getVisibilityChangeEvent();
-    MemoryMatch.debugLog("Test " + testNum + " Expect: " + 'visibilitychange (or vendor prefix)');
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + a);
-
-    testNum ++;
-    ri = MemoryMatch.getQueryStringValue('level');
-    MemoryMatch.debugLog("Test " + testNum + " Expect: " + '2');
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + ri);
-
-    testNum ++;
-    ri = MemoryMatch.convertLevelNumberToLevelAndGameNumber(1);
-    MemoryMatch.debugLog("Test " + testNum + " Expect: " + '{levelNumber:1,gameNumber:1}');
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + JSON.stringify(ri));
-    ri = MemoryMatch.convertLevelNumberToLevelAndGameNumber(7);
-    MemoryMatch.debugLog("Test " + testNum + " Expect: " + '{levelNumber:1,gameNumber:99}');
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + JSON.stringify(ri));
-    ri = MemoryMatch.convertLevelNumberToLevelAndGameNumber(10);
-    MemoryMatch.debugLog("Test " + testNum + " Expect: " + '{levelNumber:2,gameNumber:3}');
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + JSON.stringify(ri));
-    ri = MemoryMatch.convertLevelNumberToLevelAndGameNumber(13);
-    MemoryMatch.debugLog("Test " + testNum + " Expect: " + '{levelNumber:2,gameNumber:6}');
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + JSON.stringify(ri));
-    ri = MemoryMatch.convertLevelNumberToLevelAndGameNumber(14);
-    MemoryMatch.debugLog("Test " + testNum + " Expect: " + '{levelNumber:2,gameNumber:99}');
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + JSON.stringify(ri));
-    ri = MemoryMatch.convertLevelNumberToLevelAndGameNumber(28);
-    MemoryMatch.debugLog("Test " + testNum + " Expect: " + '{levelNumber:4,gameNumber:99}');
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + JSON.stringify(ri));
-    ri = MemoryMatch.convertLevelNumberToLevelAndGameNumber(78);
-    MemoryMatch.debugLog("Test " + testNum + " Expect: " + '{levelNumber:4,gameNumber:99}');
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + JSON.stringify(ri));
-
-    testNum ++;
-    a = MemoryMatch.UserData.setUserTipSeen(3);
-    ri = MemoryMatch.UserData.getUserTips();
-    MemoryMatch.debugLog("Test " + testNum + " Expect: " + '[false,false,true]');
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + JSON.stringify(ri));
-    a = MemoryMatch.UserData.isUserTipSeen(3);
-    MemoryMatch.debugLog("Test " + testNum + " Expect: " + 'true');
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + JSON.stringify(a));
-    a = MemoryMatch.UserData.isUserTipSeen(2);
-    MemoryMatch.debugLog("Test " + testNum + " Expect: " + 'false');
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + JSON.stringify(a));
-    a = MemoryMatch.UserData.isUserTipSeen(1);
-    MemoryMatch.debugLog("Test " + testNum + " Expect: " + 'false');
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + JSON.stringify(a));
-
-    testNum ++;
-    ri = MemoryMatch.formatNumberWithGroups(900);
-    MemoryMatch.debugLog("Test " + testNum + " Expect: 900");
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + ri);
-    ri = MemoryMatch.formatNumberWithGroups(-900);
-    MemoryMatch.debugLog("Test " + testNum + " Expect: -900");
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + ri);
-    ri = MemoryMatch.formatNumberWithGroups(900900900900);
-    MemoryMatch.debugLog("Test " + testNum + " Expect: 900,900,900,900");
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + ri);
-    ri = MemoryMatch.formatNumberWithGroups(-900900900900);
-    MemoryMatch.debugLog("Test " + testNum + " Expect: -900,900,900,900");
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + ri);
-    ri = MemoryMatch.formatNumberWithGroups(9009);
-    MemoryMatch.debugLog("Test " + testNum + " Expect: 9,009");
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + ri);
-    ri = MemoryMatch.formatNumberWithGroups(-9009);
-    MemoryMatch.debugLog("Test " + testNum + " Expect: -9,009");
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + ri);
-    ri = MemoryMatch.formatNumberWithGroups(90909);
-    MemoryMatch.debugLog("Test " + testNum + " Expect: 90,909");
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + ri);
-    ri = MemoryMatch.formatNumberWithGroups(-90909);
-    MemoryMatch.debugLog("Test " + testNum + " Expect: -90,909");
-    MemoryMatch.debugLog("Test " + testNum + " Result: " + ri);
 };
 
 function onGooglePlusLoaded () {
