@@ -1,7 +1,6 @@
 CACHE MANIFEST
-# 2014-07-14:v1.0.66
+# 2014-07-14:v1.0.66.1
 
-CACHE
 index.html
 assets/memoryMatch.css
 assets/MyFontsWebfontsKit.css
@@ -14,26 +13,7 @@ lib/modernizr.custom.74056.js
 lib/preloadjs-0.4.1.min.js
 lib/screenfull.min.js
 lib/soundjs-0.5.2.min.js
-js/setup.js
-js/MemoryMatch.js
-js/AchievementItem.js
-js/AnimationHandler.js
-js/AwardsPopup.js
-js/ChallengeIntroduction.js
-js/CreditsPopup.js
-js/GameComplete.js
-js/GameGUI.js
-js/GameOptions.js
-js/GameResults.js
-js/GUIButton.js
-js/InfoPopup.js
-js/LevelButton.js
-js/LevelIntroduction.js
-js/MainMenu.js
-js/MessagePopup.js
-js/Nemesis.js
-js/SharePopup.js
-js/UserData.js
+js/MemoryMatch.min.js
 assets/OpenSans-CondLight-webfont.eot
 assets/OpenSans-CondLight-webfont.svg
 assets/OpenSans-CondLight-webfont.ttf
@@ -133,7 +113,7 @@ assets/shareicons-100.png
 assets/shareicons-24.json
 assets/shareicons-50.json
 assets/shareicons-100.json
-assets/sparkle_21x23.json
+assets/sparkle_21x23.png
 assets/ATL1-26.png
 assets/ATL1-50.png
 assets/ATL1-100.png

@@ -30,7 +30,7 @@ body {
 }
 
 #canvasArea {
-    position:   absolute;
+    position:   fixed;
     left:       50%;
     top:        50%;
     align:      center;
@@ -242,13 +242,13 @@ body {
 #emailshare {
     position: absolute;
     visibility: hidden;
+    display: none;
     width: 100%;
     align:      center;
     text-align: center;
     overflow: hidden;
     color: #ffffff;
     font-size: 28px;
-    display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
