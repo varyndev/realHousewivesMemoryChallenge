@@ -168,5 +168,28 @@
     <div id="fb-root"></div>
     <canvas id="memoryMatch">In order to enjoy this content you must upgrade your browser to an HTML5 compatible version.</canvas>
 </div>
+<script type="text/javascript">
+    (function () {
+        // Size the canvas container area until we are able to figure out the real size we want.
+        // This is a temp fix to get the background image to size before the game loads.
+        var supportedResolution = {width: 1024, height: 768},
+                currentWidth = window.innerWidth,
+                currentHeight = window.innerHeight,
+                windowAspectRatio = currentWidth / currentHeight,
+                desiredAspectRatio,
+                containerDiv = document.getElementById('canvasArea');
+
+        desiredAspectRatio = supportedResolution.width / supportedResolution.height;
+        if (windowAspectRatio > desiredAspectRatio) {
+            currentWidth = Math.floor(currentHeight * desiredAspectRatio);
+        } else {
+            currentHeight = Math.floor(currentWidth / desiredAspectRatio);
+        }
+        containerDiv.style.width = currentWidth + 'px';
+        containerDiv.style.height = currentHeight + 'px';
+        containerDiv.style.marginTop = (currentHeight * -0.5) + 'px';
+        containerDiv.style.marginLeft = (currentWidth * -0.5) + 'px';
+    })();
+</script>
 </body>
 </html>
