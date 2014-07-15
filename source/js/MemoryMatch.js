@@ -4716,6 +4716,16 @@ this.MemoryMatch = {
         }
     },
 
+    isBrowserDetect: function (whichBrowser) {
+        var userAgent = navigator.userAgent.toLowerCase(),
+            regX,
+            is;
+
+        regX = new RegExp(whichBrowser.toLowerCase());
+        is = regX.test(userAgent);
+        return is;
+    },
+
     getSpriteFrameSize: function (spriteSheet, spriteFrame) {
         var spriteWidth = 0,
             spriteHeight = 0;

@@ -96,7 +96,8 @@ MemoryMatch.LevelButton = function (parameters) {
             fontSize = this.isChallengeGame ? 56 : 44,
             gameNumberText = new createjs.Text(gameNumber, MemoryMatch.getScaledFontSize(fontSize) + " " + MemoryMatch.GameSetup.guiBoldFontName, textColor),
             button = this.getChildByName('button'),
-            textHeight = gameNumberText.getMeasuredLineHeight();
+            textHeight = gameNumberText.getMeasuredLineHeight(),
+            useFontPositionHack = MemoryMatch.platform == 'Win32'; // TODO: this is the worst! font does not position the same for Windows as anywhere else.
 
         gameNumberText.textAlign = "center";
         gameNumberText.x = this.width * 0.5;
@@ -110,6 +111,9 @@ MemoryMatch.LevelButton = function (parameters) {
         } else {
             gameNumberText.visible = ! this.isLocked;
             gameNumberText.y = button.y + ((button.height - textHeight) * 0.6666);
+        }
+        if (useFontPositionHack) {
+            gameNumberText.y *= 0.9;
         }
         if (this.addShadow && this.shadowSource != null) {
             gameNumberText.shadow = this.shadowSource.clone();
