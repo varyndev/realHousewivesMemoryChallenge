@@ -579,7 +579,9 @@ this.MemoryMatch = {
         MemoryMatch.nextTimerUpdateTime = 0;
         MemoryMatch.gamePaused = false;
         createjs.Touch.enable(MemoryMatch.stage, true, false);
-        MemoryMatch.gameStartTime += pauseTime; // update the game timer
+        if (MemoryMatch.gameStartTime > 0) {
+            MemoryMatch.gameStartTime += pauseTime; // update the game timer
+        }
         MemoryMatch.updateGameTimers();
         if (MemoryMatch.isChallengeGame) {
             if (MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.SIMON) { // replay the simon pattern and reset user to beginning of current streak
@@ -3472,7 +3474,6 @@ this.MemoryMatch = {
         MemoryMatch.gamePriorState = MemoryMatch.gameState;
         MemoryMatch.gameState = newState;
         MemoryMatch.gameStateStartTime = Date.now();
-        MemoryMatch.debugLog("GameState is now " + MemoryMatch.gameState);
     },
 
     getNextGameNumber: function () {
