@@ -829,6 +829,7 @@ this.MemoryMatch = {
             if (MemoryMatch.isChallengeGameUnlocked(MemoryMatch.gameLevel)) {
                 MemoryMatch.isChallengeGame = true;
                 MemoryMatch.gameNumber = 1;
+                MemoryMatch.changeGameState(MemoryMatch.GAMESTATE.PLAY);
                 MemoryMatch.startNextGame();
             } else {
                 MemoryMatch.goToHomeScreen();
@@ -945,6 +946,7 @@ this.MemoryMatch = {
         MemoryMatch.GameGUI.updateScoreDisplay(MemoryMatch.totalScore);
         MemoryMatch.levelComplete = false;
         if (MemoryMatch.isChallengeGame) {
+            MemoryMatch.changeGameState(MemoryMatch.GAMESTATE.PLAY);
             MemoryMatch.startNextGame();
         } else {
             MemoryMatch.startGameWithNumber(MemoryMatch.gameNumber);
@@ -980,6 +982,7 @@ this.MemoryMatch = {
                     if (MemoryMatch.shouldShowLevelIntroduction(MemoryMatch.gameLevel)) {
                         MemoryMatch.showLevelIntroduction(MemoryMatch.gameNumber);
                     } else {
+                        MemoryMatch.changeGameState(MemoryMatch.GAMESTATE.PLAY);
                         MemoryMatch.startNextGame();
                     }
                 }
@@ -2023,7 +2026,7 @@ this.MemoryMatch = {
             showCardCountdownTimer = false,
             timerShowTime;
 
-        if (MemoryMatch.gamePlayState == MemoryMatch.GAMEPLAYSTATE.BOARD_SETUP) {
+        if (MemoryMatch.gamePlayState == MemoryMatch.GAMEPLAYSTATE.BOARD_SETUP && MemoryMatch.gameState == MemoryMatch.GAMESTATE.PLAY) {
             numberOfCardsInLevel = MemoryMatch.rows * MemoryMatch.columns;
             MemoryMatch.numberOfCardsShowing ++;
             if (MemoryMatch.numberOfCardsShowing >= numberOfCardsInLevel) {
@@ -2088,6 +2091,8 @@ this.MemoryMatch = {
                     MemoryMatch.GameGUI.startTimerCountdown();
                 }
             }
+        } else {
+            MemoryMatch.debugLog("checkBoardIsReadyForPlay OUT OF SYNC! gameState=" + MemoryMatch.gameState + " and playState=" + MemoryMatch.gamePlayState);
         }
     },
 
@@ -2721,7 +2726,7 @@ this.MemoryMatch = {
     },
 
     onShowCardsWaitComplete: function (card) {
-        if (MemoryMatch.gamePaused) {
+        if (MemoryMatch.gamePaused || MemoryMatch.gameState != MemoryMatch.GAMESTATE.PLAY) {
             return;
         }
         MemoryMatch.showAllPatternCards(false);
@@ -2734,7 +2739,7 @@ this.MemoryMatch = {
         // we need to turn the cards over and begin the game.
         var hideTimerCountDown = true;
 
-        if (MemoryMatch.gamePaused) {
+        if (MemoryMatch.gamePaused || MemoryMatch.gameState != MemoryMatch.GAMESTATE.PLAY) {
             return;
         }
         switch (MemoryMatch.gameType) {
@@ -2780,7 +2785,7 @@ this.MemoryMatch = {
         // we start the shuffle animation.
         var i;
 
-        if (MemoryMatch.gamePaused) {
+        if (MemoryMatch.gamePaused || MemoryMatch.gameState != MemoryMatch.GAMESTATE.PLAY) {
             return;
         }
         if (MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.MONTE) { // show the target card just a little longer
@@ -2800,7 +2805,7 @@ this.MemoryMatch = {
     },
 
     onShowTargetCardWaitComplete: function (card) {
-        if (MemoryMatch.gamePaused) {
+        if (MemoryMatch.gamePaused || MemoryMatch.gameState != MemoryMatch.GAMESTATE.PLAY) {
             return;
         }
         card.unselect();
@@ -3467,6 +3472,7 @@ this.MemoryMatch = {
         MemoryMatch.gamePriorState = MemoryMatch.gameState;
         MemoryMatch.gameState = newState;
         MemoryMatch.gameStateStartTime = Date.now();
+        MemoryMatch.debugLog("GameState is now " + MemoryMatch.gameState);
     },
 
     getNextGameNumber: function () {
