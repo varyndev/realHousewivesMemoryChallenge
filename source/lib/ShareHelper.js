@@ -232,15 +232,29 @@ var ShareHelper = {
         // Call the render method when appropriate within your app to display
         // the button.
         gapi.interactivepost.render('googleSharePost', options);
-        window.setTimeout(function(){
-            domElement = document.getElementById('googleSharePost');
-            if (typeof domElement.onclick == "function") {
-                domElement.onclick.apply(domElement);
+        window.setTimeout(function() {
+            try {
+                domElement = document.getElementById('googleSharePost');
+                if (typeof domElement.onclick == "function") {
+                    try {
+                        domElement.onclick.apply(domElement);
+                    } catch (exception) {
+                        window.open('https://plus.google.com/share?url=' + encodeURI(parameters.link),'_blank');
+//                        $("a.link").on("click", function() {
+//                            window.open('https://plus.google.com/share?url=' + encodeURI(parameters.link),'_blank');
+//                        });
+                    }
+                }
+            } catch (exceptionTwo) {
+                window.open('https://plus.google.com/share?url=' + encodeURI(parameters.link),'_blank');
             }
             if (callbackWhenComplete != null) {
                 callbackWhenComplete('googleplus');
             }
-        }, 250);
+        }, 350);
+
+        // Google + Share URL
+        // https://plus.google.com/share?url=
     },
 
     TwitterStatus: function (parameters, callbackWhenComplete) {

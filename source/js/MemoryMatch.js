@@ -5288,11 +5288,12 @@ this.MemoryMatch = {
         var priorAssetPostfix = MemoryMatch.assetFileNamePostfix;
 
         MemoryMatch.closeAllPopups();
-        if (MemoryMatch.gameState != MemoryMatch.GAMESTATE.MENU) {
-            MemoryMatch.goToHomeScreen();
-        }
+//        if (MemoryMatch.gameState != MemoryMatch.GAMESTATE.MENU) {
+//            MemoryMatch.clearBoard();
+//        }
         MemoryMatch.setCanvasSize(null);
         if (MemoryMatch.assetFileNamePostfix != priorAssetPostfix) { // Oh-boy! The size changed and our current assets won't fit. Need to reload everything!
+            MemoryMatch.goToHomeScreen();
             MemoryMatch.AnimationHandler.clearAllParticles();
             MemoryMatch.AnimationHandler.clearAllAnimations();
             MemoryMatch.MainMenu.killScreen();
