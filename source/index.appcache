@@ -1,11 +1,10 @@
 CACHE MANIFEST
-# 2014-07-14:v1.0.66.1
+# 2014-07-16:v1.0.67
 
+CACHE:
 index.html
 assets/memoryMatch.css
 assets/MyFontsWebfontsKit.css
-lib/enginesis.js
-lib/ShareHelper.js
 lib/easeljs-0.7.1.min.js
 lib/head.min.js
 lib/jquery.min.js
@@ -13,7 +12,6 @@ lib/modernizr.custom.74056.js
 lib/preloadjs-0.4.1.min.js
 lib/screenfull.min.js
 lib/soundjs-0.5.2.min.js
-js/MemoryMatch.min.js
 assets/OpenSans-CondLight-webfont.eot
 assets/OpenSans-CondLight-webfont.svg
 assets/OpenSans-CondLight-webfont.ttf
@@ -147,3 +145,5 @@ assets/NY2-100.png
 assets/OC2-26.png
 assets/OC2-50.png
 assets/OC2-100.png
+NETWORK:
+*

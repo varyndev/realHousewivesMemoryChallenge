@@ -227,7 +227,8 @@ var ShareHelper = {
             contentdeeplinkid: '/pages',
             calltoactiondeeplinkid: '/pages/create'
             },
-            domElement;
+            domElement,
+            openStatus;
 
         // Call the render method when appropriate within your app to display
         // the button.
@@ -239,14 +240,17 @@ var ShareHelper = {
                     try {
                         domElement.onclick.apply(domElement);
                     } catch (exception) {
-                        window.open('https://plus.google.com/share?url=' + encodeURI(parameters.link),'_blank');
+                        openStatus = window.open('https://plus.google.com/share?url=' + encodeURI(parameters.link),'_blank');
 //                        $("a.link").on("click", function() {
 //                            window.open('https://plus.google.com/share?url=' + encodeURI(parameters.link),'_blank');
 //                        });
                     }
                 }
             } catch (exceptionTwo) {
-                window.open('https://plus.google.com/share?url=' + encodeURI(parameters.link),'_blank');
+                openStatus = window.open('https://plus.google.com/share?url=' + encodeURI(parameters.link),'_blank');
+            }
+            if (openStatus == undefined || openStatus == null || typeof(openStatus) == 'undefined') {
+
             }
             if (callbackWhenComplete != null) {
                 callbackWhenComplete('googleplus');
