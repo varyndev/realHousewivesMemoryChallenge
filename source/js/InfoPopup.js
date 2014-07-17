@@ -183,7 +183,7 @@ MemoryMatch = MemoryMatch || {};
 
     p.setupMessageText = function () {
         var titleTextField;
-        titleTextField = new createjs.Text(this.message, MemoryMatch.getScaledFontSize(42) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
+        titleTextField = new createjs.Text(this.message, MemoryMatch.getScaledFontSize(48) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         titleTextField.textAlign = "center";
         titleTextField.x = this.width * 0.5;
         titleTextField.y = this.height * 0.4;

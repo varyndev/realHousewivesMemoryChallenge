@@ -1,6 +1,5 @@
 CACHE MANIFEST
-# 2014-07-16:v1.0.67
-
+# 2014-07-16:v1.0.67.1
 CACHE:
 index.html
 assets/memoryMatch.css
@@ -127,23 +126,5 @@ assets/NY1-100.png
 assets/OC1-26.png
 assets/OC1-50.png
 assets/OC1-100.png
-assets/ATL2-26.png
-assets/ATL2-50.png
-assets/ATL2-100.png
-assets/BH2-100.png
-assets/BH2-26.png
-assets/BH2-50.png
-assets/NJ2-26.png
-assets/NJ2-50.png
-assets/NJ2-100.png
-assets/NJ3-26.png
-assets/NJ3-50.png
-assets/NJ3-100.png
-assets/NY2-26.png
-assets/NY2-50.png
-assets/NY2-100.png
-assets/OC2-26.png
-assets/OC2-50.png
-assets/OC2-100.png
 NETWORK:
 *

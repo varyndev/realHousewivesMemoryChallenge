@@ -4418,9 +4418,18 @@ this.MemoryMatch = {
 
     hasHTML5LocalStorage: function () {
         // Determine if this device supports local storage
-        var hasSupport = false;
+        var hasSupport = false,
+            storage,
+            testKey;
+
         try {
             hasSupport = 'localStorage' in window && window['localStorage'] !== null;
+            if (hasSupport) { // even if "supported" make sure we can write and read from it
+                storage = window.localStorage;
+                testKey = 'MemoryMatch';
+                storage.setItem(testKey, '1');
+                storage.removeItem(testKey);
+            }
         } catch (e) {
             hasSupport = false;
         }
@@ -5287,10 +5296,8 @@ this.MemoryMatch = {
 
         var priorAssetPostfix = MemoryMatch.assetFileNamePostfix;
 
+        MemoryMatch.debugLog("stageSizeChanged while in state " + MemoryMatch.gameState);
         MemoryMatch.closeAllPopups();
-//        if (MemoryMatch.gameState != MemoryMatch.GAMESTATE.MENU) {
-//            MemoryMatch.clearBoard();
-//        }
         MemoryMatch.setCanvasSize(null);
         if (MemoryMatch.assetFileNamePostfix != priorAssetPostfix) { // Oh-boy! The size changed and our current assets won't fit. Need to reload everything!
             MemoryMatch.goToHomeScreen();
@@ -5306,6 +5313,9 @@ this.MemoryMatch = {
         } else {
             if (MemoryMatch.isDesiredOrientation()) {
                 MemoryMatch.showOrientationMessage(false);
+                if (MemoryMatch.gameState == MemoryMatch.GAMESTATE.LOADING) {
+                    MemoryMatch.showMenuScreen();
+                }
             } else {
                 MemoryMatch.showOrientationMessage(true);
             }
@@ -5682,4 +5692,10 @@ function initApp() {
     MemoryMatch.loadAllAssets(false);
 
 //    runTests(); // run unit tests
+}
+
+if ('applicationCache' in window && window['applicationCache'] !== null) {
+    window.applicationCache.onerror = function(e) {
+        MemoryMatch.debugLog("Application cache error " + e.toString());
+    };
 }

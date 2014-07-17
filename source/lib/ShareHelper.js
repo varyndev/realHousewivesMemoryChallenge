@@ -81,6 +81,24 @@ var ShareHelper = {
         }
     },
 
+    initializeNetworks: function (networkNames, parameters, callbackWhenComplete) {
+        // load and init requested networks
+        var i,
+            n,
+            networkName,
+            networkDetails;
+
+        for (n = 0; n < networkNames.length; n ++) {
+            networkName = networkNames[n];
+            for (i = 0; i < this.networks.length; i ++) {
+                networkDetails = this.networks[i];
+                if (networkDetails.id == networkName) {
+                    networkDetails.init(parameters, callbackWhenComplete);
+                }
+            }
+        }
+    },
+
     initializeFacebook: function (parameters, callbackWhenComplete) {
         var facebookScript = '//connect.facebook.net/en_US/sdk.js',
             domId = 'facebook-jssdk';

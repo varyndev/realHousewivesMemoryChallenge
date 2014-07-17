@@ -7,7 +7,7 @@
  */
 
 MemoryMatch.SharePopup = {
-    shareNetworks: [{id: 'facebook', icon: 'facebook-icon'}, {id: 'twitter', icon: 'twitter-icon'}, {id: 'googleplus', icon: 'googleplus-icon'}],
+    shareNetworks: [{id: 'facebook', icon: 'facebook-icon', initialized: false}, {id: 'twitter', icon: 'twitter-icon', initialized: false}, {id: 'googleplus', icon: 'googleplus-icon', initialized: false}],
     stateCompleteCallback: null,
     parentDisplayObject: null,
     groupDisplayObject: null,
@@ -98,8 +98,19 @@ MemoryMatch.SharePopup = {
     },
 
     start: function () {
-        // begin animation, then wait for user event to end this state and alert callback
+        // begin animation, initialize all the networks
+        var i,
+            parameters,
+            shareButtonsCount;
+
         this.isEnabled = true;
+        parameters = {
+            facebookAppId: MemoryMatch.GameSetup.facebookAppId
+        };
+        shareButtonsCount = this.shareNetworks.length;
+        for (i = 0; i < shareButtonsCount; i ++) {
+            enginesisSession.ShareHelper.initialize(this.shareNetworks[i].id, parameters, this.onNetworksInitializeComplete.bind(this));
+        }
     },
 
     closeStartAnimation: function () {
@@ -119,8 +130,10 @@ MemoryMatch.SharePopup = {
         var duration = 0.3, // seconds of animation
             animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.groupDisplayObject, 0, duration * 1000, false, null, this.closeComplete.bind(this));
 
-        animator.endYScale = animator.endXScale = 0;
-        animator.vYScale = animator.vXScale = (-1 * this.groupDisplayObject.scaleX) / (duration * MemoryMatch.fps);
+        if (animator != null) {
+            animator.endYScale = animator.endXScale = 0;
+            animator.vYScale = animator.vXScale = (-1 * this.groupDisplayObject.scaleX) / (duration * MemoryMatch.fps);
+        }
     },
 
     closeComplete: function () {
@@ -146,14 +159,26 @@ MemoryMatch.SharePopup = {
     },
 
     onClickNetworkButton: function (networkId) {
-        var parameters;
+        var i,
+            shareButtonsCount,
+            parameters;
 
         if (this.isEnabled) {
             this.isEnabled = false; // do not allow clicking any other button until this completes
-            parameters = {
-                facebookAppId: MemoryMatch.GameSetup.facebookAppId
-            };
-            enginesisSession.ShareHelper.initialize(networkId, parameters, this.onNetworkInitializeComplete.bind(this));
+
+            shareButtonsCount = this.shareNetworks.length;
+            for (i = 0; i < shareButtonsCount; i ++) {
+                if (networkId == this.shareNetworks[i].id) {
+                    if (this.shareNetworks[i].initalized) {
+                        this.networkShare(networkId);
+                    } else {
+                        parameters = {
+                            facebookAppId: MemoryMatch.GameSetup.facebookAppId
+                        };
+                        enginesisSession.ShareHelper.initialize(networkId, parameters, this.onNetworkInitializeComplete.bind(this));
+                    }
+                }
+            }
         }
     },
 
@@ -204,8 +229,20 @@ MemoryMatch.SharePopup = {
         // this just eats the click so anything under the popup is not activated
     },
 
-    onNetworkInitializeComplete: function (networkId) {
-        // the requested network was initialized now try to call it
+    onNetworksInitializeComplete: function (networkId) {
+        // mark this network as initialized
+        var i,
+            shareButtonsCount;
+
+        shareButtonsCount = this.shareNetworks.length;
+        for (i = 0; i < shareButtonsCount; i ++) {
+            if (networkId == this.shareNetworks[i].id) {
+                this.shareNetworks[i].initalized = true;
+            }
+        }
+    },
+
+    networkShare: function (networkId) {
         var parameters;
 
         if (networkId != 'email') { // hand off to the network to ask the user to share
@@ -224,10 +261,15 @@ MemoryMatch.SharePopup = {
                 parameters.description = MemoryMatch.GameSetup.gameSubTitle;
             }
             enginesisSession.ShareHelper.share(networkId, parameters, this.onNetworkShareComplete.bind(this));
-//            this.closePopup("continue"); // if user cancels we will never know!
         } else { // we need to prompt the user for the share info
             this.showEmailForm();
         }
+    },
+
+    onNetworkInitializeComplete: function (networkId) {
+        // the requested network was initialized now try to call it
+        this.onNetworksInitializeComplete(networkId);
+        this.networkShare(networkId);
     },
 
     onNetworkShareComplete: function (networkId) {
