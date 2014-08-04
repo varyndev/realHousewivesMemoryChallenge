@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# 2014-07-16:v1.0.67.1
+# 2014-07-16:v1.0.69.9
 CACHE:
 index.html
 assets/memoryMatch.css
@@ -11,6 +11,7 @@ lib/modernizr.custom.74056.js
 lib/preloadjs-0.4.1.min.js
 lib/screenfull.min.js
 lib/soundjs-0.5.2.min.js
+lib/enginesis.min.js
 assets/OpenSans-CondLight-webfont.eot
 assets/OpenSans-CondLight-webfont.svg
 assets/OpenSans-CondLight-webfont.ttf
