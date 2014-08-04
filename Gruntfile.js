@@ -16,9 +16,15 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
 
         concat: {
+            lib: {
+                src: [
+                    'source/lib/enginesis.js',
+                    'source/lib/ShareHelper.js'
+                ],
+                dest: 'source/lib/enginesis.min.js'
+            },
             dist: {
                 src: [
-                    'source/js/MemoryMatch.js',
                     'source/js/AchievementItem.js',
                     'source/js/AnimationHandler.js',
                     'source/js/AwardsPopup.js',
@@ -43,9 +49,13 @@ module.exports = function(grunt) {
         },
 
         uglify: {
+            lib: {
+                src: 'source/lib/enginesis.min.js',
+                dest: 'distrib/lib/enginesis.min.js'
+            },
             build: {
                 src: 'source/js/MemoryMatch.min.js',
-                dest: 'distrib/MemoryMatch.min.js'
+                dest: 'distrib/js/MemoryMatch.min.js'
             }
         },
 
@@ -54,8 +64,8 @@ module.exports = function(grunt) {
                 files: [{
                     expand: true,
                     cwd: 'source/assets',
-                    src: ['**/*.{png,jpg,gif}'],
-                    dest: 'distrib/assets/'
+                    src: ['**/*.{png,jpg}'],
+                    dest: 'distrib/assets'
                 }]
             }
         },
@@ -64,10 +74,10 @@ module.exports = function(grunt) {
             files: ['source/js/*.js', 'source/assets/*.png', 'source/assets/*.jpg'],
             tasks: 'default'
         }
-
     });
 
     // Tell Grunt we plan to use these plug-ins:
+    grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-imagemin');
