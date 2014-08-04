@@ -5,12 +5,14 @@
  * Waits for the user to indicate they are ready to move on then stateCompleteCallback is called.
  *
  */
+MemoryMatch = MemoryMatch || {};
 
 MemoryMatch.GameResults = {
     stateCompleteCallback: null,
     levelData: null,
     parentDisplayObject: null,
     groupDisplayObject: null,
+    animationDisplayObject: null,
     buttonInstances: null,
     spriteData: null,
     gemSprite: null,
@@ -50,6 +52,7 @@ MemoryMatch.GameResults = {
     primaryColorValue: null,
     secondaryColorValue: null,
     refreshTimerId: null,
+    cacheRefreshCount: 0,
 
 
     setup: function (displayObject, nextLevelData, stateCompleteCallbackFunction) {
@@ -113,7 +116,9 @@ MemoryMatch.GameResults = {
         }
         // layout the screen
         this.groupDisplayObject = new createjs.Container();
+        this.animationDisplayObject = new createjs.Container();
         this.parentDisplayObject.addChild(this.groupDisplayObject);
+        this.parentDisplayObject.addChild(this.animationDisplayObject);
         this.setColorFilters();
         this.showBackgroundImage(this.parentDisplayObject.canvas);
         this.marginTop = this.backgroundHeight * 0.06;
@@ -134,6 +139,7 @@ MemoryMatch.GameResults = {
         this.setupButtons(this.groupDisplayObject);
         this.groupDisplayObject.setTransform(this.parentDisplayObject.canvas.width * 0.5, this.parentDisplayObject.canvas.height * 0.5, 0, 0, 0, 0, 0, this.backgroundWidth * 0.5, this.backgroundHeight * 0.5);
         this.groupDisplayObject.cache(0, 0, this.backgroundWidth, this.backgroundHeight);
+        this.animationDisplayObject.setTransform(this.parentDisplayObject.canvas.width * 0.5, this.parentDisplayObject.canvas.height * 0.5, 0, 0, 0, 0, 0, this.backgroundWidth * 0.5, this.backgroundHeight * 0.5);
         if (autoStart === null) {
             autoStart = false;
         }
@@ -233,6 +239,7 @@ MemoryMatch.GameResults = {
 
     refreshCache: function () {
         this.groupDisplayObject.updateCache();
+//        MemoryMatch.debugLog("Cache updated " + this.cacheRefreshCount ++);
     },
 
     flashNextButton: function () {
@@ -344,7 +351,7 @@ MemoryMatch.GameResults = {
             }
         }
         MemoryMatch.AnimationHandler.startSplatterParticles(numberOfParticles, globalStarPoint.x + starHalfWidth, globalStarPoint.y + starHalfWidth);
-        this.groupDisplayObject.updateCache();
+        this.refreshCache();
         MemoryMatch.triggerSoundFx("soundBump");
         if (MemoryMatch.isChallengeGame) {
             this.isEnabled = true;
@@ -487,7 +494,8 @@ MemoryMatch.GameResults = {
             fontColor = MemoryMatch.GameSetup.guiFontColor,
             fontColorBonus = MemoryMatch.GameSetup.guiFontColorBonus,
             fontSizeDifference,
-            textBackgroundSpriteSource;
+            textBackgroundSpriteSource,
+            animationDisplayObject = this.animationDisplayObject;
 
         textBackgroundSpriteSource = new createjs.Sprite(this.spriteData, 'gameOverInfoBoxSmall');
         textBackgroundSpriteSource.alpha = 0.1;
@@ -522,14 +530,14 @@ MemoryMatch.GameResults = {
                 this.matchBonusText.y = Y;
                 this.matchBonusText.maxWidth = fieldWidth;
                 this.matchBonusText.visible = false;
-                groupDisplayObject.addChild(this.matchBonusText);
+                animationDisplayObject.addChild(this.matchBonusText);
                 animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.matchBonusText, starAnimationDelay + (750 * fieldOffset), 0, false, null, null);
                 animator.showAtBegin = true;
-                animator.vAlpha = -0.05;
-                animator.vY = -1.5;
+                animator.vAlpha = -0.02;
+                animator.vY = -1.2;
                 animator.vXscale = 0.1;
                 animator.vYscale = 0.1;
-                animator.tickFunction = this.animateBonusTick.bind(this);
+//                animator.tickFunction = this.animateBonusTick.bind(this);
             }
             fieldOffset ++;
 
@@ -587,14 +595,14 @@ MemoryMatch.GameResults = {
                     this.comboBonusText.y = Y;
                     this.comboBonusText.maxWidth = fieldWidth;
                     this.comboBonusText.visible = false;
-                    groupDisplayObject.addChild(this.comboBonusText);
+                    animationDisplayObject.addChild(this.comboBonusText);
                     animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.comboBonusText, starAnimationDelay + (500 * fieldOffset), 0, false, null, null);
                     animator.showAtBegin = true;
-                    animator.vAlpha = -0.05;
-                    animator.vY = -1.5;
+                    animator.vAlpha = -0.02;
+                    animator.vY = -1.2;
                     animator.vXscale = 0.1;
                     animator.vYscale = 0.1;
-                    animator.tickFunction = this.animateBonusTick.bind(this);
+//                    animator.tickFunction = this.animateBonusTick.bind(this);
                 }
                 fieldOffset ++;
             }
@@ -715,7 +723,7 @@ MemoryMatch.GameResults = {
 
     animateText: function (textSprite) {
         if (this.groupDisplayObject != null) {
-            this.groupDisplayObject.updateCache();
+            this.refreshCache();
             return true;
         } else {
             return false;
@@ -727,7 +735,7 @@ MemoryMatch.GameResults = {
         if (this.currentScoreTextField !== null) {
             this.currentScoreTextField.text = MemoryMatch.formatNumberWithGroups(this.playerScore);
         }
-        this.groupDisplayObject.updateCache();
+        this.refreshCache();
     },
 
     animateTextComboBonus: function (textSprite) {
@@ -735,7 +743,7 @@ MemoryMatch.GameResults = {
         if (this.currentScoreTextField !== null) {
             this.currentScoreTextField.text = MemoryMatch.formatNumberWithGroups(this.playerScore);
         }
-        this.groupDisplayObject.updateCache();
+        this.refreshCache();
     },
 
     animateTextTimeBonus: function (textSprite) {
@@ -760,13 +768,13 @@ MemoryMatch.GameResults = {
         this.showThirdStar(250);
         this.isEnabled = true;
         this.flashNextButton();
-        this.groupDisplayObject.updateCache();
+        this.refreshCache();
     },
 
-    animateBonusTick: function (textSprite) {
-        this.groupDisplayObject.updateCache();
-        return textSprite.actor.alpha > 0;
-    },
+//    animateBonusTick: function (textSprite) {
+//        this.refreshCache();
+//        return textSprite.actor.alpha > 0;
+//    },
 
     showBestScoreBurstIfBeatBestScore: function () {
         // display particle effect if player beat her best score
@@ -782,7 +790,7 @@ MemoryMatch.GameResults = {
                     MemoryMatch.AnimationHandler.startSplatterParticles(Math.random() * 100 + 30, globalTextPoint.x, globalTextPoint.y);
                 }
                 this.bestScoreTextField.font = fontSizeBoldBig;
-                this.groupDisplayObject.updateCache();
+                this.refreshCache();
             }
         }
     },
@@ -900,7 +908,7 @@ MemoryMatch.GameResults = {
         if (this.gemSprite != null) {
             this.gemSprite.setTransform(this.backgroundWidth * 0.5, this.backgroundHeight * 0.5, startScale, startScale, 0, 0, 0, this.gemSprite.width * 0.5, this.gemSprite.height * 0.5);
             this.gemSprite.alpha = startAlpha;
-            this.groupDisplayObject.addChild(this.gemSprite);
+            this.animationDisplayObject.addChild(this.gemSprite);
             steps = MemoryMatch.fps * duration;
             animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.gemSprite, 300, 0, false, null, this.gemAnimationComplete.bind(this));
             animator.vX = (this.gemSpriteFinalPosition.x - this.gemSprite.x) / steps;
@@ -921,8 +929,7 @@ MemoryMatch.GameResults = {
         var stillAnimating = false,
             endScale = 0.75;
 
-        if (this.groupDisplayObject != null) {
-            this.groupDisplayObject.updateCache();
+        if (this.animationDisplayObject != null) {
             if (animator.actor.alpha != 1 || animator.actor.scaleX != endScale) {
                 stillAnimating = true;
             }
@@ -934,10 +941,10 @@ MemoryMatch.GameResults = {
         var globalCardPoint = this.groupDisplayObject.localToGlobal(this.gemSprite.x, this.gemSprite.y);
         MemoryMatch.AnimationHandler.startSplatterStars(Math.random() * 120 + 100, globalCardPoint.x, globalCardPoint.y);
         MemoryMatch.triggerSoundFx("soundBump");
-        this.groupDisplayObject.removeChild(this.gemSprite);
+        this.animationDisplayObject.removeChild(this.gemSprite);
         this.gemSprite = null;
         this.gemSpriteFinalPosition = null;
-        this.groupDisplayObject.updateCache();
+        this.refreshCache();
     },
 
     killScreen: function () {

@@ -11,7 +11,7 @@ var enginesisSession = enginesis || {};
 
 
 this.MemoryMatch = {
-    GameVersion: "1.0.67",
+    GameVersion: "1.0.69",
     platform: "unknown",
     locale: "en-US",
     debugMode: true,
@@ -5602,7 +5602,12 @@ this.MemoryMatch = {
                 assetManifest.push({src:MemoryMatch.makeResolutionBasedJsonFileFromFileName(assetsFolder + guiSpritesArray[i]), id: "guiSprites" + (i + 1) + "json"});
             }
         }
-
+        // Load any Map specific images
+        if (MemoryMatch.GameSetup.mapImages != null) {
+            for (i = 0; i < MemoryMatch.GameSetup.mapImages.length; i ++) {
+                assetManifest.push({src:MemoryMatch.makeResolutionBasedFileNameFromFileName(assetsFolder + MemoryMatch.GameSetup.mapImages[i]), id:"mapImage" + i.toString()});
+            }
+        }
         // All level based assets are under GameSetup.levels
         for (gameLevelIndex = 0; gameLevelIndex < MemoryMatch.GameSetup.games.length; gameLevelIndex ++) {
             gameData = MemoryMatch.GameSetup.games[gameLevelIndex];

@@ -18,6 +18,7 @@
  *   Close button
  *
  */
+MemoryMatch = MemoryMatch || {};
 
 MemoryMatch.GameOptions = {
     stateCompleteCallback: null,

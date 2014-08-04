@@ -6,6 +6,7 @@
  * made by the user.
  *
  */
+MemoryMatch = MemoryMatch || {};
 
 MemoryMatch.MainMenu = {
     stateCompleteCallback: null,

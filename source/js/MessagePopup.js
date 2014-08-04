@@ -4,6 +4,7 @@
  * Show a generic popup that can be used for informational or error messages.
  *
  */
+MemoryMatch = MemoryMatch || {};
 
 MemoryMatch.MessagePopup = {
     stateCompleteCallback: null,

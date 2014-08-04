@@ -8,7 +8,7 @@
  *
  */
 // namespace to MemoryMatch
-this.MemoryMatch = this.MemoryMatch || {};
+MemoryMatch = MemoryMatch || {};
 
 (function() {
 

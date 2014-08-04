@@ -7,6 +7,7 @@
  * Then call onEnterFrame in the game loop to update the particle sprites.
  *
  */
+MemoryMatch = MemoryMatch || {};
 
 MemoryMatch.AnimationHandler = {
     canvas: null,

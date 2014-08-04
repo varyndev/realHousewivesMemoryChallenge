@@ -4,6 +4,7 @@
  * Show the Game Complete popup. We show this once the player has completed all 4 challenges.
  *
  */
+MemoryMatch = MemoryMatch || {};
 
 MemoryMatch.GameComplete = {
     stateCompleteCallback: null,

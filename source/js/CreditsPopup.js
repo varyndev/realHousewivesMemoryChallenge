@@ -4,6 +4,7 @@
  * Show game credits.
  *
  */
+MemoryMatch = MemoryMatch || {};
 
 MemoryMatch.CreditsPopup = {
     parentDisplayObject: null,
@@ -149,21 +150,22 @@ MemoryMatch.CreditsPopup = {
 
     showCredits: function () {
         var titleTextField,
-            text1 = 'This game was made by JumpyDot using the EaselJS HTML5 framework.',
-            text2 = 'Dan Hart:  Game Design & Product Management\n\nJohn Foster:     Programming & Audio\n\nJulia Deter-Keren: Game Design & Art Direction\n\nRobert Prescott:     Quality Assurance';
+            text1 = MemoryMatch.GameSetup.GUIStrings.creditsInfo,
+            text2 = MemoryMatch.GameSetup.GUIStrings.creditsCredit;
 
         titleTextField = new createjs.Text(text1, MemoryMatch.getScaledFontSize(52) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         titleTextField.textAlign = "left";
         titleTextField.x = this.marginLeft;
-        titleTextField.y = this.backgroundHeight * 0.2;
+        titleTextField.y = this.backgroundHeight * 0.18;
         titleTextField.lineWidth = this.backgroundWidth - (this.marginLeft * 2);
         titleTextField.maxWidth = this.backgroundWidth - (this.marginLeft * 2);
+        titleTextField.lineHeight = titleTextField.getMeasuredLineHeight() * 1.5;
         this.groupDisplayObject.addChild(titleTextField);
 
-        titleTextField = new createjs.Text(text2, MemoryMatch.getScaledFontSize(56) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
+        titleTextField = new createjs.Text(text2, MemoryMatch.getScaledFontSize(48) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         titleTextField.textAlign = "center";
         titleTextField.x = this.backgroundWidth * 0.5;
-        titleTextField.y = this.backgroundHeight * 0.3;
+        titleTextField.y = this.backgroundHeight * 0.32;
         titleTextField.lineWidth = this.backgroundWidth - (this.marginLeft * 2);
         titleTextField.maxWidth = this.backgroundWidth - (this.marginLeft * 2);
         this.groupDisplayObject.addChild(titleTextField);

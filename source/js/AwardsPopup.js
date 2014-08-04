@@ -4,6 +4,7 @@
  * Show the Awards popup showing all earned achievements and other stats.
  *
  */
+MemoryMatch = MemoryMatch || {};
 
 MemoryMatch.AwardsPopup = {
     stateCompleteCallback: null,
@@ -478,7 +479,7 @@ MemoryMatch.AwardsPopup = {
         // Close button always shows in its own special place
         gameButton = MemoryMatch.GUIButton({name: "close", tag: 1, disabled: false, callback: this.onClickClose.bind(this), baseUp: "closeButtonUp", baseOver: "closeButtonDown", baseDown: "closeButtonDown"});
         buttonSize = gameButton.getSize();
-        gameButton.setTransform(this.backgroundWidth * 0.94 - buttonSize.width, this.backgroundHeight * 0.05, buttonScale, buttonScale);
+        gameButton.setTransform(this.backgroundWidth * 0.94 - buttonSize.width, this.backgroundHeight * 0.03, buttonScale, buttonScale);
         this.groupDisplayObject.addChild(gameButton);
         this.closeButtonInstance = gameButton;
     },

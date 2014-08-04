@@ -23,6 +23,7 @@
  *      disabled: show button is the disabled state, otherwise the button is enabled
  *
  */
+MemoryMatch = MemoryMatch || {};
 
 MemoryMatch.GUIButton = function (parameters) {
     var guiButton = new createjs.Container();

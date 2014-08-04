@@ -9,8 +9,9 @@
  * 4. removeNemesisCharacter when Nemesis games is over and remove sprites from stage
  *
  */
+this.MemoryMatch = this.MemoryMatch || {};
 
-MemoryMatch.Nemesis = {
+this.MemoryMatch.Nemesis = {
     nemesisGroupDisplayObject: null,
     parentDisplayObject: null,
     spriteFrameData: null,

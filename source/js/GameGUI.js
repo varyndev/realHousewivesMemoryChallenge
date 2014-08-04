@@ -7,6 +7,7 @@
  * Layout:
  * Score ######### Level ##/##  <* * *> Matches: ## Time: ##:## [O]
  */
+MemoryMatch = MemoryMatch || {};
 
 MemoryMatch.GameGUI = {
     groupDisplayObject: null,
@@ -525,11 +526,11 @@ MemoryMatch.GameGUI = {
             backgroundShape;
 
         matchCountWidth = this.width * 0.18;
-        matchCountHeight = this.hudHeight * 0.68;
+        matchCountHeight = this.hudHeight * MemoryMatch.GameSetup.guiHUDMatchCountHeight;
         backgroundShape = new createjs.Shape();
         backgroundShape.graphics.beginFill("#000000").drawRect(0, 0, matchCountWidth, matchCountHeight);
         backgroundShape.alpha = 0.2;
-        backgroundShape.setTransform((this.width - matchCountWidth) * 0.5, this.hudHeight * 0.14);
+        backgroundShape.setTransform((this.width - matchCountWidth) * 0.5, this.hudHeight * MemoryMatch.GameSetup.guiHUDMatchCountOffset);
         this.groupDisplayObject.addChild(backgroundShape);
 
         matchCountLabel = new createjs.Text("Misses:", MemoryMatch.getScaledFontSize(60) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColor);
@@ -748,7 +749,7 @@ MemoryMatch.GameGUI = {
         } else {
             this.secondaryColorFilter = null;
         }
-        if (this.headerSprite != null) {
+        if (this.headerSprite != null && this.primaryColorFilter != null) {
             this.headerSprite.filters = [this.primaryColorFilter];
             this.headerSprite.updateCache();
         }

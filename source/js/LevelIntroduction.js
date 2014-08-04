@@ -6,6 +6,7 @@
  * and waits for the user to indicate they are ready to play.
  *
  */
+MemoryMatch = MemoryMatch || {};
 
 MemoryMatch.LevelIntroduction = {
     stateCompleteCallback: null,
@@ -263,7 +264,7 @@ MemoryMatch.LevelIntroduction = {
         this.buildDemoBoard(groupDisplayObject, this.backgroundWidth * 0.28, this.backgroundHeight * 0.48);
 
         // setup up text caption
-        caption = 'Match like cards.'
+        caption = MemoryMatch.GameSetup.GUIStrings.demoTextMatchLikeCards;
         captionText = new createjs.Text(caption, MemoryMatch.getScaledFontSize(this.captionTextFontSize) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         captionText.textAlign = "center";
         captionText.x = this.backgroundWidth * 0.25;
@@ -277,7 +278,7 @@ MemoryMatch.LevelIntroduction = {
         this.setupMatchCountTextField(groupDisplayObject, (this.backgroundWidth - (300 * MemoryMatch.stageScaleFactor)) * 0.5, middleY, 300 * MemoryMatch.stageScaleFactor, 144 * MemoryMatch.stageScaleFactor);
 
         // setup caption
-        caption = 'Clear the board before you run out of misses.'
+        caption = MemoryMatch.GameSetup.GUIStrings.demoTextClearBoard;
         captionText = new createjs.Text(caption, MemoryMatch.getScaledFontSize(this.captionTextFontSize) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         captionText.textAlign = "center";
         captionText.x = this.backgroundWidth * 0.5;
@@ -291,7 +292,7 @@ MemoryMatch.LevelIntroduction = {
         this.setupGameTimerTextField(groupDisplayObject, (this.backgroundWidth - (300 * MemoryMatch.stageScaleFactor)) * 0.86, middleY);
 
         // setup caption
-        caption = 'Play quickly for extra points.'
+        caption = MemoryMatch.GameSetup.GUIStrings.demoTextPlayQuick;
         captionText = new createjs.Text(caption, MemoryMatch.getScaledFontSize(this.captionTextFontSize) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         captionText.textAlign = "center";
         captionText.x = this.backgroundWidth * 0.75;
@@ -312,7 +313,7 @@ MemoryMatch.LevelIntroduction = {
         this.buildDemoBoard(groupDisplayObject, this.backgroundWidth * 0.28, this.backgroundHeight * 0.48);
 
         // setup up text caption
-        caption = 'Study the board to remember where all the pairs are located.'
+        caption = MemoryMatch.GameSetup.GUIStrings.demoTextStudyBoard;
         captionText = new createjs.Text(caption, MemoryMatch.getScaledFontSize(this.captionTextFontSize) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         captionText.textAlign = "center";
         captionText.x = this.backgroundWidth * 0.25;
@@ -326,7 +327,7 @@ MemoryMatch.LevelIntroduction = {
         this.showTimerCountdown(groupDisplayObject, this.backgroundWidth * 0.5, middleY);
 
         // setup caption
-        caption = 'You have only a few seconds to study the board.'
+        caption = MemoryMatch.GameSetup.GUIStrings.demoTextOnlyAFewSeconds;
         captionText = new createjs.Text(caption, MemoryMatch.getScaledFontSize(this.captionTextFontSize) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         captionText.textAlign = "center";
         captionText.x = this.backgroundWidth * 0.5;
@@ -340,7 +341,7 @@ MemoryMatch.LevelIntroduction = {
         this.showChainsPath(groupDisplayObject, this.backgroundWidth * 0.75, middleY, 0.5);
 
         // setup caption
-        caption = 'Find the pairs but you have only a few misses!'
+        caption = MemoryMatch.GameSetup.GUIStrings.demoTextFindPairs;
         captionText = new createjs.Text(caption, MemoryMatch.getScaledFontSize(this.captionTextFontSize) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         captionText.textAlign = "center";
         captionText.x = this.backgroundWidth * 0.75;
@@ -367,7 +368,7 @@ MemoryMatch.LevelIntroduction = {
         this.buildDemoBoard(groupDisplayObject, this.backgroundWidth * 0.28, this.backgroundHeight * 0.48);
 
         // setup up text caption
-        caption = 'Match like cards.'
+        caption = MemoryMatch.GameSetup.GUIStrings.demoTextMatchLikeCards;
         captionText = new createjs.Text(caption, MemoryMatch.getScaledFontSize(this.captionTextFontSize) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         captionText.textAlign = "center";
         captionText.x = this.backgroundWidth * 0.25;
@@ -381,7 +382,7 @@ MemoryMatch.LevelIntroduction = {
         this.setupMatchCountTextField(groupDisplayObject, (this.backgroundWidth - (300 * MemoryMatch.stageScaleFactor)) * 0.5, middleY, 300 * MemoryMatch.stageScaleFactor, 144 * MemoryMatch.stageScaleFactor);
 
         // setup caption
-        caption = 'Clear the board before you run out of misses.'
+        caption = MemoryMatch.GameSetup.GUIStrings.demoTextClearBoard;
         captionText = new createjs.Text(caption, MemoryMatch.getScaledFontSize(this.captionTextFontSize) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         captionText.textAlign = "center";
         captionText.x = this.backgroundWidth * 0.5;
@@ -395,13 +396,13 @@ MemoryMatch.LevelIntroduction = {
         MemoryMatch.Nemesis.layoutNemesisDemo(groupDisplayObject, this.backgroundWidth * 0.88, middleY, 0.3333);
 
         // setup caption
-        caption = 'Each time you miss you lose wine. Don\'t lose all your wine!';
+        caption = MemoryMatch.GameSetup.GUIStrings.demoTextNemesisGoal;
         captionText = new createjs.Text(caption, MemoryMatch.getScaledFontSize(this.captionTextFontSize) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         captionText.textAlign = "center";
-        captionText.x = this.backgroundWidth * 0.75;
+        captionText.x = this.backgroundWidth * 0.8;
         captionText.y = bottomY;
-        captionText.lineWidth = this.backgroundWidth * 0.2;
-        captionText.maxWidth = this.backgroundWidth * 0.2;
+        captionText.lineWidth = this.backgroundWidth * 0.25;
+        captionText.maxWidth = this.backgroundWidth * 0.25;
         captionText.lineHeight = captionText.getMeasuredLineHeight() * 1.5;
         groupDisplayObject.addChild(captionText);
     },
@@ -416,7 +417,7 @@ MemoryMatch.LevelIntroduction = {
         this.buildDemoBoard(groupDisplayObject, this.backgroundWidth * 0.28, this.backgroundHeight * 0.48);
 
         // setup up text caption
-        caption = 'Remember the locations of the cards.'
+        caption = MemoryMatch.GameSetup.GUIStrings.demoTextRememberLocation;
         captionText = new createjs.Text(caption, MemoryMatch.getScaledFontSize(this.captionTextFontSize) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         captionText.textAlign = "center";
         captionText.x = this.backgroundWidth * 0.25;
@@ -430,7 +431,7 @@ MemoryMatch.LevelIntroduction = {
         this.showTimerCountdown(groupDisplayObject, this.backgroundWidth * 0.5, middleY);
 
         // setup caption
-        caption = 'You have only a few seconds to study the board.'
+        caption = MemoryMatch.GameSetup.GUIStrings.demoTextOnlyAFewSeconds;
         captionText = new createjs.Text(caption, MemoryMatch.getScaledFontSize(this.captionTextFontSize) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         captionText.textAlign = "center";
         captionText.x = this.backgroundWidth * 0.5;
@@ -444,7 +445,7 @@ MemoryMatch.LevelIntroduction = {
         this.setupMatchCountTextField(groupDisplayObject, (this.backgroundWidth - (300 * MemoryMatch.stageScaleFactor)) * 0.8, middleY, 300 * MemoryMatch.stageScaleFactor, 144 * MemoryMatch.stageScaleFactor);
 
         // setup caption
-        caption = 'Locate the target card before you run out of misses.'
+        caption = MemoryMatch.GameSetup.GUIStrings.demoTextHaystackGoal;
         captionText = new createjs.Text(caption, MemoryMatch.getScaledFontSize(this.captionTextFontSize) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         captionText.textAlign = "center";
         captionText.x = this.backgroundWidth * 0.75;

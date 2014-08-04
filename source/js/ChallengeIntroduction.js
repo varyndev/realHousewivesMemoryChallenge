@@ -4,6 +4,7 @@
  * Show the Challenge Introduction popup. This popup introduces a challenge level.
  *
  */
+MemoryMatch = MemoryMatch || {};
 
 MemoryMatch.ChallengeIntroduction = {
     stateCompleteCallback: null,

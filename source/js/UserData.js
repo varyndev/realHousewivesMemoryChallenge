@@ -17,6 +17,7 @@
  *   userAchievements: an array of earned achievements
  *   userTips: an array of seen/unseen tips, each item is a flag (true=seen, false=unseen) indexed by tipId - 1 (e.g. tip # 1 is index 0)
  */
+MemoryMatch = MemoryMatch || {};
 
 MemoryMatch.UserData = {
     userDataCollection: null,

@@ -5,6 +5,7 @@
  * Allow user to pick a network to share game
  *
  */
+MemoryMatch = MemoryMatch || {};
 
 MemoryMatch.SharePopup = {
     shareNetworks: [{id: 'facebook', icon: 'facebook-icon', initialized: false}, {id: 'twitter', icon: 'twitter-icon', initialized: false}, {id: 'googleplus', icon: 'googleplus-icon', initialized: false}],

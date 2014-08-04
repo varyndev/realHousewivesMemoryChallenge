@@ -1,22 +1,22 @@
 // The GameSetup object defines all the optional parameters around an instance of the
 // Memory Match game.
 
-this.MemoryMatch = this.MemoryMatch || {};
-
-this.MemoryMatch.GameSetup = {
+MemoryMatch.GameSetup = {
     clientId: "bravotv",
     gameName: "realHousewivesMemoryChallenge",
     gameTitle: "The Real Housewives Memory Challenge",
-    gameLink: 'http://www.enginesis.com/games/realHousewivesMemoryChallenge/index.html',
     gameSubTitle: "Think you have a good memory? See if you can win the award in this memory challenge game.",
     gameId: 1084,
     siteId: 108,
+    gameLink: 'http://www.enginesis.com/games/realHousewivesMemoryChallenge/index.html',
     enginesisStage: '',
     developerKey: 'deaddaeddeaddaed',
     gameKey: 'e86cf3754cbd83700639e16eee0583c4',
     twitterId: '@bravotv',
     socialHashTag: '#rhmc',
     facebookAppId: '477181735758491',
+    googlePlusClientId: '972925239064-mgco9a8lvqu00tuf9pv3q9c385834h66.apps.googleusercontent.com',
+    googleAnalyticsAccountId: 'UA-13133265-1',
     promoImage: 'http://www.enginesis.com/games/realHousewivesMemoryChallenge/assets/1200x900.png',
     orientation: "landscape",
     assetsFolder: "assets",
@@ -31,6 +31,8 @@ this.MemoryMatch.GameSetup = {
     guiFontColorBonus: "#30BED2",
     guiInfoColor: "#FFFFFF",
     guiAlertFontColor: "#FFFFFF",
+    guiHUDMatchCountHeight: 0.6,
+    guiHUDMatchCountOffset: 0.08,
     mapLevelColor: "#FFFFFF",
     achievementBorderColor: '#58ddf5',
     achievementBackgroundColor: '#3bc7e4',
@@ -45,8 +47,6 @@ this.MemoryMatch.GameSetup = {
     numberOfStars: 3,
     unlockAllFirstLevels: true,
     levelButtonAlign: "vertical",
-    mapLogoPosition: {x: 1024, y:144},
-    mapAwardPosition: {x: 1024, y:540},
     levels: [
         {gameId: 4,
             title: "Wife Pairing",
@@ -295,6 +295,7 @@ this.MemoryMatch.GameSetup = {
             {id: 24, category: 'tip', text: 'You may not be the sharpest tool in the shed, but you\'re pretty, so don\'t give up!'},
             {id: 25, category: 'tip', text: 'You\'re living the American dream, one mistake at a time... Try again!'}
         ]],
+    mapImages: [],
     mapLevelPositions: [
         [{x:166, y:140}, {x:236, y:340}, {x:110, y:510}, {x:230, y:650}, {x:90, y:804}, {x:300, y:840}, {x:370, y:1020}],
         [{x:730, y:1280}, {x:854, y:1164}, {x:684, y:1032}, {x:572, y:836}, {x:756, y:840}, {x:892, y:964}, {x:1072, y:1048}],
@@ -302,10 +303,23 @@ this.MemoryMatch.GameSetup = {
         [{x:1746, y:498}, {x:1720, y:270}, {x:1718, y:48}, {x:1548, y:114}, {x:1498, y:304}, {x:1328, y:316}, {x:1140, y:228}]
     ],
     mapPathColor: 'rgba(102,102,102,0.5)',
+    mapLogoPosition: {x: 1024, y:144},
+    mapAwardPosition: {x: 1024, y:540},
     mapSpecialMarkers: [{x: 650, y: 1306, icon: 'planeRouteCa'}, {x: 1270, y: 1190, icon: 'planeRouteGa'}, {x: 1712, y: 662, icon: 'bridge'}],
     GUIStrings: {
         bookmarkTitle: 'Did you know?',
         bookmarkMessage: 'For a better playing experience you can bookmark this app by tapping the Share icon then select Add to Home Screen.',
-        orientationMessage: 'This game is best played in landscape orientation.'
+        orientationMessage: 'This game is best played in landscape orientation.',
+        creditsInfo: 'This game was made by JumpyDot using the EaselJS HTML5 framework.',
+        creditsCredit: 'Dan Hart:  Game Design & Product Management\n\nJohn Foster:     Programming & Audio\n\nJulia Deter-Keren: Game Design & Art Direction\n\nRobert Prescott:     Quality Assurance',
+        demoTextMatchLikeCards: 'Match like cards.',
+        demoTextClearBoard: 'Clear the board before you run out of misses.',
+        demoTextPlayQuick: 'Play quickly for extra points.',
+        demoTextStudyBoard: 'Study the board to remember where all the pairs are located.',
+        demoTextOnlyAFewSeconds: 'You have only a few seconds to study the board.',
+        demoTextFindPairs: 'Find the pairs but you have only a few misses!',
+        demoTextNemesisGoal: 'Each time you miss your Nemesis advances. Don\'t lose your cupcake!',
+        demoTextRememberLocation: 'Remember the locations of the cards.',
+        demoTextHaystackGoal: 'Locate the target card before you run out of misses.'
     }
 };

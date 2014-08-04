@@ -9,8 +9,9 @@
  *   Show different states for Challenge levels
  *   ...and act like a button!
  */
+this.MemoryMatch = this.MemoryMatch || {};
 
-MemoryMatch.LevelButton = function (parameters) {
+this.MemoryMatch.LevelButton = function (parameters) {
     var levelButton = new createjs.Container();
 
     levelButton.callback = null;
