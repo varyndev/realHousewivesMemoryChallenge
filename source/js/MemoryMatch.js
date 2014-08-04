@@ -457,6 +457,14 @@ this.MemoryMatch = {
     goToHomeScreen: function () {
         MemoryMatch.GameGUI.show(false);
         MemoryMatch.showMenuScreen();
+
+
+
+
+        MemoryMatch.showAdPopup();
+
+
+
     },
 
     processDeepLink: function () {
@@ -5670,6 +5678,16 @@ this.MemoryMatch = {
         if (secondaryAssetManifest.length > 0) {
             MemoryMatch.secondaryAssetManifest = secondaryAssetManifest;
         }
+    },
+
+    showAdPopup: function () {
+        // show the ad div and reload it
+        MemoryMatch.AdPopup.setup(MemoryMatch.stage, {title: "Advertisement", callback: MemoryMatch.onAdClosed.bind(MemoryMatch), closeButton: true});
+        MemoryMatch.AdPopup.buildScreen(true);
+    },
+
+    onAdClosed: function (event) {
+//        MemoryMatch.GameOptions.closePopupFromPopup("continue");
     }
 };
 

@@ -338,6 +338,18 @@ body {
     font-style:normal;
 }
 
+.adCentered {
+    width:300px;
+    height:250px;
+    position: fixed;
+    display: none;
+    background-color: #3cc7e8;
+    top: 50%;
+    left: 50%;
+    margin-top: -150px;
+    margin-left: -125px;
+}
+
 .debug {
     font-size: 36px;
 }

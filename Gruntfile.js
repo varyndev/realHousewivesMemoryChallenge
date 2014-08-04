@@ -42,6 +42,7 @@ module.exports = function(grunt) {
                     'source/js/MessagePopup.js',
                     'source/js/Nemesis.js',
                     'source/js/SharePopup.js',
+                    'source/js/AdPopup.js',
                     'source/js/UserData.js'
                 ],
                 dest: 'source/js/MemoryMatch.min.js'
