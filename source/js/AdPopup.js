@@ -20,6 +20,7 @@ MemoryMatch.AdPopup = {
     domElement: null,
     noscale: false,
     closeEventType: null,
+    closeTimer: null,
 
 
     setParameters: function (parameters) {
@@ -73,6 +74,8 @@ MemoryMatch.AdPopup = {
     start: function () {
         // begin animation, then wait for user event to end this state and alert callback
         this.isEnabled = true;
+        enginesisSession.gameTrackingRecord('game', 'showad', '', '', null);
+        this.startAutoCloseTimer();
     },
 
     closeStartAnimation: function () {
@@ -113,6 +116,16 @@ MemoryMatch.AdPopup = {
         }
         // begin animation, then once close is complete send notification
         this.closeStartAnimation();
+    },
+
+    startAutoCloseTimer: function () {
+        // Close in 30 seconds, unless user clicks on SKIP
+        this.closeTimer = window.setTimeout(this.onAutoCloseTimerExpired.bind(this), 30000);
+    },
+
+    onAutoCloseTimerExpired: function () {
+        this.closeTimer = null;
+        this.closePopup("close");
     },
 
     onClickClose: function (event) {
@@ -190,6 +203,10 @@ MemoryMatch.AdPopup = {
         var i,
             pageElement;
 
+        if (this.closeTimer != null) {
+            window.clearTimeout(this.closeTimer);
+            this.closeTimer = null;
+        }
         this.buttonInstances = null;
         if (this.domElement != null) {
             pageElement = document.getElementById(this.domElement);

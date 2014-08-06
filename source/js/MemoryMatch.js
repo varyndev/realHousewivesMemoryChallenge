@@ -204,6 +204,12 @@ this.MemoryMatch = {
     unlockAllLevelsCounter: 0,
     cheatChallengeNoMiss: false,
     secondaryAssetLoaderProgress: 0,
+    adModel: {
+        showAds: true,
+        showedPreroll: false,
+        interstitalCounter: 0,
+        adDisplayCounter: 0
+    },
 
 
     configureGame: function () {
@@ -448,6 +454,7 @@ this.MemoryMatch = {
         MemoryMatch.changeGameState(MemoryMatch.GAMESTATE.MENU);
         MemoryMatch.MainMenu.setup(MemoryMatch.stage, MemoryMatch.getGameData(false), MemoryMatch.mainMenuCallback);
         MemoryMatch.MainMenu.buildScreen(true);
+        MemoryMatch.determineIfItTimeToShowAdPopup();
     },
 
     mainMenuCallback: function (levelNumber) {
@@ -457,14 +464,6 @@ this.MemoryMatch = {
     goToHomeScreen: function () {
         MemoryMatch.GameGUI.show(false);
         MemoryMatch.showMenuScreen();
-
-
-
-
-        MemoryMatch.showAdPopup();
-
-
-
     },
 
     processDeepLink: function () {
@@ -2175,7 +2174,7 @@ this.MemoryMatch = {
                 isMatch = true;
                 earnedAchievement = MemoryMatch.cardsMatch(MemoryMatch.cardSelected, secondCardSelected);
                 if ( ! earnedAchievement) {
-                    MemoryMatch.triggerSoundFx("soundCorrect", {delay: 250});
+                    MemoryMatch.triggerSoundFx("soundCorrect", {delay: 100});
                 }
 
                 // unselect both and remove cards
@@ -2192,7 +2191,7 @@ this.MemoryMatch = {
             } else {
                 isMiss = true;
                 MemoryMatch.cardsDoNotMatch();
-                MemoryMatch.triggerSoundFx("soundMiss", {delay: 500});
+                MemoryMatch.triggerSoundFx("soundMiss", {delay: 100});
 
                 // unselect the first card then unflip it after a delay
                 MemoryMatch.cardSelected.unselect();
@@ -2246,12 +2245,12 @@ this.MemoryMatch = {
                 MemoryMatch.updateChainCount(true);
                 if ((MemoryMatch.matchCount >= MemoryMatch.gameMatchCount)) {
                     MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.WIN;
-                    MemoryMatch.triggerSoundFx("soundCorrect", {delay: 250});
+                    MemoryMatch.triggerSoundFx("soundCorrect", {delay: 100});
                     MemoryMatch.gameEndTime = Date.now();
                     MemoryMatch.removeAllCards(MemoryMatch.gameCompleteRemoveCardThenAdvance); // user completed the game, but wait for cards to dissolve before advancing
                     MemoryMatch.showChainsMatches();
                 } else {
-                    MemoryMatch.triggerSoundFx("soundCorrectLess", {delay: 250});
+                    MemoryMatch.triggerSoundFx("soundCorrectLess", {delay: 100});
                     MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.CHOOSE_FIRST_CARD;
                 }
             } else {
@@ -2260,7 +2259,7 @@ this.MemoryMatch = {
                 MemoryMatch.updateChainCount(false);
                 MemoryMatch.showChainsMatches();
                 MemoryMatch.cardsDoNotMatch();
-                MemoryMatch.triggerSoundFx("soundMiss", {delay: 500});
+                MemoryMatch.triggerSoundFx("soundMiss", {delay: 100});
                 // unselect both cards then unflip after a delay
                 MemoryMatch.cardSelected.unselect();
                 MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.cardSelected, 400, 0, false, null, MemoryMatch.onCardMissWaitComplete);
@@ -2290,7 +2289,7 @@ this.MemoryMatch = {
             if (MemoryMatch.matchCount >= MemoryMatch.gameMatchCount) {
                 MemoryMatch.gameEndTime = Date.now();
                 MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.WIN;
-                MemoryMatch.triggerSoundFx("soundCorrect", {delay: 250});
+                MemoryMatch.triggerSoundFx("soundCorrect", {delay: 100});
                 MemoryMatch.GameGUI.updateMatchCountDisplay(MemoryMatch.gameNumber);
                 MemoryMatch.removeAllCards(MemoryMatch.gameCompleteRemoveCardThenAdvance); // user completed the game, but wait for cards to dissolve before advancing
                 MemoryMatch.awardChallengeStreakMilestone();
@@ -2299,7 +2298,7 @@ this.MemoryMatch = {
             }
         } else {
             MemoryMatch.cardsDoNotMatch();
-            MemoryMatch.triggerSoundFx("soundMiss", {delay: 500});
+            MemoryMatch.triggerSoundFx("soundMiss", {delay: 100});
             if (MemoryMatch.moveCountDown > 0 || MemoryMatch.levelTolerance == 0) {
                 MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.CHOOSE_SECOND_CARD;
             } else {
@@ -2324,13 +2323,13 @@ this.MemoryMatch = {
         cardSelected.select();
         if (cardSelected.value == MemoryMatch.cardSelected.value) {
             MemoryMatch.cardsMatch(cardSelected, null);
-            MemoryMatch.triggerSoundFx("soundCorrect", {delay: 250});
+            MemoryMatch.triggerSoundFx("soundCorrect", {delay: 100});
             MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.CHOOSE_SECOND_CARD;
             MemoryMatch.AnimationHandler.addToAnimationQueue(cardSelected, 500, 0, false, null, MemoryMatch.onCardFlipBackWaitComplete);
             MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.cardSelected, 500, 0, false, null, MemoryMatch.onCardFlipBackWaitCompleteTargetCard);
         } else {
             MemoryMatch.cardsDoNotMatch();
-            MemoryMatch.triggerSoundFx("soundMiss", {delay: 500});
+            MemoryMatch.triggerSoundFx("soundMiss", {delay: 100});
             if (MemoryMatch.matchCount >= MemoryMatch.gameMatchCount) {
                 MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.LOSE;
             } else {
@@ -2408,7 +2407,7 @@ this.MemoryMatch = {
             MemoryMatch.cardsMatch(cardSelected, null);
             MemoryMatch.gamePlayState = priorState;
             MemoryMatch.gameEndTime = Date.now();
-            MemoryMatch.triggerSoundFx("soundCorrect", {delay: 250});
+            MemoryMatch.triggerSoundFx("soundCorrect", {delay: 100});
             globalCardPoint = MemoryMatch.boardContainer.localToGlobal(cardSelected.x, cardSelected.y);
             MemoryMatch.matchEffectsStars(globalCardPoint.x, globalCardPoint.y, 1);
             MemoryMatch.GameGUI.updateMatchCountDisplay(MemoryMatch.gameNumber);
@@ -2416,7 +2415,7 @@ this.MemoryMatch = {
             MemoryMatch.awardChallengeStreakMilestone();
         } else {
             MemoryMatch.cardsDoNotMatch();
-            MemoryMatch.triggerSoundFx("soundMiss", {delay: 500});
+            MemoryMatch.triggerSoundFx("soundMiss", {delay: 100});
             // unselect card then unflip after a delay
             cardAnimator = MemoryMatch.AnimationHandler.addToAnimationQueue(cardSelected, 400, 0, false, null, MemoryMatch.onCardMissWaitComplete);
             if ( ! (MemoryMatch.moveCountDown > 0 || MemoryMatch.levelTolerance == 0)) { // game over? show target card
@@ -2447,7 +2446,7 @@ this.MemoryMatch = {
             MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.WIN;
             MemoryMatch.gameEndTime = Date.now();
             MemoryMatch.cardSelected.flip(); // Show user the card briefly before moving on
-            MemoryMatch.triggerSoundFx("soundCorrect", {delay: 250});
+            MemoryMatch.triggerSoundFx("soundCorrect", {delay: 100});
             globalCardPoint = MemoryMatch.boardContainer.localToGlobal(cardSelected.x, cardSelected.y);
             MemoryMatch.matchEffectsStars(globalCardPoint.x, globalCardPoint.y, 1);
             MemoryMatch.GameGUI.updateMatchCountDisplay(MemoryMatch.gameNumber);
@@ -2455,7 +2454,7 @@ this.MemoryMatch = {
             MemoryMatch.awardChallengeStreakMilestone();
         } else {
             MemoryMatch.cardsDoNotMatch();
-            MemoryMatch.triggerSoundFx("soundMiss", {delay: 500});
+            MemoryMatch.triggerSoundFx("soundMiss", {delay: 100});
             // unselect card then unflip after a delay
             MemoryMatch.AnimationHandler.addToAnimationQueue(cardSelected, 400, 0, false, null, MemoryMatch.onCardMissWaitComplete);
             if (MemoryMatch.moveCountDown == 0) {
@@ -3482,6 +3481,10 @@ this.MemoryMatch = {
         MemoryMatch.gamePriorState = MemoryMatch.gameState;
         MemoryMatch.gameState = newState;
         MemoryMatch.gameStateStartTime = Date.now();
+    },
+
+    returnToPriorGameState: function () {
+        MemoryMatch.changeGameState(MemoryMatch.gamePriorState);
     },
 
     getNextGameNumber: function () {
@@ -5680,14 +5683,37 @@ this.MemoryMatch = {
         }
     },
 
-    showAdPopup: function () {
-        // show the ad div and reload it
-        MemoryMatch.AdPopup.setup(MemoryMatch.stage, {title: "Advertisement", callback: MemoryMatch.onAdClosed.bind(MemoryMatch), closeButton: true});
-        MemoryMatch.AdPopup.buildScreen(true);
+    determineIfItTimeToShowAdPopup: function (callMeWhenComplete) {
+        var showAd = false;
+
+        // Always call this function when it may be time to display an ad. This function will
+        // make the determination if an ad should be displayed or not. If so,
+        // show the ad div and reload it.
+
+        if (MemoryMatch.adModel.showAds) {
+            if (MemoryMatch.GameSetup.adShowPreroll && ! MemoryMatch.adModel.showedPreroll) {
+                MemoryMatch.adModel.showedPreroll = true;
+                showAd = true;
+            } else if (MemoryMatch.GameSetup.adInterstitalGameCounter > 0) {
+                MemoryMatch.adModel.interstitalCounter ++;
+                showAd = (MemoryMatch.adModel.interstitalCounter % MemoryMatch.GameSetup.adInterstitalGameCounter == 0);
+            }
+        }
+        if (showAd) {
+            if (callMeWhenComplete === undefined || callMeWhenComplete == null) {
+                callMeWhenComplete = MemoryMatch.onAdClosed.bind(MemoryMatch);
+            }
+            MemoryMatch.changeGameState(MemoryMatch.GAMESTATE.SHOWAD);
+            MemoryMatch.adModel.adDisplayCounter ++;
+            MemoryMatch.AdPopup.setup(MemoryMatch.stage, {title: "Advertisement", callback: callMeWhenComplete, closeButton: true});
+            MemoryMatch.AdPopup.buildScreen(true);
+        }
+        return showAd;
     },
 
     onAdClosed: function (event) {
 //        MemoryMatch.GameOptions.closePopupFromPopup("continue");
+        MemoryMatch.returnToPriorGameState();
     }
 };
 

@@ -217,7 +217,9 @@ MemoryMatch.GameResults = {
         // begin animation, then wait for user event to end this state and alert callback
         if (MemoryMatch.GameResults.isEnabled) {
             MemoryMatch.GameResults.closeEventType = "next";
-            MemoryMatch.GameResults.close();
+            if ( ! MemoryMatch.determineIfItTimeToShowAdPopup(this.onCloseAdInterstital.bind(this))) {
+                MemoryMatch.GameResults.close();
+            }
         }
     },
 
@@ -225,7 +227,9 @@ MemoryMatch.GameResults = {
         // begin animation, then wait for user event to end this state and alert callback
         if (MemoryMatch.GameResults.isEnabled) {
             MemoryMatch.GameResults.closeEventType = "replay";
-            MemoryMatch.GameResults.close();
+            if ( ! MemoryMatch.determineIfItTimeToShowAdPopup(this.onCloseAdInterstital.bind(this))) {
+                MemoryMatch.GameResults.close();
+            }
         }
     },
 
@@ -235,6 +239,10 @@ MemoryMatch.GameResults = {
             MemoryMatch.GameResults.closeEventType = "home";
             MemoryMatch.GameResults.close();
         }
+    },
+
+    onCloseAdInterstital: function (event) {
+        MemoryMatch.GameResults.close();
     },
 
     refreshCache: function () {
