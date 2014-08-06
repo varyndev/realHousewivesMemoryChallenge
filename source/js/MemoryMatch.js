@@ -11,7 +11,7 @@ var enginesisSession = enginesis || {};
 
 
 this.MemoryMatch = {
-    GameVersion: "1.0.69",
+    GameVersion: "1.0.70",
     platform: "unknown",
     locale: "en-US",
     debugMode: true,
