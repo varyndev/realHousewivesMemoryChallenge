@@ -18,6 +18,7 @@ MemoryMatch.AdPopup = {
     title: null,
     closeButton: true,
     domElement: null,
+    refreshOnDisplay: true,
     noscale: false,
     closeEventType: null,
     closeTimer: null,
@@ -74,7 +75,7 @@ MemoryMatch.AdPopup = {
     start: function () {
         // begin animation, then wait for user event to end this state and alert callback
         this.isEnabled = true;
-        enginesisSession.gameTrackingRecord('game', 'showad', '', '', null);
+        enginesisSession.gameTrackingRecord('game', 'showad', '', MemoryMatch.adModel.adDisplayCounter.toString(), null);
         this.startAutoCloseTimer();
     },
 
@@ -84,9 +85,6 @@ MemoryMatch.AdPopup = {
         if (animator != null) {
             animator.endX = this.groupDisplayObject.x - (this.backgroundWidth * 0.05);
             animator.vX = animator.endX / (duration * MemoryMatch.fps);
-        }
-        if (this.stateCompleteCallback != null) {
-            this.stateCompleteCallback(this.closeEventType);
         }
     },
 
@@ -98,15 +96,13 @@ MemoryMatch.AdPopup = {
     },
 
     closeComplete: function () {
-        this.killScreen();
-    },
-
-    closePopup: function (closeEventType) {
-        var domElement = this.groupDisplayObject.getChildByName('text'),
-            pageElement;
+        var domElement = this.groupDisplayObject.getChildByName('ad'),
+            pageElement,
+            stateCompleteCallback = this.stateCompleteCallback,
+            closeEventType = this.closeEventType;
 
         this.isEnabled = false;
-        this.closeEventType = closeEventType;
+        this.closeEventType = this.closeEventType;
         if (domElement != null) {
             domElement.visible = false;
             pageElement = document.getElementById(this.domElement);
@@ -114,6 +110,15 @@ MemoryMatch.AdPopup = {
                 pageElement.style.display = 'none';
             }
         }
+        this.killScreen();
+        if (stateCompleteCallback != null) {
+            stateCompleteCallback(closeEventType);
+        }
+    },
+
+    closePopup: function (closeEventType) {
+        this.isEnabled = false;
+        this.closeEventType = closeEventType;
         // begin animation, then once close is complete send notification
         this.closeStartAnimation();
     },
@@ -159,13 +164,28 @@ MemoryMatch.AdPopup = {
     setupDOMElement: function () {
         // Position a DOM element in the center of the popup. Expecting the element to be a div containing what we want to show.
         // Register domElement to its center
-        var pageElement = document.getElementById(this.domElement),
-            domElement = new createjs.DOMElement(pageElement);
+        var pageElement,
+            domElement,
+            iframe;
 
-        if (domElement != null) {
-            domElement.name = 'ad';
-            this.groupDisplayObject.addChild(domElement);
-            pageElement.style.display = 'block';
+        pageElement = document.getElementById(this.domElement);
+        if (pageElement != null) {
+            domElement = new createjs.DOMElement(pageElement);
+            if (domElement != null) {
+                domElement.name = 'ad';
+                this.groupDisplayObject.addChild(domElement);
+                pageElement.style.display = 'block';
+                if (this.refreshOnDisplay) {
+                    iframe = window.frames['adFramed'];
+                    if (iframe == null) {
+                        iframe = window.frames[0];
+                    }
+                    if (iframe == null) {
+                        iframe = document.getElementById('adFramed').contentWindow;
+                    }
+                    iframe.location.reload(true);
+                }
+            }
         }
     },
 
@@ -189,7 +209,7 @@ MemoryMatch.AdPopup = {
         // Close button always shows in its own special place
         gameButton = MemoryMatch.GUIButton({name: "close", tag: 1, disabled: false, callback: this.onClickClose.bind(this), baseUp: "closeButtonUp", baseOver: "closeButtonDown", baseDown: "closeButtonDown"});
         buttonSize = gameButton.getSize();
-        gameButton.setTransform(this.backgroundWidth * 0.98 - buttonSize.width, this.backgroundHeight * 0.02, buttonScale, buttonScale);
+        gameButton.setTransform(this.backgroundWidth * 0.99 - buttonSize.width, this.backgroundHeight * 0.06, buttonScale, buttonScale);
         this.groupDisplayObject.addChild(gameButton);
         this.buttonInstances = gameButton;
     },
@@ -212,6 +232,7 @@ MemoryMatch.AdPopup = {
             pageElement = document.getElementById(this.domElement);
             if (pageElement != null) {
                 pageElement.style.visibility = "hidden";
+                pageElement.style.display = "none";
             }
         }
         this.domElement = null;

@@ -11,7 +11,7 @@ var enginesisSession = enginesis || {};
 
 
 this.MemoryMatch = {
-    GameVersion: "1.0.70",
+    GameVersion: "1.0.71",
     platform: "unknown",
     locale: "en-US",
     debugMode: true,
@@ -122,6 +122,7 @@ this.MemoryMatch = {
     stageAspectRatio: 1.3333,
     fps: 60,
     gamePaused: false,
+    adIsShowing: false,
     boardContainer: null,
     playAreaWidth: 0,
     playAreaHeight: 0,
@@ -5419,9 +5420,10 @@ this.MemoryMatch = {
             isIosDevice = MemoryMatch.isDeviceiOS(),
             userDataObject = this.UserData.getUserDataObject(),
             askedUserToBookmark = userDataObject['askBookmark'] | 0,
-            shouldAsk = false;
+            shouldAsk = false,
+            isAdShowing = MemoryMatch.isAdShowing();
 
-        if (isIosDevice && ! isAppBookmarked && askedUserToBookmark < 5) {
+        if (isIosDevice && ! isAppBookmarked && askedUserToBookmark < 5 && ! isAdShowing) {
             askedUserToBookmark ++;
             userDataObject['askBookmark'] = askedUserToBookmark;
             this.UserData.flush();
@@ -5707,13 +5709,26 @@ this.MemoryMatch = {
             MemoryMatch.adModel.adDisplayCounter ++;
             MemoryMatch.AdPopup.setup(MemoryMatch.stage, {title: "Advertisement", callback: callMeWhenComplete, closeButton: true});
             MemoryMatch.AdPopup.buildScreen(true);
+            MemoryMatch.adIsShowing = true;
         }
         return showAd;
     },
 
+    isAdShowing: function () {
+        var isAdShowing;
+        isAdShowing = MemoryMatch.adIsShowing;
+        if ( ! isAdShowing) {
+            isAdShowing = MemoryMatch.AdPopup.isShowing();
+        }
+        return isAdShowing;
+    },
+
     onAdClosed: function (event) {
-//        MemoryMatch.GameOptions.closePopupFromPopup("continue");
+        MemoryMatch.adIsShowing = false;
         MemoryMatch.returnToPriorGameState();
+        if (MemoryMatch.gameState == MemoryMatch.GAMESTATE.MENU && MemoryMatch.adModel.adDisplayCounter == 1 && MemoryMatch.shouldAskUserToBookmarkApp()) {
+            MemoryMatch.MainMenu.showBookmarkAppPrompt();
+        }
     }
 };
 

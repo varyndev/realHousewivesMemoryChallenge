@@ -162,18 +162,19 @@ MemoryMatch.CreditsPopup = {
         titleTextField.lineHeight = titleTextField.getMeasuredLineHeight() * 1.5;
         this.groupDisplayObject.addChild(titleTextField);
 
-        titleTextField = new createjs.Text(text2, MemoryMatch.getScaledFontSize(48) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
+        titleTextField = new createjs.Text(text2, MemoryMatch.getScaledFontSize(44) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         titleTextField.textAlign = "center";
         titleTextField.x = this.backgroundWidth * 0.5;
         titleTextField.y = this.backgroundHeight * 0.32;
         titleTextField.lineWidth = this.backgroundWidth - (this.marginLeft * 2);
         titleTextField.maxWidth = this.backgroundWidth - (this.marginLeft * 2);
+        titleTextField.lineHeight = titleTextField.getMeasuredLineHeight();
         this.groupDisplayObject.addChild(titleTextField);
 
         // Show the JumpyDot logo
         var spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.guiSpritesheet2Frames);
         var iconSprite = new createjs.Sprite(spriteData, "JumpyDotLogo");
-        iconSprite.setTransform(this.backgroundWidth * 0.15, this.backgroundHeight * 0.70);
+        iconSprite.setTransform(this.backgroundWidth * 0.15, this.backgroundHeight * 0.74);
         iconSprite.framerate = 1;
         this.groupDisplayObject.addChild(iconSprite);
 
@@ -190,7 +191,7 @@ MemoryMatch.CreditsPopup = {
 
         infoTextField.textAlign = "center";
         infoTextField.x = this.backgroundWidth * 0.5;
-        infoTextField.y = this.backgroundHeight * 0.88;
+        infoTextField.y = this.backgroundHeight * 0.92;
         infoTextField.maxWidth = this.backgroundWidth - (this.marginLeft * 2);
         this.groupDisplayObject.addChild(infoTextField);
     },

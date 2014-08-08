@@ -32,7 +32,10 @@ MemoryMatch = MemoryMatch || {};
     p.marginX = 0;
     p.lineHeight = 0;
     p.title = null;
+    p.titleFontSize = 56;
     p.message = null;
+    p.messageFontSize = 48;
+    p.messageFont = '';
     p.icon = null;
     p.sound = null;
     p.displayDuration = 2.5;
@@ -70,10 +73,25 @@ MemoryMatch = MemoryMatch || {};
             } else if (this.title == null) {
                 this.title = "";
             }
+            if (parameters.titleFontSize != null) {
+                this.titleFontSize = parameters.titleFontSize;
+            } else if (this.titleFontSize == null) {
+                this.titleFontSize = 56;
+            }
             if (parameters.message != null) {
                 this.message = parameters.message;
             } else if (this.message == null) {
                 this.message = "";
+            }
+            if (parameters.messageFont != null) {
+                this.messageFont = parameters.messageFont;
+            } else if (this.messageFont == null) {
+                this.messageFont = MemoryMatch.GameSetup.guiMediumFontName;
+            }
+            if (parameters.messageFontSize != null) {
+                this.messageFontSize = parameters.messageFontSize;
+            } else if (this.messageFontSize == null) {
+                this.messageFontSize = 48;
             }
             if (parameters.icon != null) {
                 this.icon = parameters.icon;
@@ -171,7 +189,7 @@ MemoryMatch = MemoryMatch || {};
 
     p.setupTitleText = function () {
         var titleTextField;
-        titleTextField = new createjs.Text(this.title, MemoryMatch.getScaledFontSize(56) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColor);
+        titleTextField = new createjs.Text(this.title, MemoryMatch.getScaledFontSize(this.titleFontSize) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColor);
         titleTextField.textAlign = "center";
         titleTextField.x = this.width * 0.5;
         titleTextField.y = this.height * 0.1;
@@ -183,7 +201,7 @@ MemoryMatch = MemoryMatch || {};
 
     p.setupMessageText = function () {
         var titleTextField;
-        titleTextField = new createjs.Text(this.message, MemoryMatch.getScaledFontSize(48) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
+        titleTextField = new createjs.Text(this.message, MemoryMatch.getScaledFontSize(this.messageFontSize) + " " + this.messageFont, MemoryMatch.GameSetup.guiFontColor);
         titleTextField.textAlign = "center";
         titleTextField.x = this.width * 0.5;
         titleTextField.y = this.height * 0.34;
