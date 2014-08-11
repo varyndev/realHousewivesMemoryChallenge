@@ -22,6 +22,7 @@ MemoryMatch.AdPopup = {
     noscale: false,
     closeEventType: null,
     closeTimer: null,
+    showAdTimer: null,
 
 
     setParameters: function (parameters) {
@@ -102,7 +103,6 @@ MemoryMatch.AdPopup = {
             closeEventType = this.closeEventType;
 
         this.isEnabled = false;
-        this.closeEventType = this.closeEventType;
         if (domElement != null) {
             domElement.visible = false;
             pageElement = document.getElementById(this.domElement);
@@ -145,6 +145,16 @@ MemoryMatch.AdPopup = {
         // this just eats the click so anything under the popup is not activated
     },
 
+    onShowAdTimerExpired: function () {
+        var pageElement;
+
+        this.showAdTimer = null;
+        pageElement = document.getElementById(this.domElement);
+        if (pageElement != null) {
+            pageElement.style.display = 'block';
+        }
+    },
+
     showBackgroundImage: function () {
 
         // This method will lay down the background cover
@@ -175,7 +185,7 @@ MemoryMatch.AdPopup = {
             if (domElement != null) {
                 domElement.name = 'ad';
                 this.groupDisplayObject.addChild(domElement);
-                pageElement.style.display = 'block';
+                this.showAdTimer = window.setTimeout(this.onShowAdTimerExpired.bind(this), 1000);
                 if (this.refreshOnDisplay) {
                     iframe = window.frames['adFramed'];
                     if (iframe == null) {
@@ -193,7 +203,7 @@ MemoryMatch.AdPopup = {
     setupTitleText: function () {
         var titleTextField;
 
-        titleTextField = new createjs.Text(this.title, MemoryMatch.getScaledFontSize(36) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
+        titleTextField = new createjs.Text(this.title, MemoryMatch.getScaledFontSize(56) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         titleTextField.textAlign = "center";
         titleTextField.x = this.backgroundWidth * 0.5;
         titleTextField.y = this.backgroundHeight * 0.94;
@@ -227,6 +237,10 @@ MemoryMatch.AdPopup = {
         if (this.closeTimer != null) {
             window.clearTimeout(this.closeTimer);
             this.closeTimer = null;
+        }
+        if (this.showAdTimer != null) {
+            window.clearTimeout(this.showAdTimer);
+            this.showAdTimer = null;
         }
         this.buttonInstances = null;
         if (this.domElement != null) {
