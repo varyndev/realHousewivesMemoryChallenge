@@ -53,6 +53,7 @@ MemoryMatch.GameResults = {
     secondaryColorValue: null,
     refreshTimerId: null,
     cacheRefreshCount: 0,
+    showingTip: true,
 
 
     setup: function (displayObject, nextLevelData, stateCompleteCallbackFunction) {
@@ -114,6 +115,7 @@ MemoryMatch.GameResults = {
         if (this.groupDisplayObject !== null) {
             return;
         }
+        this.showingTip = (! MemoryMatch.isChallengeGame) || (MemoryMatch.gamePlayState != MemoryMatch.GAMEPLAYSTATE.WIN);
         // layout the screen
         this.groupDisplayObject = new createjs.Container();
         this.animationDisplayObject = new createjs.Container();
@@ -126,7 +128,6 @@ MemoryMatch.GameResults = {
         this.setupTitleText(this.groupDisplayObject);
         if (MemoryMatch.isChallengeGame) {
             this.setupAward(this.groupDisplayObject);
-
             hiFiveWord = MemoryMatch.hiFiveEarnedInCurrentGame();
             if (hiFiveWord != null && hiFiveWord.length > 0) {
                 MemoryMatch.showMessageBalloon(null, hiFiveWord + '!', 0, this.backgroundWidth * 0.5, this.backgroundHeight * 0.2);
@@ -134,12 +135,14 @@ MemoryMatch.GameResults = {
         } else {
             this.setupStars(this.groupDisplayObject);
         }
-        this.setupTipText(this.groupDisplayObject);
+        if (this.showingTip) {
+            this.setupTipText(this.groupDisplayObject);
+        }
         this.setupLevelText(this.groupDisplayObject);
         this.setupButtons(this.groupDisplayObject);
         this.groupDisplayObject.setTransform(this.parentDisplayObject.canvas.width * 0.5, this.parentDisplayObject.canvas.height * 0.5, 0, 0, 0, 0, 0, this.backgroundWidth * 0.5, this.backgroundHeight * 0.5);
         this.groupDisplayObject.cache(0, 0, this.backgroundWidth, this.backgroundHeight);
-        this.animationDisplayObject.setTransform(this.parentDisplayObject.canvas.width * 0.5, this.parentDisplayObject.canvas.height * 0.5, 0, 0, 0, 0, 0, this.backgroundWidth * 0.5, this.backgroundHeight * 0.5);
+        this.animationDisplayObject.setTransform(this.parentDisplayObject.canvas.width * 0.5, this.parentDisplayObject.canvas.height * 0.5, 1, 1, 0, 0, 0, this.backgroundWidth * 0.5, this.backgroundHeight * 0.5);
         if (autoStart === null) {
             autoStart = false;
         }
@@ -400,23 +403,32 @@ MemoryMatch.GameResults = {
             gemPosition,
             gemName,
             landNumber,
+            awardScale = 0.5,
+            yOffset,
             numberOfLevels = MemoryMatch.GameSetup.levels.length;
 
-        position = {x: this.backgroundWidth * 0.5, y: this.backgroundHeight * 0.22};
-        imageSprite.setTransform(position.x, position.y, 0.5, 0.5, 0, 0, 0, spriteSize.width * 0.5, spriteSize.height * 0.5);
+        if (this.showingTip) {
+            awardScale = 0.5;
+            yOffset = 0.22;
+        } else {
+            awardScale = 0.92;
+            yOffset = 0.3;
+        }
+        position = {x: this.backgroundWidth * 0.5, y: this.backgroundHeight * yOffset};
+        imageSprite.setTransform(position.x, position.y, awardScale, awardScale, 0, 0, 0, spriteSize.width * 0.5, spriteSize.height * 0.5);
         imageSprite.framerate = 0;
         this.groupDisplayObject.addChild(imageSprite);
 
         // position gems relative to award position, accounting for the center registration of the award sprite
         spriteFrame = 'mapAwardLand';
-        position.x -= spriteSize.width * 0.25;
-        position.y -= spriteSize.height * 0.25;
+        position.x -= spriteSize.width * 0.5 * awardScale;
+        position.y -= spriteSize.height * 0.5 * awardScale;
         for (i = 0; i < numberOfLevels; i ++) {
             landNumber = i + 1;
             gemName = spriteFrame + landNumber.toString();
             imageSprite = new createjs.Sprite(spriteData, gemName);
             gemPosition = MemoryMatch.GameSetup.levels[i].gemPosition;
-            imageSprite.setTransform(position.x + (gemPosition.x * 0.5 * MemoryMatch.stageScaleFactor), position.y + (gemPosition.y * 0.5 * MemoryMatch.stageScaleFactor), 0.5, 0.5);
+            imageSprite.setTransform(position.x + (gemPosition.x * awardScale * MemoryMatch.stageScaleFactor), position.y + (gemPosition.y * awardScale * MemoryMatch.stageScaleFactor), awardScale, awardScale);
             imageSprite.name = gemName;
             imageSprite.visible = MemoryMatch.didUserBeatChallenge(landNumber);
             this.groupDisplayObject.addChild(imageSprite);
@@ -425,7 +437,7 @@ MemoryMatch.GameResults = {
                 this.gemSprite = imageSprite.clone();
                 this.gemSprite.width = spriteSize.width;
                 this.gemSprite.height = spriteSize.height;
-                this.gemSpriteFinalPosition = {x: imageSprite.x + spriteSize.width * 0.5, y: imageSprite.y + spriteSize.height * 0.5};
+                this.gemSpriteFinalPosition = {x: imageSprite.x + spriteSize.width * 0.5 * awardScale, y: imageSprite.y + spriteSize.height * 0.5 * awardScale};
                 this.animateGemToAward();
             }
         }
@@ -965,7 +977,7 @@ MemoryMatch.GameResults = {
     },
 
     gemAnimationComplete: function (actor) {
-        var globalCardPoint = this.groupDisplayObject.localToGlobal(this.gemSprite.x, this.gemSprite.y);
+        var globalCardPoint = this.animationDisplayObject.localToGlobal(this.gemSprite.x, this.gemSprite.y);
         MemoryMatch.AnimationHandler.startSplatterStars(Math.random() * 120 + 100, globalCardPoint.x, globalCardPoint.y);
         MemoryMatch.triggerSoundFx("soundBump");
         this.animationDisplayObject.removeChild(this.gemSprite);
