@@ -1,13 +1,15 @@
 {
   "name": "realHousewivesMemoryChallenge",
-  "version": "1.0.66",
+  "version": "1.0.71",
+  "private": true,
   "description": "Match Master Grunt file setup",
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-contrib-concat": "^0.4.0",
-    "grunt-contrib-uglify": "^0.5.0",
     "grunt-contrib-imagemin": "^0.7.1",
+    "grunt-contrib-uglify": "^0.5.0",
     "grunt-contrib-watch": "^0.6.1",
+    "grunt-exec": "^0.4.6",
     "time-grunt": "^0.4.0"
   }
 }

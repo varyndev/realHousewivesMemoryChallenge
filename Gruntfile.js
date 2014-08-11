@@ -7,6 +7,7 @@
  npm install grunt-contrib-htmlmin --save-dev
  npm install grunt-contrib-concat --save-dev
  npm install time-grunt --save-dev
+ npm install grunt-exec --save-dev
 
  */
 
@@ -74,6 +75,19 @@ module.exports = function(grunt) {
         watch: {
             files: ['source/js/*.js', 'source/assets/*.png', 'source/assets/*.jpg'],
             tasks: 'default'
+        },
+
+        exec: {
+            copymin: {
+                command: 'cp distrib/js/MemoryMatch.min.js source/js/MemoryMatch.min.js && cp distrib/js/MemoryMatch.min.js ../../websites/enginesis/public/games/realHousewivesMemoryChallenge/js/MemoryMatch.min.js',
+                stdout: true,
+                stderr: true
+            },
+            copyenginesismin: {
+                command: 'cp distrib/lib/enginesis.min.js source/lib/enginesis.min.js && cp distrib/lib/enginesis.min.js ../../websites/enginesis/public/games/realHousewivesMemoryChallenge/lib/enginesis.min.js',
+                stdout: true,
+                stderr: true
+            }
         }
     });
 
@@ -82,9 +96,10 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-imagemin');
+    grunt.loadNpmTasks('grunt-exec');
 
     // Tell Grunt what to do when we type "grunt" into the terminal.
-    grunt.registerTask('default', ['concat', 'uglify', 'imagemin']);
-    grunt.registerTask('release', ['concat', 'uglify', 'imagemin']);
+    grunt.registerTask('default', ['concat', 'uglify', 'imagemin', 'exec']);
+    grunt.registerTask('release', ['concat', 'uglify', 'imagemin', 'exec']);
 
 };
