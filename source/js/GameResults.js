@@ -256,9 +256,9 @@ MemoryMatch.GameResults = {
         MemoryMatch.GameResults.close();
     },
 
-    refreshCache: function () {
+    refreshCache: function (fromWhere) {
         this.groupDisplayObject.updateCache();
-//        MemoryMatch.debugLog("Cache updated " + this.cacheRefreshCount ++);
+        MemoryMatch.debugLog("Cache updated " + (this.cacheRefreshCount ++) + " from " + fromWhere);
     },
 
     flashNextButton: function () {
@@ -370,7 +370,7 @@ MemoryMatch.GameResults = {
             }
         }
         MemoryMatch.AnimationHandler.startSplatterParticles(numberOfParticles, globalStarPoint.x + starHalfWidth, globalStarPoint.y + starHalfWidth);
-        this.refreshCache();
+        this.refreshCache('showStar');
         MemoryMatch.triggerSoundFx("soundBump");
         if (MemoryMatch.isChallengeGame) {
             this.isEnabled = true;
@@ -558,6 +558,8 @@ MemoryMatch.GameResults = {
                 this.matchBonusText.y = Y;
                 this.matchBonusText.maxWidth = fieldWidth;
                 this.matchBonusText.visible = false;
+                this.matchBonusText.height = this.matchBonusText.getMeasuredLineHeight();
+                this.matchBonusText.cache(0, 0, fieldWidth, this.matchBonusText.height);
                 animationDisplayObject.addChild(this.matchBonusText);
                 animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.matchBonusText, starAnimationDelay + (750 * fieldOffset), 0, false, null, null);
                 animator.showAtBegin = true;
@@ -565,7 +567,6 @@ MemoryMatch.GameResults = {
                 animator.vY = -1.2;
                 animator.vXscale = 0.1;
                 animator.vYscale = 0.1;
-//                animator.tickFunction = this.animateBonusTick.bind(this);
             }
             fieldOffset ++;
 
@@ -623,6 +624,8 @@ MemoryMatch.GameResults = {
                     this.comboBonusText.y = Y;
                     this.comboBonusText.maxWidth = fieldWidth;
                     this.comboBonusText.visible = false;
+                    this.comboBonusText.height = this.comboBonusText.getMeasuredLineHeight();
+                    this.comboBonusText.cache(0, 0, fieldWidth, this.comboBonusText.height);
                     animationDisplayObject.addChild(this.comboBonusText);
                     animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.comboBonusText, starAnimationDelay + (500 * fieldOffset), 0, false, null, null);
                     animator.showAtBegin = true;
@@ -630,7 +633,6 @@ MemoryMatch.GameResults = {
                     animator.vY = -1.2;
                     animator.vXscale = 0.1;
                     animator.vYscale = 0.1;
-//                    animator.tickFunction = this.animateBonusTick.bind(this);
                 }
                 fieldOffset ++;
             }
@@ -751,7 +753,7 @@ MemoryMatch.GameResults = {
 
     animateText: function (textSprite) {
         if (this.groupDisplayObject != null) {
-            this.refreshCache();
+            this.refreshCache('animateText');
             return true;
         } else {
             return false;
@@ -763,7 +765,7 @@ MemoryMatch.GameResults = {
         if (this.currentScoreTextField !== null) {
             this.currentScoreTextField.text = MemoryMatch.formatNumberWithGroups(this.playerScore);
         }
-        this.refreshCache();
+        this.refreshCache('animateTextMisses');
     },
 
     animateTextComboBonus: function (textSprite) {
@@ -771,7 +773,7 @@ MemoryMatch.GameResults = {
         if (this.currentScoreTextField !== null) {
             this.currentScoreTextField.text = MemoryMatch.formatNumberWithGroups(this.playerScore);
         }
-        this.refreshCache();
+        this.refreshCache('animateTextComboBonus');
     },
 
     animateTextTimeBonus: function (textSprite) {
@@ -796,13 +798,8 @@ MemoryMatch.GameResults = {
         this.showThirdStar(250);
         this.isEnabled = true;
         this.flashNextButton();
-        this.refreshCache();
+        this.refreshCache('animateTextTimeBonus');
     },
-
-//    animateBonusTick: function (textSprite) {
-//        this.refreshCache();
-//        return textSprite.actor.alpha > 0;
-//    },
 
     showBestScoreBurstIfBeatBestScore: function () {
         // display particle effect if player beat her best score
@@ -818,7 +815,7 @@ MemoryMatch.GameResults = {
                     MemoryMatch.AnimationHandler.startSplatterParticles(Math.random() * 100 + 30, globalTextPoint.x, globalTextPoint.y);
                 }
                 this.bestScoreTextField.font = fontSizeBoldBig;
-                this.refreshCache();
+                this.refreshCache('showBestScoreBurstIfBeatBestScore');
             }
         }
     },
@@ -927,7 +924,7 @@ MemoryMatch.GameResults = {
     },
 
     refreshInterval: function () {
-        this.refreshCache();
+        this.refreshCache('refreshInterval');
         this.startRefreshInterval();
     },
 
@@ -983,7 +980,7 @@ MemoryMatch.GameResults = {
         this.animationDisplayObject.removeChild(this.gemSprite);
         this.gemSprite = null;
         this.gemSpriteFinalPosition = null;
-        this.refreshCache();
+        this.refreshCache('gemAnimationComplete');
     },
 
     killScreen: function () {
