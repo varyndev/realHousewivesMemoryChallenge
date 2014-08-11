@@ -124,8 +124,9 @@ MemoryMatch.AdPopup = {
     },
 
     startAutoCloseTimer: function () {
-        // Close in 30 seconds, unless user clicks on SKIP
-        this.closeTimer = window.setTimeout(this.onAutoCloseTimerExpired.bind(this), 30000);
+        // Close by adMinDisplaySeconds seconds, unless user clicks on SKIP
+        var adMinDisplaySeconds = MemoryMatch.GameSetup.adMinDisplaySeconds | 15;
+        this.closeTimer = window.setTimeout(this.onAutoCloseTimerExpired.bind(this), adMinDisplaySeconds * 1000);
     },
 
     onAutoCloseTimerExpired: function () {
