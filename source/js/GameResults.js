@@ -258,7 +258,6 @@ MemoryMatch.GameResults = {
 
     refreshCache: function (fromWhere) {
         this.groupDisplayObject.updateCache();
-        MemoryMatch.debugLog("Cache updated " + (this.cacheRefreshCount ++) + " from " + fromWhere);
     },
 
     flashNextButton: function () {
