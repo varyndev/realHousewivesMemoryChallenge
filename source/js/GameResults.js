@@ -241,6 +241,14 @@ MemoryMatch.GameResults = {
         }
     },
 
+    onClickStats: function (event) {
+        // Show Awards / View Stats popup
+        if (MemoryMatch.GameResults.isEnabled) {
+            MemoryMatch.AwardsPopup.setup(MemoryMatch.stage, null);
+            MemoryMatch.AwardsPopup.buildScreen(true, true);
+        }
+    },
+
     onCloseAdInterstital: function (event) {
         MemoryMatch.GameResults.close();
     },
@@ -251,8 +259,8 @@ MemoryMatch.GameResults = {
     },
 
     flashNextButton: function () {
-        if (this.buttonInstances.length > 2) {
-            this.buttonInstances[2].setFlashing(true);
+        if (this.buttonInstances.length > 3) {
+            this.buttonInstances[3].setFlashing(true);
             this.startRefreshInterval();
         }
     },
@@ -807,7 +815,7 @@ MemoryMatch.GameResults = {
         // 2 or 3 buttons centered horizontal at bottom of popup
 
         var spriteFrame = "gameOverButtonBase",
-            numberOfButtons = MemoryMatch.gamePlayState == MemoryMatch.GAMEPLAYSTATE.WIN ? 3 : 2,
+            numberOfButtons = MemoryMatch.gamePlayState == MemoryMatch.GAMEPLAYSTATE.WIN ? 4 : 3,
             buttonScale = 1.0,
             buttonWidth = MemoryMatch.GameSetup.guiSpritesheet1Frames.frames[MemoryMatch.GameSetup.guiSpritesheet1Frames.animations[spriteFrame][0]][2] * buttonScale,
             gameButton,
@@ -819,12 +827,22 @@ MemoryMatch.GameResults = {
             buttonBaseColor = MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].liteColor,
             buttonRollOverColor = MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].secondaryColor;
 
+        // Map button
         gameButton = MemoryMatch.GUIButton({name: "home", tag: ++ buttonTagCounter, disabled: false, callback: this.onClickHome.bind(this), baseUp: "gameOverButtonBase", buttonBaseColor: buttonBaseColor, buttonBaseRollOverColor: buttonRollOverColor, iconUp: "gameOverMenuIcon", iconOver: "gameOverMenuDownIcon", iconDown: "gameOverMenuDownIcon"});
         gameButton.setTransform(xOffset, yOffset, buttonScale, buttonScale);
         gameButton.refreshParent = this;
         groupDisplayObject.addChild(gameButton);
         this.buttonInstances.push(gameButton);
 
+        // gameOverStatsIcon
+        xOffset += buttonWidth + buttonMargin;
+        gameButton = MemoryMatch.GUIButton({name: "stats", tag: ++ buttonTagCounter, disabled: false, callback: this.onClickStats.bind(this), baseUp: "gameOverButtonBase", buttonBaseColor: buttonBaseColor, buttonBaseRollOverColor: buttonRollOverColor, iconUp: "gameOverStatsIcon", iconOver: "gameOverStatsDownIcon", iconDown: "gameOverStatsDownIcon"});
+        gameButton.setTransform(xOffset, yOffset, buttonScale, buttonScale);
+        gameButton.refreshParent = this;
+        groupDisplayObject.addChild(gameButton);
+        this.buttonInstances.push(gameButton);
+
+        // Replay button
         xOffset += buttonWidth + buttonMargin;
         gameButton = MemoryMatch.GUIButton({name: "replay", tag: ++ buttonTagCounter, disabled: false, callback: this.onClickReplay.bind(this), baseUp: "gameOverButtonBase", buttonBaseColor: buttonBaseColor, buttonBaseRollOverColor: buttonRollOverColor, iconUp: "gameOverReplayIcon", iconOver: "gameOverReplayDownIcon", iconDown: "gameOverReplayDownIcon"});
         gameButton.setTransform(xOffset, yOffset, buttonScale, buttonScale);
@@ -832,6 +850,7 @@ MemoryMatch.GameResults = {
         groupDisplayObject.addChild(gameButton);
         this.buttonInstances.push(gameButton);
 
+        // Continue button
         if (MemoryMatch.gamePlayState == MemoryMatch.GAMEPLAYSTATE.WIN) {
             xOffset += buttonWidth + buttonMargin;
             gameButton = MemoryMatch.GUIButton({name: "continue", tag: ++ buttonTagCounter, disabled: false, callback: this.onClickNext.bind(this), baseUp: "gameOverButtonBase", buttonBaseColor: buttonBaseColor, buttonBaseRollOverColor: buttonRollOverColor, iconUp: "gameOverNextIcon", iconOver: "gameOverNextDownIcon", iconDown: "gameOverNextDownIcon"});

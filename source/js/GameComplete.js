@@ -75,6 +75,14 @@ MemoryMatch.GameComplete = {
         }
     },
 
+    onClickStats: function (event) {
+        // Show Awards / View Stats popup
+        if (MemoryMatch.GameComplete.isEnabled) {
+            MemoryMatch.AwardsPopup.setup(MemoryMatch.stage, null);
+            MemoryMatch.AwardsPopup.buildScreen(true, true);
+        }
+    },
+
     onClickShare: function (event) {
         var shareMessage = '';
         if (MemoryMatch.GameComplete.isEnabled) {
@@ -175,14 +183,25 @@ MemoryMatch.GameComplete = {
             buttonBaseColor = MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].liteColor,
             buttonRollOverColor = MemoryMatch.GameSetup.levels[MemoryMatch.gameLevel - 1].secondaryColor,
             buttonTagCounter = 0,
-            xOffset = (this.backgroundWidth - (buttonWidth + buttonMargin + buttonWidth)) * 0.5,
+            numberOfButtons = 3,
+            xOffset = (this.backgroundWidth - ((buttonWidth * numberOfButtons) + (buttonMargin * (numberOfButtons - 1)))) * 0.5,
             yOffset = this.backgroundHeight * 0.75;
 
+        // Map button
         gameButton = MemoryMatch.GUIButton({name: "home", tag: ++ buttonTagCounter, disabled: false, callback: this.onClickHome.bind(this), baseUp: spriteFrame, buttonBaseColor: buttonBaseColor, buttonBaseRollOverColor: buttonRollOverColor, iconUp: "gameOverMenuIcon", iconOver: "gameOverMenuDownIcon", iconDown: "gameOverMenuDownIcon"});
         gameButton.setTransform(xOffset, yOffset, buttonScale, buttonScale);
         this.groupDisplayObject.addChild(gameButton);
         this.buttonInstances.push(gameButton);
 
+        // gameOverStatsIcon
+        xOffset += buttonWidth + buttonMargin;
+        gameButton = MemoryMatch.GUIButton({name: "stats", tag: ++ buttonTagCounter, disabled: false, callback: this.onClickStats.bind(this), baseUp: "gameOverButtonBase", buttonBaseColor: buttonBaseColor, buttonBaseRollOverColor: buttonRollOverColor, iconUp: "gameOverStatsIcon", iconOver: "gameOverStatsDownIcon", iconDown: "gameOverStatsDownIcon"});
+        gameButton.setTransform(xOffset, yOffset, buttonScale, buttonScale);
+        gameButton.refreshParent = this;
+        this.groupDisplayObject.addChild(gameButton);
+        this.buttonInstances.push(gameButton);
+
+        // Share button
         xOffset += buttonWidth + buttonMargin;
         gameButton = MemoryMatch.GUIButton({name: "share", tag: ++ buttonTagCounter, disabled: false, callback: this.onClickShare.bind(this), baseUp: spriteFrame, buttonBaseColor: buttonBaseColor, buttonBaseRollOverColor: buttonRollOverColor, iconUp: "gameOverShareIcon", iconOver: "gameOverShareDownIcon", iconDown: "gameOverShareDownIcon"});
         gameButton.setTransform(xOffset, yOffset, buttonScale, buttonScale);
