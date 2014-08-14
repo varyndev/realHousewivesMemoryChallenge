@@ -54,6 +54,7 @@ MemoryMatch.GameResults = {
     refreshTimerId: null,
     cacheRefreshCount: 0,
     showingTip: true,
+    pausedWhileShowingAd: false,
 
 
     setup: function (displayObject, nextLevelData, stateCompleteCallbackFunction) {
@@ -189,6 +190,7 @@ MemoryMatch.GameResults = {
         var duration = 0.1, // seconds of animation
             animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.groupDisplayObject, 0, duration * 1000, false, null, this.closeShrink.bind(this));
 
+        MemoryMatch.debugLog("GameResults:closeStartAnimation ");
         animator.endYScale = animator.endXScale = 1.08;
         animator.vYScale = animator.vXScale = animator.endXScale / (duration * MemoryMatch.fps);
         MemoryMatch.stopInterstitialMusic();
@@ -203,6 +205,7 @@ MemoryMatch.GameResults = {
     },
 
     closeComplete: function () {
+        MemoryMatch.debugLog("GameResults:closeComplete ");
         if (this.stateCompleteCallback !== null) {
             this.stateCompleteCallback(this.closeEventType);
         }
@@ -210,6 +213,7 @@ MemoryMatch.GameResults = {
     },
 
     close: function () {
+        MemoryMatch.debugLog("GameResults:close ");
         MemoryMatch.GameResults.isEnabled = false;
         if (MemoryMatch.GameResults.isShowing()) {
             MemoryMatch.GameResults.closeStartAnimation();
@@ -253,7 +257,14 @@ MemoryMatch.GameResults = {
     },
 
     onCloseAdInterstital: function (event) {
-        MemoryMatch.GameResults.close();
+        if ( ! MemoryMatch.gamePaused) {
+            MemoryMatch.debugLog("onCloseAdInterstital and game is NOT PAUSED");
+            MemoryMatch.GameResults.close();
+            MemoryMatch.GameResults.pausedWhileShowingAd = false;
+        } else {
+            MemoryMatch.debugLog("onCloseAdInterstital but game is PAUSED");
+            MemoryMatch.GameResults.pausedWhileShowingAd = true;
+        }
     },
 
     refreshCache: function (fromWhere) {

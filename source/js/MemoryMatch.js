@@ -11,7 +11,7 @@ var enginesisSession = enginesis || {};
 
 
 this.MemoryMatch = {
-    GameVersion: "1.0.71",
+    GameVersion: "1.0.72",
     platform: "unknown",
     locale: "en-US",
     debugMode: true,
@@ -455,7 +455,7 @@ this.MemoryMatch = {
         MemoryMatch.changeGameState(MemoryMatch.GAMESTATE.MENU);
         MemoryMatch.MainMenu.setup(MemoryMatch.stage, MemoryMatch.getGameData(false), MemoryMatch.mainMenuCallback);
         MemoryMatch.MainMenu.buildScreen(true);
-        MemoryMatch.determineIfItTimeToShowAdPopup();
+        MemoryMatch.determineIfItTimeToShowAdPopup(null);
     },
 
     mainMenuCallback: function (levelNumber) {
@@ -540,6 +540,7 @@ this.MemoryMatch = {
             pauseFlag = true;
         }
         if (pauseFlag && MemoryMatch.gameInProgress) {
+            MemoryMatch.debugLog("Pausing game when in progress");
             // app went from active to inactive, show GAME PAUSED popup
             MemoryMatch.stopInterstitialMusic();
             MemoryMatch.pauseGameInProgress();
@@ -551,13 +552,20 @@ this.MemoryMatch = {
             this.stageUpdated = false;
         } else if (pauseFlag) {
             // stop music
-            MemoryMatch.stopBackgroundMusic();
+            MemoryMatch.debugLog("Pausing game NOT in progress");
+            MemoryMatch.gamePaused = true;
             MemoryMatch.stopInterstitialMusic();
+            MemoryMatch.stopBackgroundMusic();
         } else {
             // app went from inactive to active. if we are on the home screen then restart the music
+            MemoryMatch.debugLog("Resuming game");
             if (MemoryMatch.gameState == MemoryMatch.GAMESTATE.MENU) {
                 MemoryMatch.restartBackgroundMusic();
                 MemoryMatch.GameGUI.resume(null);
+            }
+            if (MemoryMatch.GameResults != null && MemoryMatch.GameResults.pausedWhileShowingAd) {
+                MemoryMatch.GameResults.pausedWhileShowingAd = false;
+                MemoryMatch.GameResults.close();
             }
         }
     },
@@ -690,6 +698,7 @@ this.MemoryMatch = {
             guiFlashThreshold = 0;
 
         // Use to setup a game, reset all timers and counters for an individual game
+        MemoryMatch.debugLog("MemoryMatch:startNextGame ");
         MemoryMatch.gameInProgress = true;
         MemoryMatch.stopBackgroundMusic();
         MemoryMatch.GameGUI.show(true);
@@ -5445,7 +5454,7 @@ this.MemoryMatch = {
 
     onVisibilityChange: function (event) {
         var isHidden = MemoryMatch.isDocumentHidden();
-//        MemoryMatch.debugLog("onVisibilityChange: hidden? " + (isHidden ? 'YES' : 'NO'));
+        MemoryMatch.debugLog("onVisibilityChange: hidden? " + (isHidden ? 'YES' : 'NO'));
         MemoryMatch.onPauseGame(isHidden);
     },
 
@@ -5724,6 +5733,7 @@ this.MemoryMatch = {
     },
 
     onAdClosed: function (event) {
+        MemoryMatch.debugLog("onAdClosed returning game state ");
         MemoryMatch.adIsShowing = false;
         MemoryMatch.returnToPriorGameState();
         if (MemoryMatch.gameState == MemoryMatch.GAMESTATE.MENU && MemoryMatch.adModel.adDisplayCounter == 1 && MemoryMatch.shouldAskUserToBookmarkApp()) {

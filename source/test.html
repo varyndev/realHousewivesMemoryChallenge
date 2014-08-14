@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <title>The Real Housewives Memory Challenge</title>
+    <link href="assets/MyFontsWebfontsKit.css" rel="stylesheet" type="text/css"/>
+    <link href="assets/memoryMatch.css" rel="stylesheet" type="text/css"/>
+    <link rel="icon" type="image/png" href="/games/realHousewivesMemoryChallenge/assets/icon.png" sizes="48x48"/>
+    <link rel="icon" type="image/png" href="/games/realHousewivesMemoryChallenge/assets/icon-196.png" sizes="196x196">
+    <link rel="icon" type="image/png" href="/games/realHousewivesMemoryChallenge/assets/icon-160.png" sizes="160x160">
+    <link rel="icon" type="image/png" href="/games/realHousewivesMemoryChallenge/assets/icon-96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/games/realHousewivesMemoryChallenge/assets/icon-16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="/games/realHousewivesMemoryChallenge/assets/icon-32.png" sizes="32x32">
+    <link rel="apple-touch-icon" href="assets/icon-72.png" sizes="72x72"/>
+    <link rel="apple-touch-icon" href="assets/icon-76.png"/>
+    <link rel="apple-touch-icon" href="assets/icon-76.png" sizes="76x76"/>
+    <link rel="apple-touch-icon" href="assets/icon-120.png" sizes="120x120"/>
+    <link rel="apple-touch-icon" href="assets/icon-152.png" sizes="152x152"/>
+    <meta property="og:title" content="The Real Housewives Memory Challenge">
+    <meta property="og:url" content="http://www.enginesis.com/games/realHousewivesMemoryChallenge/index.html">
+    <meta property="og:site_name" content="BravoTV">
+    <meta property="og:description" content="A memory match game like no other. Eight different play patterns organized into a quest for the ultimate Real Housewives award. Play through 28 levels of increasing difficulty, earn achievements and special bonus awards, build your memory all while having fun! A unique challenge in the category of puzzle games.">
+    <meta property="og:image" content="http://www.enginesis.com/games/realHousewivesMemoryChallenge/assets/1200x900.png">
+    <meta property="og:image" content="http://www.enginesis.com/games/realHousewivesMemoryChallenge/assets/gameLogo-1024.png">
+    <meta property="og:image" content="http://www.enginesis.com/games/realHousewivesMemoryChallenge/assets/1200x600.png">
+    <meta property="og:image" content="http://www.enginesis.com/games/realHousewivesMemoryChallenge/assets/600x600.png">
+    <meta property="og:image" content="http://www.enginesis.com/games/realHousewivesMemoryChallenge/assets/2048x1536.png">
+    <meta property="og:type" content="game">
+    <meta name="twitter:card" content="photo">
+    <meta name="twitter:site" content="@bravotv">
+    <meta name="twitter:creator" content="@bravotv">
+    <meta name="twitter:title" content="The Real Housewives Memory Challenge">
+    <meta name="twitter:image:src" content="http://www.enginesis.com/games/realHousewivesMemoryChallenge/assets/600x600.png">
+    <meta name="twitter:domain" content="bravotv.com">
+    <script src="lib/head.min.js"></script>
+    <script src="lib/modernizr.custom.74056.js"></script>
+    <script type="text/javascript">
+        /*
+        head.ready(function() {
+            initApp();
+        });
+        //        head.js("lib/easeljs-0.7.1.min.js", "lib/preloadjs-0.4.1.min.js", "lib/soundjs-0.5.2.min.js", "lib/jquery.min.js", "lib/screenfull.min.js", "lib/enginesis.js", "js/MemoryMatch.min.js", "js/setup.js");
+        head.js("lib/easeljs-0.7.1.min.js", "lib/preloadjs-0.4.1.min.js", "lib/soundjs-0.5.2.min.js", "lib/jquery.min.js", "lib/screenfull.min.js", "lib/ShareHelper.js", "lib/enginesis.js", "js/MemoryMatch.js", "js/setup.js", "js/Nemesis.js", "js/UserData.js", "js/GameGUI.js", "js/GUIButton.js", "js/MainMenu.js", "js/LevelIntroduction.js", "js/GameResults.js", "js/GameOptions.js", "js/AnimationHandler.js", "js/LevelButton.js", "js/ChallengeIntroduction.js", "js/MessagePopup.js", "js/InfoPopup.js", "js/CreditsPopup.js", "js/AchievementItem.js", "js/AwardsPopup.js", "js/GameComplete.js", "js/SharePopup.js", 'js/Tests.js');
+
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-13133265-1', 'auto');
+        ga('send', 'pageview');
+        */
+    </script>
+    <style type="text/css">
+        .adCentered {
+            width:300px;
+            height:250px;
+            position: fixed;
+            background-color: #00FF00;
+            top: 50%;
+            left: 50%;
+            margin-top: -150px;
+            margin-left: -125px;
+        }
+    </style>
+</head>
+<body>
+<div id="canvasArea">
+    <div id="loader">
+        <div id="loaderProgress"></div>
+        <div id="loaderBar" style="display: none;"><span id="loaderProgressFrameStroke"></span><span id="loaderProgressFrameTop"></span><span id="loaderProgressFrameMiddle"></span><span id="loaderProgressFrameBottom"></span><span id="loaderProgressStroke"></span><span id="loaderProgressTop"></span><span id="loaderProgressMiddle"></span><span id="loaderProgressBottom"></span></div>
+    </div>
+    <div id="sharearea">
+        <span id="googleSharePost"></span>
+    </div>
+    <div id="helpArea">
+        <div id="close-button" onclick="document.getElementById('helpArea').style.display='none';"></div>
+        <div id="helpContent">
+            <div id="help_contents">
+                <a id="ref_top"><h1>About The Real Housewives Memory Challenge</h1></a>
+                <p>This is a concentration game for all ages. We packed up 28 levels of card-flipping memory challenges for a fun brain workout.
+                <ul>
+                    <li>28 levels, 8 unique game patterns;</li>
+                    <li>4 challenge games;</li>
+                    <li>25 achievements;</li>
+                    <li>Multiple card sets;</li>
+                    <li>Earn the Real Housewives Memory Challenge trophy!</li>
+                    <li>Challenge your friends;</li>
+                    <li>Play anytime, anywhere;</li>
+                </ul>
+                </p>
+            </div>
+            <a id="ref_rules"><h3>Rules of the Game</h3></a>
+
+            <p>Match like cards to make pairs. But The Real Housewives Memory Challenge has some twists!</p>
+            <p>Earn at least 1 star on each level to advance. Earn 3 stars to maximize your score and your bragging rights! Unlock all levels in each land to unlock the challenge game.</p>
+
+            <h4>Wife Pairing (O.C. and Beverly Hills Casts)</h4>
+            <p>A standard concentration game - with some twists!</p>
+            <p>Match all of the cards within the allowed number of misses.</p>
+            <p>Scoring: 100 points per match.  Extra points for speed and combos (consecutive matches.)</p>
+
+            <h4>A Housewife Never Forgets (Atlanta Casts)</h4>
+            <p>Chain together all the matches in as few moves as you can.</p>
+            <p>Scoring: 100 points per match. 500 points to complete the board.</p>
+
+            <h4>Housewives in a Haystack (New Jersey Casts)</h4>
+            <p>Take five seconds to study the cards up-front.</p>
+            <p>Remember the position of all the cards on the board. We then show you one card at a time, you must recall where that card is on the board.</p>
+            <p>Scoring: 100 points per match. 500 points to complete the board.</p>
+
+            <h4>A Race Against Wine (New York Casts)</h4>
+            <p>Match like cards to make pairs.</p>
+            <p>On every miss you lose some wine – keep as much as you can!</p>
+            <p>Scoring: 100 points per match. 500 points to complete the board.</p>
+
+            <h4>Challenge Games</h4>
+            <p>Each level has a final challenge game. If you pass the challenge you win one jewel of the final award. Win all 4 jewels to complete the award and you win the game!
+                Each challenge game tests your memory until you miss. You must pass at least 5 boards in order to beat the challenge, but don\'t stop there.
+                Keep playing as far as you can to maximize your points.</p>
+
+            <h4>Pattern</h4>
+            <p>Repeat the pattern shown. Keep going until you miss. A minimum of 5 complete boards to complete the challenge.</p>
+            <p>Scoring: 100 points per correct card, 500 points to complete each board, and an additional 500 points every 5 complete boards.</p>
+
+            <h4>Follow the Card</h4>
+            <p>Keep your eye on the center card. When the movement stops, you must select only that card. Keep going until you miss. A minimum of 5 complete boards to complete the challenge.</p>
+            <p>Scoring: 500 points per correct card, and an additional 500 points every 5 complete boards.</p>
+
+            <h4>Repeat After Me</h4>
+            <p>Another repeat the pattern type of game. In this case we will play a sequence. The sequence begins at one and each round we will add one more to the sequence.
+                After the sequence has played you must repeat the sequence in teh exact same order. Just repeat after me!</p>
+            <p>Scoring: 500 points per correct card, and an additional 500 points every 5 complete repeated patterns.</p>
+
+            <h4>Parts vs. Whole</h4>
+            <p>The target card (first shown) contains several objects. Try to remember everything in this card.
+                Then we show you some cards, you must select the only card that contains an element that was in the target card.
+                You must complete a minimum of 5 boards to complete the challenge.</p>
+            <p>Scoring: 500 points per correct card, and an additional 500 points every 5 complete boards.</p>
+
+            <h4>Winning The Trophy</h4>
+            <p>You must complete all levels and beat all challenge games to be crowned a The Real Housewives Memory Challenge award winner.</p>
+
+            <a id="ref_achievements"><h3>Achievements</h3></a>
+            <p>Earn achievements to boost your score and your satisfaction.</p>
+
+            <a id="ref_techniques"><h3>Game Tips and Memory Techniques</h3></a>
+            <p>There are some important tips and memory techniques to make you a better player.</p>
+            <p>Become familiar with the objects and faces in the cards.</p>
+            <p>Give each image a meaningful nickname and repeat to yourself when you reveal the card.</p>
+            <p>Play the boards in methodical patterns that will help you remember image locations.</p>
+            <p>Imagine sounds, smells, and emotions to associate with each card – this will help with recall.</p>
+            <p>Take your time – the game is about limiting misses.</p>
+            <p>There are techniques – search the Internet for the <q>Method of loci</q> or <q>Memory Palace.</q>
+                These methods were practiced by the ancient Greeks and Romans at a time when memory was an
+                important outward signal of intelligence and learning.  In modern times, memory contest
+                winners employ a variety of techniques to enhance recall including the <q>memory palace</q>.
+                These techniques involve visualization and creating multiple associations with objects
+                which use a variety of regions of the brain including those that have to do with spatial learning.</p>
+            <p> </p>
+            <p>** - <a href="#ref_top">Back to top</a> - **</p>
+            <p>&nbsp;</p>
+        </div>
+    </div>
+    <div id="emailshare">
+        <div id="emailform">
+            <table id="emailtable">
+                <tr><td class="emailtablelabel">Your Name:</td><td><input type="text" class="emailtablefield" id="fromname" name="fromname" size="20" maxlength="80"/></td></tr>
+                <tr><td class="emailtablelabel">Your Email:</td><td><input type="email" class="emailtablefield" id="fromemail" name="fromemail" size="20" maxlength="80"/></td></tr>
+                <tr><td class="emailtablelabel">Recipient:</td><td><input type="email" class="emailtablefield" id="toemail" name="toemail" size="20" maxlength="80"/></td></tr>
+                <tr><td class="emailtablelabel">Message:</td><td><textarea class="emailtablefield" id="message" name="message" rows="2" cols="22"></textarea></td></tr>
+                <tr><td colspan="2"><input type="button" class="emailtablebutton" name="send" id="send" value="Send"/></td></tr>
+                <tr><td colspan="2"><span id="errorMessage" class="errorMessage">&nbsp;</span></td></tr>
+            </table>
+        </div>
+    </div>
+    <div id="fb-root"></div>
+    <canvas id="memoryMatch">In order to enjoy this content you must upgrade your browser to an HTML5 compatible version.</canvas>
+</div>
+<div id="adPlacement" class="adCentered">
+    <script type="text/javascript">
+        var randDARTNumber = Math.ceil(1 + 1E12 * Math.random());
+        document.write('<sc'+'ript language=\'JavaScript1.1\' src="http://iv.doubleclick.net/N2620/adj/nbcu.bravo/realhousewives_memorygame;site=bravo;sect=realhousewives;sub=memorygame;sub2=;pageid=;season=1;daypart=primetime;genre=reality;!category=bravo;!category=realhousewives;!category=memorygame;dcopt=ist;pos=2;tile=2;sz=300x250;ord=' + randDARTNumber + '?"></s'+'cript>');
+    </script>
+</div>
+<script type="text/javascript">
+    (function () {
+        // Size the canvas container area until we are able to figure out the real size we want.
+        // This is a temp fix to get the background image to size before the game loads.
+        var supportedResolution = {width: 1024, height: 768},
+                currentWidth = window.innerWidth,
+                currentHeight = window.innerHeight,
+                windowAspectRatio = currentWidth / currentHeight,
+                desiredAspectRatio,
+                containerDiv = document.getElementById('canvasArea');
+
+        desiredAspectRatio = supportedResolution.width / supportedResolution.height;
+        if (windowAspectRatio > desiredAspectRatio) {
+            currentWidth = Math.floor(currentHeight * desiredAspectRatio);
+        } else {
+            currentHeight = Math.floor(currentWidth / desiredAspectRatio);
+        }
+        containerDiv.style.width = currentWidth + 'px';
+        containerDiv.style.height = currentHeight + 'px';
+        containerDiv.style.marginTop = (currentHeight * -0.5) + 'px';
+        containerDiv.style.marginLeft = (currentWidth * -0.5) + 'px';
+    })();
+
+    function loadAd() {
+        var randDARTNumber = Math.ceil(1 + 1E12 * Math.random()),
+            adSrc = "http://iv.doubleclick.net/N2620/adj/nbcu.bravo/realhousewives_memorygame;site=bravo;sect=realhousewives;sub=memorygame;sub2=;pageid=;season=1;daypart=primetime;genre=reality;!category=bravo;!category=realhousewives;!category=memorygame;dcopt=ist;pos=2;tile=2;sz=300x250;ord=" + randDARTNumber + "?",
+            adPlacementElement = document.getElementById('adPlacement'),
+            newAdScript = document.createElement("script");
+        while (adPlacementElement.firstChild) {
+            adPlacementElement.removeChild(adPlacementElement.firstChild);
+        }
+        newAdScript.type = "text/javascript";
+        newAdScript.src = adSrc;
+        adPlacementElement.appendChild(newAdScript);
+    }
+
+//    loadAd();
+</script>
+</body>
+</html>
