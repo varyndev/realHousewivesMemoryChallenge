@@ -101,6 +101,7 @@ MemoryMatch.AnimationHandler = {
         animationObject.removeFromStage = removeFromStage;
         animationObject.startFunction = startFunction;
         animationObject.endFunction = endFunction;
+        animationObject.tag = 0;
         this.activeCardQueue.push(animationObject);
         return animationObject;
     },
@@ -109,6 +110,7 @@ MemoryMatch.AnimationHandler = {
         // Each object on the queue is expected to be a DisplayObject, Sprite, or Container.
         // Animations Parameters:
         //  .actor        : the display object that is the target of the animation
+        //  .tag          : unique identifier so we can find and manipulate this item later
         //  .addTime      : time stamp this animation was added to the queue
         //  .startTime    : time stamp this animation will begin its animation
         //  .removeFromStage : true object will be removed at endTime, false it will remain in display list
@@ -578,6 +580,60 @@ MemoryMatch.AnimationHandler = {
             // add to the display list:
             this.stage.addChild(particle);
             this.allParticles.push(particle);
+        }
+    },
+
+    removeActor: function (actor) {
+
+        // Find any animations for this actor and remove them from the queue.
+
+        var objectsToRemove = 0,
+            animatingObject = null,
+            i;
+
+        for (i = 0; i < this.activeCardQueue.length; i ++) {
+            animatingObject = this.activeCardQueue[i];
+//            MemoryMatch.debugLog("Removing Actor " + i + "; " + animatingObject.actor.name);
+            if (animatingObject.actor == actor) {
+                animatingObject.markedForRemoval = true;
+                objectsToRemove ++;
+            }
+        }
+        if (objectsToRemove > 0) {
+            // go through list backwards and remove objects from activeCardQueue
+            for (i = this.activeCardQueue.length - 1; i >= 0; i --) {
+                animatingObject = this.activeCardQueue[i];
+                if (animatingObject.markedForRemoval) {
+                    this.activeCardQueue.splice(i, 1);
+                }
+            }
+        }
+    },
+
+    removeWithTag: function (tag) {
+
+        // Find any animations for this tag and remove them from the queue.
+
+        var objectsToRemove = 0,
+            animatingObject = null,
+            i;
+
+        for (i = 0; i < this.activeCardQueue.length; i ++) {
+            animatingObject = this.activeCardQueue[i];
+//            MemoryMatch.debugLog("Removing Actor " + i + "; " + animatingObject.actor.name);
+            if (animatingObject.tag == tag) {
+                animatingObject.markedForRemoval = true;
+                objectsToRemove ++;
+            }
+        }
+        if (objectsToRemove > 0) {
+            // go through list backwards and remove objects from activeCardQueue
+            for (i = this.activeCardQueue.length - 1; i >= 0; i --) {
+                animatingObject = this.activeCardQueue[i];
+                if (animatingObject.markedForRemoval) {
+                    this.activeCardQueue.splice(i, 1);
+                }
+            }
         }
     },
 

@@ -411,6 +411,10 @@ MemoryMatch.GameGUI = {
 
     hideTimerCountdown: function () {
         if (this.timerCountdownGroup != null) {
+            if (this.timerCountdownTimer != null) {
+                window.clearTimeout(this.timerCountdownTimer);
+                this.timerCountdownTimer = null;
+            }
             this.timerCountdownGroup.visible = false;
             this.timerCountdownStarted = false;
             this.lastUpdateTime = 0;
@@ -430,7 +434,7 @@ MemoryMatch.GameGUI = {
         var timerTextFieldAnimate,
             animator;
 
-        if (this.timerCountdownGroup != null && this.timerCountdownGroup.visible) {
+        if (this.timerCountdownGroup != null && this.timerCountdownGroup.visible && ! MemoryMatch.isGamePaused()) {
             timerTextFieldAnimate = this.timerCountdownGroup.getChildByName('timerAnimate');
             if (timerTextFieldAnimate != null) {
                 animator = MemoryMatch.AnimationHandler.addToAnimationQueue(timerTextFieldAnimate, 0, 900, false, null, null);
@@ -453,26 +457,26 @@ MemoryMatch.GameGUI = {
             timeValue,
             lastUpdate;
 
-        if (this.timerCountdownGroup != null) {
+        if (this.timerCountdownGroup != null && this.timerCountdownStarted && ! MemoryMatch.isGamePaused()) {
             updateTimeDelta = Date.now() - this.lastUpdateTime;
+            timerTextField = this.timerCountdownGroup.getChildByName('timer');
             timerTextFieldAnimate = this.timerCountdownGroup.getChildByName('timerAnimate');
-            if (timerTextFieldAnimate != null) {
-                timerTextFieldAnimate.alpha = 1.0;
-                timerTextFieldAnimate.scaleX = 1.0;
-                timerTextFieldAnimate.scaleY = 1.0;
-                timeValue = parseInt(timerTextFieldAnimate.text);
+            if (timerTextField != null) {
+                timeValue = parseInt(timerTextField.text);
                 if (timeValue > 0) {
                     timeValue --;
                     lastUpdate = false;
                 } else {
                     lastUpdate = true;
                 }
-                timerTextFieldAnimate.text = timeValue.toString();
-                timerTextField = this.timerCountdownGroup.getChildByName('timer');
-                if (timerTextField != null) {
-                    timerTextField.text = timeValue.toString();
+                timerTextField.text = timeValue.toString();
+                if (timerTextFieldAnimate != null) {
+                    timerTextFieldAnimate.alpha = 1.0;
+                    timerTextFieldAnimate.scaleX = 1.0;
+                    timerTextFieldAnimate.scaleY = 1.0;
+                    timerTextFieldAnimate.text = timeValue.toString();
                 }
-                if (timeValue >= 0 && ! lastUpdate) {
+                if (timeValue >= 0 && ! lastUpdate) { // schedule another update
                     this.updateTimerCountdown();
                 } else {
                     this.timerCountdownStarted = false;
@@ -693,7 +697,7 @@ MemoryMatch.GameGUI = {
             case "close":    // unpause the game
             default:
                 if (MemoryMatch.gameState != MemoryMatch.GAMESTATE.MENU) {
-                    MemoryMatch.resumePausedGame();
+                    MemoryMatch.resumePausedGame(null);
                 }
                 break;
         }

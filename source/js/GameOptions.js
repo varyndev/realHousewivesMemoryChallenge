@@ -107,6 +107,7 @@ MemoryMatch.GameOptions = {
 
     startAnimationComplete: function (sprite) {
         this.isEnabled = true;
+        MemoryMatch.pauseGamePendingComplete();
     },
 
     closeStartAnimation: function () {
@@ -135,6 +136,7 @@ MemoryMatch.GameOptions = {
     closePopup: function (closeEventType) {
         if (this.isShowing()) {
             this.isEnabled = false;
+            MemoryMatch.gamePausePending = true;
             this.closeEventType = closeEventType;
             // begin animation, then once close is complete send notification
             this.closeStartAnimation();

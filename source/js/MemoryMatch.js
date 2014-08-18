@@ -60,6 +60,7 @@ this.MemoryMatch = {
         DOWN:                0,
         UP:                  1,
         REMOVED:             2,
+        FLIPPING:            5,
         NOTREADY:            9
     },
 
@@ -122,7 +123,8 @@ this.MemoryMatch = {
     cardScaleFactor: 1,
     stageAspectRatio: 1.3333,
     fps: 60,
-    gamePaused: false,
+    gamePaused: false,       // game is paused
+    gamePausePending: false, // game is in process to pause or unpause but need to complete animations
     adIsShowing: false,
     boardContainer: null,
     playAreaWidth: 0,
@@ -434,7 +436,7 @@ this.MemoryMatch = {
     },
 
     triggerSoundFx: function (tag, params) {
-        if ( ! MemoryMatch.gamePaused) {
+        if ( ! MemoryMatch.isGamePaused()) {
 //            MemoryMatch.debugLog("triggerSoundFx: " + tag);
             createjs.Sound.play(tag, params);
         }
@@ -522,6 +524,7 @@ this.MemoryMatch = {
         MemoryMatch.gamePauseTime = 0;
         MemoryMatch.nextTimerUpdateTime = 0;
         MemoryMatch.gamePaused = false;
+        MemoryMatch.gamePausePending = false;
         MemoryMatch.quitPending = true;
         MemoryMatch.gameInProgress = false;
         MemoryMatch.GameGUI.setMessage('');
@@ -553,14 +556,16 @@ this.MemoryMatch = {
                 MemoryMatch.GameOptions.setup(MemoryMatch.stage, MemoryMatch.GameGUI.onOptionsClosed, true);
                 MemoryMatch.GameOptions.buildScreen(true, false);
             }
-            this.stage.update(event); // render these updates now as the render loop will be paused
-            this.stageUpdated = false;
+            MemoryMatch.stage.update(event); // render these updates now as the render loop will be paused
+            MemoryMatch.stageUpdated = false;
+            MemoryMatch.gamePaused = true;
         } else if (pauseFlag) {
             // stop music
 //            MemoryMatch.debugLog("Pausing game NOT in progress");
             MemoryMatch.gamePaused = true;
             MemoryMatch.stopInterstitialMusic();
             MemoryMatch.stopBackgroundMusic();
+            MemoryMatch.AnimationHandler.removeWithTag(990); // kill any board wait timers
         } else {
             // app went from inactive to active. if we are on the home screen then restart the music
 //            MemoryMatch.debugLog("Resuming game");
@@ -589,6 +594,7 @@ this.MemoryMatch = {
                 }
             }
         }
+        MemoryMatch.gamePausePending = false;
     },
 
     unPauseGame: function () {
@@ -597,14 +603,20 @@ this.MemoryMatch = {
 
     pauseGameInProgress: function () {
         if ( ! MemoryMatch.gamePaused && MemoryMatch.gameInProgress) {
-            MemoryMatch.gamePaused = true;
+            MemoryMatch.gamePausePending = true;
             if (MemoryMatch.gamePauseTime == 0) {
                 MemoryMatch.gamePauseTime = Date.now();
             }
+            MemoryMatch.AnimationHandler.removeWithTag(990); // kill any board wait timers
             MemoryMatch.saveGame();
             MemoryMatch.turnBackAllCards();
             MemoryMatch.GameGUI.pause(null);
         }
+    },
+
+    pauseGamePendingComplete: function () {
+        MemoryMatch.gamePausePending = false;
+        MemoryMatch.gamePaused = true;
     },
 
     resumePausedGame: function (event) {
@@ -615,6 +627,7 @@ this.MemoryMatch = {
         MemoryMatch.gamePauseTime = 0;
         MemoryMatch.nextTimerUpdateTime = 0;
         MemoryMatch.gamePaused = false;
+        MemoryMatch.gamePausePending = false;
         createjs.Touch.enable(MemoryMatch.stage, true, false);
         if (MemoryMatch.gameStartTime > 0) {
             MemoryMatch.gameStartTime += pauseTime; // update the game timer
@@ -628,12 +641,16 @@ this.MemoryMatch = {
             } else {
                 MemoryMatch.restartCurrentChallengeGame(); // restart the current game keeping current streak in tact
             }
-        } else if (MemoryMatch.gamePlayState == MemoryMatch.GAMEPLAYSTATE.BOARD_SETUP) {
+        } else if (MemoryMatch.gamePlayState <= MemoryMatch.GAMEPLAYSTATE.PLAY_WAIT) {
             MemoryMatch.replayCurrentGame();
         } else {
             MemoryMatch.restoreGame();
             MemoryMatch.restoreAllCards();
         }
+    },
+
+    isGamePaused: function () {
+        return MemoryMatch.gamePausePending || MemoryMatch.gamePaused;
     },
 
     startGameWithNumber: function (gameNumber) {
@@ -786,9 +803,11 @@ this.MemoryMatch = {
         MemoryMatch.numberOfCardsShowing = 0;
         MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.BOARD_SETUP;
         MemoryMatch.GameGUI.updateLevelDisplay(MemoryMatch.gameLevel, MemoryMatch.gameNumber);
-        MemoryMatch.GameGUI.setFlashCountThreshold(guiFlashThreshold);
-        MemoryMatch.updateMatchCountDisplay();
-        MemoryMatch.buildBoard();
+        if ( ! MemoryMatch.gamePaused) {
+            MemoryMatch.GameGUI.setFlashCountThreshold(guiFlashThreshold);
+            MemoryMatch.updateMatchCountDisplay();
+            MemoryMatch.buildBoard();
+        }
     },
 
     loadCardSetForCurrentLevel: function () {
@@ -970,12 +989,14 @@ this.MemoryMatch = {
         MemoryMatch.triggerSoundFx("soundMiss", {delay: 100});
         MemoryMatch.gameEndTime = Date.now();
         MemoryMatch.gamePaused = false;
+        MemoryMatch.gamePausePending = false;
         MemoryMatch.gameInProgress = false;
         MemoryMatch.removeAllCards(MemoryMatch.restartGameRemoveCardThenRestart); // calls replayLastGame after cards are removed
     },
 
     restartCurrentChallengeGame: function () {
         MemoryMatch.gamePaused = false;
+        MemoryMatch.gamePausePending = true;
         MemoryMatch.gameInProgress = false;
         MemoryMatch.removeAllCards(MemoryMatch.restartChallengeGameRemoveCardThenReplay); // calls replayCurrentChallengeGame after cards are removed
     },
@@ -2066,9 +2087,10 @@ this.MemoryMatch = {
         // check all cards for the level are visible
         var numberOfCardsInLevel,
             showCardCountdownTimer = false,
-            timerShowTime;
+            timerShowTime,
+            animator;
 
-        if (MemoryMatch.gamePaused) {
+        if (MemoryMatch.isGamePaused()) {
             MemoryMatch.debugLog("checkBoardIsReadyForPlay but game is PAUSED gameState=" + MemoryMatch.gameState + " and playState=" + MemoryMatch.gamePlayState);
             return;
         }
@@ -2088,7 +2110,8 @@ this.MemoryMatch = {
                         // we now want to briefly show all cards
                         MemoryMatch.showAllCards(true);
                         showCardCountdownTimer = true;
-                        MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.allCardsOnBoard[0], MemoryMatch.cardShowTime, 0, false, null, MemoryMatch.onShowAllCardsWaitComplete);
+                        animator = MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.allCardsOnBoard[0], MemoryMatch.cardShowTime, 0, false, null, MemoryMatch.onShowAllCardsWaitComplete);
+                        animator.tag = 990;
                         break;
                     case MemoryMatch.GAMEPLAYTYPE.PATTERN:
                         // we now want to briefly show the cards in the pattern
@@ -2097,30 +2120,35 @@ this.MemoryMatch = {
                         MemoryMatch.gameEndTime = 0;
                         MemoryMatch.showAllPatternCards(true);
                         showCardCountdownTimer = true;
-                        MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.allCardsOnBoard[0], MemoryMatch.cardShowTime, 0, false, null, MemoryMatch.onShowCardsWaitComplete);
+                        animator = MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.allCardsOnBoard[0], MemoryMatch.cardShowTime, 0, false, null, MemoryMatch.onShowCardsWaitComplete);
+                        animator.tag = 990;
                         break;
                     case MemoryMatch.GAMEPLAYTYPE.HAYSTACK:
                         // we now want to briefly show all cards
                         MemoryMatch.showAllCards(true);
                         showCardCountdownTimer = true;
-                        MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.allCardsOnBoard[0], MemoryMatch.cardShowTime, 0, false, null, MemoryMatch.onShowAllCardsWaitComplete);
+                        animator = MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.allCardsOnBoard[0], MemoryMatch.cardShowTime, 0, false, null, MemoryMatch.onShowAllCardsWaitComplete);
+                        animator.tag = 990;
                         break;
                     case MemoryMatch.GAMEPLAYTYPE.SIMON:
                         // we now want to show all cards
                         MemoryMatch.showAllCards(true);
-                        MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.allCardsOnBoard[0], 2000, 0, false, null, MemoryMatch.onShowAllCardsWaitComplete);
+                        animator = MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.allCardsOnBoard[0], 2000, 0, false, null, MemoryMatch.onShowAllCardsWaitComplete);
+                        animator.tag = 990;
                         break;
                     case MemoryMatch.GAMEPLAYTYPE.MONTE:
                         // we now want to briefly show all cards
                         MemoryMatch.showAllCards(true);
                         showCardCountdownTimer = true;
-                        MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.allCardsOnBoard[0], MemoryMatch.cardShowTime + 1000, 0, false, null, MemoryMatch.onShowAllCardsMonteWaitComplete);
+                        animator = MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.allCardsOnBoard[0], MemoryMatch.cardShowTime + 1000, 0, false, null, MemoryMatch.onShowAllCardsMonteWaitComplete);
+                        animator.tag = 990;
                         break;
                     case MemoryMatch.GAMEPLAYTYPE.EYESPY:
                         // show the target card
                         MemoryMatch.cardSelected.flip();
                         showCardCountdownTimer = true;
-                        MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.cardSelected, MemoryMatch.cardShowTime, 0, false, null, MemoryMatch.onShowTargetCardWaitComplete);
+                        animator = MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.cardSelected, MemoryMatch.cardShowTime, 0, false, null, MemoryMatch.onShowTargetCardWaitComplete);
+                        animator.tag = 990;
                         MemoryMatch.gameStartTime = Date.now();
                         MemoryMatch.nextTimerUpdateTime = 0;
                         MemoryMatch.gameEndTime = 0;
@@ -2903,8 +2931,16 @@ this.MemoryMatch = {
             for (i = 0; i < MemoryMatch.allCardsOnBoard.length; i ++) {
                 card = MemoryMatch.allCardsOnBoard[i];
                 if (card.state == MemoryMatch.CARDSTATE.UP) {
-                    card.restoreFlag = true;
+                    if (MemoryMatch.gameType != MemoryMatch.GAMEPLAYTYPE.HAYSTACK) {
+                        card.restoreFlag = true;
+                    }
                     card.flipBack();
+                } else if (card.state == MemoryMatch.CARDSTATE.FLIPPING) {
+                    card.restoreFlag = false;
+                    card.forceDown();
+                    MemoryMatch.AnimationHandler.removeActor(card);
+                } else {
+                    card.restoreFlag = false;
                 }
             }
         }
@@ -2921,6 +2957,8 @@ this.MemoryMatch = {
                 if (card.state == MemoryMatch.CARDSTATE.DOWN && card.restoreFlag) {
                     card.restoreFlag = false;
                     card.flip();
+                } else if (card.state == MemoryMatch.CARDSTATE.FLIPPING) {
+                    card.forceDown();
                 }
             }
         }
@@ -4424,11 +4462,13 @@ this.MemoryMatch = {
 
     onEnterFrame: function (event) {
         var deltaTime = createjs.Ticker.getInterval();
-        this.AnimationHandler.onEnterFrame(event, deltaTime);
-        if ( ! this.gamePaused) {
+        if ( ! this.gamePaused) { // do not do these things if the game is paused
             this.updateGameTimers();
+            this.processAchievementQueue();
         }
-        this.processAchievementQueue();
+        if ( ! this.gamePaused || this.gamePausePending) {
+            this.AnimationHandler.onEnterFrame(event, deltaTime); // only process the animations if the game is not paused
+        }
         this.stage.update(event); // TODO: to improve performance, try not to call stage.update()
         this.stageUpdated = false;
     },
@@ -5105,8 +5145,12 @@ this.MemoryMatch = {
         }
 
         card.flip = function () {
+            if (MemoryMatch.gamePaused) {
+                return;
+            }
             // begin card flip animation
             this.isEnabled = false;
+            this.state = MemoryMatch.CARDSTATE.FLIPPING;
             var cardAnimator = MemoryMatch.AnimationHandler.addToAnimationQueue(this, 0, 0, false, null, this.flipAnimationPhaseTwo);
             if (cardAnimator != null) {
                 cardAnimator.vYSkew = MemoryMatch.cardFlipSpeed;
@@ -5137,10 +5181,14 @@ this.MemoryMatch = {
             if (card.matchCounter > 0) {
                 card.showMatchCounter(false);
             }
-            cardAnimator = MemoryMatch.AnimationHandler.addToAnimationQueue(card, 0, 0, false, null, card.flipAnimationComplete);
-            if (cardAnimator != null) {
-                cardAnimator.vYSkew = -1.0 * MemoryMatch.cardFlipSpeed;
-                cardAnimator.endYSkew = 0;
+            if (MemoryMatch.gamePaused) {
+                card.flipAnimationComplete(card);
+            } else {
+                cardAnimator = MemoryMatch.AnimationHandler.addToAnimationQueue(card, 0, 0, false, null, card.flipAnimationComplete);
+                if (cardAnimator != null) {
+                    cardAnimator.vYSkew = -1.0 * MemoryMatch.cardFlipSpeed;
+                    cardAnimator.endYSkew = 0;
+                }
             }
             card.updateCache();
         }
@@ -5155,10 +5203,14 @@ this.MemoryMatch = {
             if (card.matchCounter > 0) {
                 card.showMatchCounter(true);
             }
-            cardAnimator = MemoryMatch.AnimationHandler.addToAnimationQueue(card, 0, 0, false, null, card.flipAnimationComplete);
-            if (cardAnimator != null) {
-                cardAnimator.vYSkew = -1.0 * MemoryMatch.cardFlipSpeed;
-                cardAnimator.endYSkew = 0;
+            if (MemoryMatch.gamePaused) {
+                card.flipAnimationComplete(card);
+            } else {
+                cardAnimator = MemoryMatch.AnimationHandler.addToAnimationQueue(card, 0, 0, false, null, card.flipAnimationComplete);
+                if (cardAnimator != null) {
+                    cardAnimator.vYSkew = -1.0 * MemoryMatch.cardFlipSpeed;
+                    cardAnimator.endYSkew = 0;
+                }
             }
             card.updateCache();
         }
@@ -5187,8 +5239,12 @@ this.MemoryMatch = {
         }
 
         card.flipBack = function () {
+            if (MemoryMatch.gamePaused) {
+                return;
+            }
             // begin card flip animation
             this.isEnabled = false;
+            this.state = MemoryMatch.CARDSTATE.FLIPPING;
             var cardAnimator = MemoryMatch.AnimationHandler.addToAnimationQueue(this, 0, 0, false, null, this.unflipAnimationPhaseTwo);
 
             this.unselect();
@@ -5198,9 +5254,23 @@ this.MemoryMatch = {
             }
         }
 
+        card.forceDown = function () {
+            var cardFace = card.getChildAt(card.SPRITEINDEX.SPRITE_CARDFACE),
+                cardBack = card.getChildAt(card.SPRITEINDEX.SPRITE_CARDBACK);
+            cardFace.visible = false;
+            cardBack.visible = true;
+            card.skewY = 0;
+            card.state = MemoryMatch.CARDSTATE.DOWN;
+            card.updateCache();
+            card.isEnabled = true;
+        }
+
         card.showCard = function (cardToShow) {
             var cardBackSprite = cardToShow.actor.getChildAt(card.SPRITEINDEX.SPRITE_CARDBACK);
 
+            if (MemoryMatch.gamePaused) {
+                return;
+            }
             MemoryMatch.triggerSoundFx("soundCardDeal");
             cardBackSprite.visible = true;
             cardToShow.actor.showMatchCounter(cardToShow.actor.matchCounter > 0);
