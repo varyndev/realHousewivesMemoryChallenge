@@ -11,7 +11,7 @@ var enginesisSession = enginesis || {};
 
 
 this.MemoryMatch = {
-    GameVersion: "1.0.72",
+    GameVersion: "1.0.73",
     platform: "unknown",
     locale: "en-US",
     debugMode: true,
@@ -98,6 +98,7 @@ this.MemoryMatch = {
         EAGLEEYE:          21
     },
 
+    cacheStatusValues: ['uncached', 'idle', 'checking', 'downloading', 'updateready', 'obsolete'],
     gameWasInitialized: false,
     gameData: null,
     rows: 0,
@@ -535,12 +536,16 @@ this.MemoryMatch = {
     },
 
     onPauseGame: function (pauseFlag) {
+
         // Pause or unpause the game
+
+        var restoredFromPause = false;
+
         if (pauseFlag === undefined || pauseFlag === null) {
             pauseFlag = true;
         }
         if (pauseFlag && MemoryMatch.gameInProgress) {
-            MemoryMatch.debugLog("Pausing game when in progress");
+//            MemoryMatch.debugLog("Pausing game when in progress");
             // app went from active to inactive, show GAME PAUSED popup
             MemoryMatch.stopInterstitialMusic();
             MemoryMatch.pauseGameInProgress();
@@ -552,20 +557,36 @@ this.MemoryMatch = {
             this.stageUpdated = false;
         } else if (pauseFlag) {
             // stop music
-            MemoryMatch.debugLog("Pausing game NOT in progress");
+//            MemoryMatch.debugLog("Pausing game NOT in progress");
             MemoryMatch.gamePaused = true;
             MemoryMatch.stopInterstitialMusic();
             MemoryMatch.stopBackgroundMusic();
         } else {
             // app went from inactive to active. if we are on the home screen then restart the music
-            MemoryMatch.debugLog("Resuming game");
-            if (MemoryMatch.gameState == MemoryMatch.GAMESTATE.MENU) {
+//            MemoryMatch.debugLog("Resuming game");
+            if (MemoryMatch.gameState == MemoryMatch.GAMESTATE.MENU || (MemoryMatch.gameState == MemoryMatch.GAMESTATE.SHOWAD && MemoryMatch.gamePriorState == MemoryMatch.GAMESTATE.MENU)) {
                 MemoryMatch.restartBackgroundMusic();
+                MemoryMatch.gamePaused = false;
                 MemoryMatch.GameGUI.resume(null);
+                restoredFromPause = true;
             }
-            if (MemoryMatch.GameResults != null && MemoryMatch.GameResults.pausedWhileShowingAd) {
-                MemoryMatch.GameResults.pausedWhileShowingAd = false;
-                MemoryMatch.GameResults.close();
+            if (MemoryMatch.GameResults != null) {
+                if (MemoryMatch.GameResults.pausedWhileShowingAd) {
+                    MemoryMatch.GameResults.pausedWhileShowingAd = false;
+                    MemoryMatch.gamePaused = false;
+                    MemoryMatch.GameResults.close();
+                    restoredFromPause = true;
+                } else if (MemoryMatch.GameResults.isShowing()) {
+                    MemoryMatch.gamePaused = false;
+                    restoredFromPause = true;
+                }
+            }
+            if ( ! restoredFromPause && MemoryMatch.GameOptions != null && ! MemoryMatch.GameOptions.isShowing()) {
+                createjs.Touch.enable(MemoryMatch.stage, true, false);
+                MemoryMatch.gamePaused = false;
+                if (MemoryMatch.ChallengeIntroduction != null && MemoryMatch.ChallengeIntroduction.isShowing()) {
+                    MemoryMatch.ChallengeIntroduction.resumeFromPause();
+                }
             }
         }
     },
@@ -698,7 +719,7 @@ this.MemoryMatch = {
             guiFlashThreshold = 0;
 
         // Use to setup a game, reset all timers and counters for an individual game
-        MemoryMatch.debugLog("MemoryMatch:startNextGame ");
+//        MemoryMatch.debugLog("MemoryMatch:startNextGame ");
         MemoryMatch.gameInProgress = true;
         MemoryMatch.stopBackgroundMusic();
         MemoryMatch.GameGUI.show(true);
@@ -949,11 +970,13 @@ this.MemoryMatch = {
         MemoryMatch.triggerSoundFx("soundMiss", {delay: 100});
         MemoryMatch.gameEndTime = Date.now();
         MemoryMatch.gamePaused = false;
+        MemoryMatch.gameInProgress = false;
         MemoryMatch.removeAllCards(MemoryMatch.restartGameRemoveCardThenRestart); // calls replayLastGame after cards are removed
     },
 
     restartCurrentChallengeGame: function () {
         MemoryMatch.gamePaused = false;
+        MemoryMatch.gameInProgress = false;
         MemoryMatch.removeAllCards(MemoryMatch.restartChallengeGameRemoveCardThenReplay); // calls replayCurrentChallengeGame after cards are removed
     },
 
@@ -2045,6 +2068,10 @@ this.MemoryMatch = {
             showCardCountdownTimer = false,
             timerShowTime;
 
+        if (MemoryMatch.gamePaused) {
+            MemoryMatch.debugLog("checkBoardIsReadyForPlay but game is PAUSED gameState=" + MemoryMatch.gameState + " and playState=" + MemoryMatch.gamePlayState);
+            return;
+        }
         if (MemoryMatch.gamePlayState == MemoryMatch.GAMEPLAYSTATE.BOARD_SETUP && MemoryMatch.gameState == MemoryMatch.GAMESTATE.PLAY) {
             numberOfCardsInLevel = MemoryMatch.rows * MemoryMatch.columns;
             MemoryMatch.numberOfCardsShowing ++;
@@ -2087,7 +2114,7 @@ this.MemoryMatch = {
                         // we now want to briefly show all cards
                         MemoryMatch.showAllCards(true);
                         showCardCountdownTimer = true;
-                        MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.allCardsOnBoard[0], MemoryMatch.cardShowTime, 0, false, null, MemoryMatch.onShowAllCardsMonteWaitComplete);
+                        MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.allCardsOnBoard[0], MemoryMatch.cardShowTime + 1000, 0, false, null, MemoryMatch.onShowAllCardsMonteWaitComplete);
                         break;
                     case MemoryMatch.GAMEPLAYTYPE.EYESPY:
                         // show the target card
@@ -2754,11 +2781,11 @@ this.MemoryMatch = {
     },
 
     onShowAllCardsWaitComplete: function (card) {
-        // Some game begin by showing the user some cards. After a timer expires
+        // Some games begin by showing the user some cards. After a timer expires
         // we need to turn the cards over and begin the game.
         var hideTimerCountDown = true;
 
-        if (MemoryMatch.gamePaused || MemoryMatch.gameState != MemoryMatch.GAMESTATE.PLAY) {
+        if (MemoryMatch.gamePaused || MemoryMatch.gameState != MemoryMatch.GAMESTATE.PLAY || MemoryMatch.allCardsOnBoard == null || MemoryMatch.allCardsOnBoard.length == 0) {
             return;
         }
         switch (MemoryMatch.gameType) {
@@ -2820,7 +2847,6 @@ this.MemoryMatch = {
             }
             MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.allCardsOnBoard[0], MemoryMatch.cardShowTime, 0, false, null, MemoryMatch.onShowAllCardsWaitComplete);
         }
-        MemoryMatch.GameGUI.hideTimerCountdown();
     },
 
     onShowTargetCardWaitComplete: function (card) {
@@ -3066,7 +3092,7 @@ this.MemoryMatch = {
             cardAnimator,
             cardSpeed;
 
-        if (MemoryMatch.gamePaused) {
+        if (MemoryMatch.gamePaused || MemoryMatch.allCardsOnBoard == null || MemoryMatch.allCardsOnBoard.length == 0) {
             return;
         }
         if (MemoryMatch.gamePlayState != MemoryMatch.GAMEPLAYSTATE.PLAY_WAIT) {
@@ -3087,6 +3113,7 @@ this.MemoryMatch = {
             }
             MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.PLAY_WAIT;
             MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.allCardsOnBoard[0], 500, 0, false, null, MemoryMatch.monteShuffle);
+            MemoryMatch.GameGUI.hideTimerCountdown();
         } else {
             // Shuffle pairs of cards until we play out all the moves. Select 2 cards to shuffle. Move the first
             // card to the second, and the second card to the first.
@@ -4933,7 +4960,7 @@ this.MemoryMatch = {
         card.name = "Card" + cardValue;
         card.value = cardValue;
         card.isSelected = false;
-        card.isEnabled = true;    // Allow cards to be non-interactive
+        card.isEnabled = true;    // Allow cards to be non-interactive when isEnabled is false user cannot select the card
         card.seenCount = 0;
         card.restoreFlag = false; // indicates a card flip state was saved to be later restored
         card.isPattern = false;  // for Pattern Match game
@@ -4958,7 +4985,12 @@ this.MemoryMatch = {
         }
 
         card.kill = function () {
+            cardBackSprite = null;
+            cardFrontSprite = null;
+            card.bounds = null;
             card.removeAllChildren();
+            card.removeAllEventListeners();
+            card = null;
             guiSpriteFrames = null;
             guiSpriteData = null;
         }
@@ -4985,7 +5017,7 @@ this.MemoryMatch = {
         card.highlight = function () {
             var cardHighlight;
 
-            if (this.isEnabled &&  ! this.isSelected) {
+            if (this.isEnabled && ! this.isSelected) {
                 cardHighlight = this.getChildAt(this.SPRITEINDEX.SPRITE_HIGHLIGHT);
                 cardHighlight.alpha = 0.5;
                 this.updateCache();
@@ -5074,6 +5106,7 @@ this.MemoryMatch = {
 
         card.flip = function () {
             // begin card flip animation
+            this.isEnabled = false;
             var cardAnimator = MemoryMatch.AnimationHandler.addToAnimationQueue(this, 0, 0, false, null, this.flipAnimationPhaseTwo);
             if (cardAnimator != null) {
                 cardAnimator.vYSkew = MemoryMatch.cardFlipSpeed;
@@ -5140,6 +5173,7 @@ this.MemoryMatch = {
                 card.state = MemoryMatch.CARDSTATE.DOWN;
             }
             card.updateCache();
+            card.isEnabled = true;
         }
 
         card.unselect = function () {
@@ -5154,6 +5188,7 @@ this.MemoryMatch = {
 
         card.flipBack = function () {
             // begin card flip animation
+            this.isEnabled = false;
             var cardAnimator = MemoryMatch.AnimationHandler.addToAnimationQueue(this, 0, 0, false, null, this.unflipAnimationPhaseTwo);
 
             this.unselect();
@@ -5454,7 +5489,7 @@ this.MemoryMatch = {
 
     onVisibilityChange: function (event) {
         var isHidden = MemoryMatch.isDocumentHidden();
-        MemoryMatch.debugLog("onVisibilityChange: hidden? " + (isHidden ? 'YES' : 'NO'));
+//        MemoryMatch.debugLog("onVisibilityChange: hidden? " + (isHidden ? 'YES' : 'NO'));
         MemoryMatch.onPauseGame(isHidden);
     },
 
@@ -5577,6 +5612,33 @@ this.MemoryMatch = {
     goFullScreen: function () {
         if (window.screenfull !== false) {
             window.screenfull.toggle(document.getElementById(MemoryMatch.canvasContainerElement));
+        }
+    },
+
+    logCacheEvent: function (e) {
+
+        // Checking index.appcache, log every event to the console
+
+        var online,
+            status,
+            type,
+            message,
+            cache = window.applicationCache;
+
+        if (cache != null) {
+            online = navigator.onLine ? 'yes' : 'no';
+            status = MemoryMatch.cacheStatusValues[cache.status];
+            type = e.type;
+            message = 'online: ' + online;
+            message += ', event: ' + type;
+            message += ', status: ' + status;
+            if (type == 'error' && navigator.onLine) {
+                message += ' There was an unknown error, check your Cache Manifest.';
+            }
+            MemoryMatch.debugLog('logCacheEvent: ' + message);
+            if (status == 'updateready') {
+                cache.swapCache();
+            }
         }
     },
 
@@ -5733,7 +5795,7 @@ this.MemoryMatch = {
     },
 
     onAdClosed: function (event) {
-        MemoryMatch.debugLog("onAdClosed returning game state ");
+//        MemoryMatch.debugLog("onAdClosed returning game state ");
         MemoryMatch.adIsShowing = false;
         MemoryMatch.returnToPriorGameState();
         if (MemoryMatch.gameState == MemoryMatch.GAMESTATE.MENU && MemoryMatch.adModel.adDisplayCounter == 1 && MemoryMatch.shouldAskUserToBookmarkApp()) {
@@ -5755,6 +5817,20 @@ function onGooglePlusLoaded () {
 function initApp() {
     MemoryMatch.setPlatform();
     MemoryMatch.debugLog("Loading " + MemoryMatch.GameSetup.gameTitle + " version " + MemoryMatch.GameVersion + " on " + MemoryMatch.platform + " using locale " + MemoryMatch.locale + (MemoryMatch.isTouchDevice ? " / Touch" : " / Mouse"));
+
+    // Listeners for all possible cache events
+
+    var cache = window.applicationCache;
+    if (cache != null) {
+        cache.addEventListener('cached', MemoryMatch.logCacheEvent, false);
+        cache.addEventListener('checking', MemoryMatch.logCacheEvent, false);
+        cache.addEventListener('downloading', MemoryMatch.logCacheEvent, false);
+        cache.addEventListener('error', MemoryMatch.logCacheEvent, false);
+        cache.addEventListener('noupdate', MemoryMatch.logCacheEvent, false);
+        cache.addEventListener('obsolete', MemoryMatch.logCacheEvent, false);
+        cache.addEventListener('progress', MemoryMatch.logCacheEvent, false);
+        cache.addEventListener('updateready', MemoryMatch.logCacheEvent, false);
+    }
     if (document.getElementById(MemoryMatch.loaderElement) != null) {
         // show canvas under loader so we can implement a loadbar until we get everything setup for EaselJS to take over
         document.getElementById(MemoryMatch.loaderElement).style.display = "block";

@@ -346,8 +346,8 @@ body {
     background-color: #3cc7e8;
     top: 50%;
     left: 50%;
-    margin-top: -150px;
-    margin-left: -125px;
+    margin-top: -125px;
+    margin-left: -150px;
 }
 
 .adLoaderCentered {

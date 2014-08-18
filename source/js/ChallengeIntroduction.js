@@ -62,6 +62,10 @@ MemoryMatch.ChallengeIntroduction = {
         }
     },
 
+    resumeFromPause: function () {
+        MemoryMatch.playInterstitialMusic("soundChallenge", true);
+    },
+
     closePopup: function (closeEventType) {
         this.isEnabled = false;
         MemoryMatch.stopInterstitialMusic();
@@ -241,7 +245,7 @@ MemoryMatch.ChallengeIntroduction = {
     },
 
     isShowing: function () {
-        return this.groupDisplayObject !== null && this.groupDisplayObject.visible;
+        return this.groupDisplayObject != null && this.groupDisplayObject.visible;
     },
 
     setColorFilters: function () {

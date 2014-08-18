@@ -97,11 +97,15 @@ MemoryMatch.AdPopup = {
     },
 
     closeComplete: function () {
-        var domElement = this.groupDisplayObject.getChildByName('ad'),
+        var domElement,
             pageElement,
             stateCompleteCallback = this.stateCompleteCallback,
             closeEventType = this.closeEventType;
 
+        if (this.groupDisplayObject == null) {
+            return;
+        }
+        domElement = this.groupDisplayObject.getChildByName('ad');
         this.isEnabled = false;
         if (domElement != null) {
             domElement.visible = false;
