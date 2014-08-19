@@ -77,6 +77,7 @@ module.exports = function(grunt) {
             tasks: 'default'
         },
 
+        /* Copy the minified files to the destination folders so we stay in-sync */
         exec: {
             copymin: {
                 command: 'cp distrib/js/MemoryMatch.min.js source/js/MemoryMatch.min.js && cp distrib/js/MemoryMatch.min.js ../../websites/enginesis/public/games/realHousewivesMemoryChallenge/js/MemoryMatch.min.js',
@@ -99,7 +100,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-exec');
 
     // Tell Grunt what to do when we type "grunt" into the terminal.
-    grunt.registerTask('default', ['concat', 'uglify', 'imagemin', 'exec']);
+    grunt.registerTask('default', ['concat', 'uglify', 'exec']);
     grunt.registerTask('release', ['concat', 'uglify', 'imagemin', 'exec']);
 
 };
