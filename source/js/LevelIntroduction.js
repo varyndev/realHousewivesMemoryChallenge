@@ -77,6 +77,7 @@ MemoryMatch.LevelIntroduction = {
         var duration = 0.3, // seconds of animation
             animator;
 
+        MemoryMatch.showingDemo = true;
         this.demoAnimationState = 1;
         if (this.animate) {
             this.groupDisplayObject.setTransform(this.parentDisplayObject.canvas.width * 0.5, this.parentDisplayObject.canvas.height * 0.5, 0, 0, 0, 0, 0, this.backgroundWidth * 0.5, this.backgroundHeight * 0.5);
@@ -129,6 +130,7 @@ MemoryMatch.LevelIntroduction = {
     },
 
     close: function () {
+        MemoryMatch.showingDemo = false;
         this.isEnabled = false;
         if (this.isShowing()) {
             if (this.stateCompleteCallback !== null) {

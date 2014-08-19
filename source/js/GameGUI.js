@@ -652,7 +652,7 @@ MemoryMatch.GameGUI = {
 
         // Show the Options popup
         if ( ! MemoryMatch.GameOptions.isShowing()) {
-            MemoryMatch.pauseGameInProgress();
+//            MemoryMatch.pauseGameInProgress();
             MemoryMatch.GameOptions.setup(MemoryMatch.stage, MemoryMatch.GameGUI.onOptionsClosed, false);
             MemoryMatch.GameOptions.buildScreen(true, true);
         } else {
@@ -696,7 +696,7 @@ MemoryMatch.GameGUI = {
             case "continue":
             case "close":    // unpause the game
             default:
-                if (MemoryMatch.gameState != MemoryMatch.GAMESTATE.MENU) {
+                if (MemoryMatch.gameState != MemoryMatch.GAMESTATE.MENU && MemoryMatch.gameState != MemoryMatch.GAMESTATE.RESULTS) {
                     MemoryMatch.resumePausedGame(null);
                 }
                 break;

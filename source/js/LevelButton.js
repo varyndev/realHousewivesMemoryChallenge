@@ -467,7 +467,11 @@ this.MemoryMatch.LevelButton = function (parameters) {
             lockIcon.visible = true;
             bestScoreField.visible = false;
             gameNumberText.visible = false;
-            buttonRing.visible = false;
+            if (this.isChallengeGame) {
+                buttonRing.visible = true;
+            } else {
+                buttonRing.visible = false;
+            }
         } else {
             this.setEnabled(true);
             lockIcon.visible = false;
