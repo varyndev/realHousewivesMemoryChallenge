@@ -1,7 +1,6 @@
 CACHE MANIFEST
-# 2014-08-15:v1.0.75.3
+# 2014-08-15:v1.0.76.1
 CACHE:
-index.html
 assets/memoryMatch.css
 assets/MyFontsWebfontsKit.css
 lib/easeljs-0.7.1.min.js
