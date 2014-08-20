@@ -1,6 +1,7 @@
 email
 images
 badges
+.DS_Store
 js/.DS_Store
 assets/.DS_Store
 .idea
