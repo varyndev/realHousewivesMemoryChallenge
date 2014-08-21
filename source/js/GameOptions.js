@@ -233,13 +233,15 @@ MemoryMatch.GameOptions = {
 
     onClickClearStats: function (event) {
         var objectToDisplay;
+        //             infoPopup = new MemoryMatch.InfoPopup(MemoryMatch.stage, true, {title: MemoryMatch.GameSetup.GUIStrings.bookmarkTitle, message: MemoryMatch.GameSetup.GUIStrings.bookmarkMessage, x: MemoryMatch.stageWidth * 0.5, y: MemoryMatch.stageHeight * 0.14 * resolutionAdjustment, duration: 5.5, backgroundColor: MemoryMatch.GameSetup.achievementBackgroundColor, borderColor: MemoryMatch.GameSetup.achievementBorderColor, titleFontSize: 64 * resolutionAdjustment, messageFontSize: 52 * resolutionAdjustment, messageFont: 'Arial', width: 1200 * resolutionAdjustment, height: 380 * resolutionAdjustment});
+
         if (MemoryMatch.GameOptions.isEnabled) {
             if (MemoryMatch.unlockAllLevelsCounter > 2) {
                 MemoryMatch.unlockAllLevels();
-                objectToDisplay = new MemoryMatch.InfoPopup(MemoryMatch.stage, true, {title: "UNLOCKED", message: 'You have unlocked all levels.', sound: 'soundCorrect'});
+                objectToDisplay = new MemoryMatch.InfoPopup(MemoryMatch.stage, true, {title: "UNLOCKED", message: 'You have unlocked all levels.', messageFontSize: 64, sound: 'soundCorrect'});
             } else {
                 MemoryMatch.resetUserData();
-                objectToDisplay = new MemoryMatch.InfoPopup(MemoryMatch.stage, true, {title: "CLEARED", message: 'You have reset all levels.', sound: 'soundCorrect'});
+                objectToDisplay = new MemoryMatch.InfoPopup(MemoryMatch.stage, true, {title: "CLEARED", message: 'You have reset all levels.', messageFontSize: 64, sound: 'soundCorrect'});
             }
             MemoryMatch.unlockAllLevelsCounter = 0;
             if (MemoryMatch.MainMenu != null) {

@@ -11,7 +11,7 @@ var enginesisSession = enginesis || {};
 
 
 this.MemoryMatch = {
-    GameVersion: "1.0.76",
+    GameVersion: "1.0.77",
     platform: "unknown",
     locale: "en-US",
     debugMode: true,
@@ -111,6 +111,7 @@ this.MemoryMatch = {
     cardMargin: 0,
     canvasContainerElement: "canvasArea",
     loaderElement: "loader",
+    isDesiredOrientationWhenLoadStarted: false,
     stageCanvasElement: "memoryMatch",
     assetFileNamePostfix: "",
     cardsFileNamePostfix: "",
@@ -211,6 +212,7 @@ this.MemoryMatch = {
     unlockAllLevelsCounter: 0,
     cheatChallengeNoMiss: false,
     secondaryAssetLoaderProgress: 0,
+    mainMenuViewCount: 0,
     adModel: {
         showAds: true,
         showedPreroll: false,
@@ -455,13 +457,16 @@ this.MemoryMatch = {
     },
 
     showMenuScreen: function () {
+        MemoryMatch.mainMenuViewCount ++;
         MemoryMatch.gameCleanUp();
         MemoryMatch.stopInterstitialMusic();
-        MemoryMatch.playBackgroundMusic();
+        if ( ! MemoryMatch.isTouchDevice || (MemoryMatch.isTouchDevice && MemoryMatch.mainMenuViewCount > 1)) {
+            MemoryMatch.playBackgroundMusic();
+        }
         MemoryMatch.changeGameState(MemoryMatch.GAMESTATE.MENU);
         MemoryMatch.MainMenu.setup(MemoryMatch.stage, MemoryMatch.getGameData(false), MemoryMatch.mainMenuCallback);
         MemoryMatch.MainMenu.buildScreen(true);
-        MemoryMatch.determineIfItTimeToShowAdPopup(null);
+        MemoryMatch.determineIfItTimeToShowAdPopup(MemoryMatch.onCloseAdPopup.bind(MemoryMatch));
     },
 
     mainMenuCallback: function (levelNumber) {
@@ -559,7 +564,7 @@ this.MemoryMatch = {
                 MemoryMatch.GameOptions.setup(MemoryMatch.stage, MemoryMatch.GameGUI.onOptionsClosed, true);
                 MemoryMatch.GameOptions.buildScreen(true, false);
             }
-            MemoryMatch.stage.update(event); // render these updates now as the render loop will be paused
+            MemoryMatch.stage.update(); // render these updates now as the render loop will be paused
             MemoryMatch.stageUpdated = false;
             MemoryMatch.gamePaused = true;
             MemoryMatch.runAnimations = false;
@@ -1271,6 +1276,10 @@ this.MemoryMatch = {
         var totalLoadTime = Date.now() - this.gameStartTime;
 
         this.assetLoader.removeAllEventListeners();
+        if ( ! MemoryMatch.isDesiredOrientationWhenLoadStarted && MemoryMatch.isDesiredOrientation()) {
+            // orientation changed while we were loading the game, we need to force a resize now.
+            MemoryMatch.setCanvasSize(null);
+        }
         if (totalLoadTime < this.minimumSplashScreenDisplayTime) {
             window.setTimeout(this.readyToStart.bind(this), this.minimumSplashScreenDisplayTime - totalLoadTime);
         } else {
@@ -5442,6 +5451,7 @@ this.MemoryMatch = {
             MemoryMatch.stage.removeAllChildren();
             MemoryMatch.changeGameState(MemoryMatch.GAMESTATE.LOADING);
             MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.IDLE;
+            MemoryMatch.stage.update(); // render these updates now as the render loop will be paused
             MemoryMatch.showLoader();
             MemoryMatch.loadAllAssets(true);
         } else {
@@ -5863,13 +5873,14 @@ this.MemoryMatch = {
         return showAd;
     },
 
-    isAdShowing: function () {
-        var isAdShowing;
-        isAdShowing = MemoryMatch.adIsShowing;
-        if ( ! isAdShowing) {
-            isAdShowing = MemoryMatch.AdPopup.isShowing();
+    onCloseAdPopup: function () {
+        if (MemoryMatch.isTouchDevice && MemoryMatch.mainMenuViewCount < 2) {
+            MemoryMatch.playBackgroundMusic();
         }
-        return isAdShowing;
+    },
+
+    isAdShowing: function () {
+        return MemoryMatch.AdPopup.isShowing();
     },
 
     onAdClosed: function (event) {
@@ -5916,6 +5927,7 @@ function initApp() {
     }
 
     // Determine canvas size, it will determine which assets need to be loaded
+    MemoryMatch.isDesiredOrientationWhenLoadStarted = MemoryMatch.isDesiredOrientation();
     MemoryMatch.setCanvasSize(null);
     MemoryMatch.loadAllAssets(false);
 
