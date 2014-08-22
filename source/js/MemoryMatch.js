@@ -11,7 +11,7 @@ var enginesisSession = enginesis || {};
 
 
 this.MemoryMatch = {
-    GameVersion: "1.0.77",
+    GameVersion: "1.0.78",
     platform: "unknown",
     locale: "en-US",
     debugMode: true,
@@ -3481,6 +3481,8 @@ this.MemoryMatch = {
         animator = MemoryMatch.AnimationHandler.addToAnimationQueue(comboBonusText, 250, 0, true, null, null);
         animator.showAtBegin = true;
         animator.vAlpha = -0.011;
+        animator.endAlpha = 0;
+        animator.killOnAlphaZero = true;
         animator.vY = -1.5;
         animator.vXScale = 0.003;
         animator.endXScale = 1.25;
@@ -3562,6 +3564,8 @@ this.MemoryMatch = {
         animator = MemoryMatch.AnimationHandler.addToAnimationQueue(groupDisplayObject, 250, 0, true, null, null);
         animator.showAtBegin = true;
         animator.vAlpha = -0.011;
+        animator.endAlpha = 0;
+        animator.killOnAlphaZero = true;
         animator.vY = -1.5;
         animator.vXScale = 0.003;
         animator.endXScale = 1.25;

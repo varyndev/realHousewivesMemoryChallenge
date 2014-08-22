@@ -122,6 +122,7 @@ MemoryMatch.AnimationHandler = {
         //  .endY         : Y value at endTime (mitigates rounding errors). If vY is not provided will be used to calc vY.
         //  .vAlpha       : alpha "velocity" amount of alpha to subtract (- to add) over startTime to endTime
         //  .endAlpha     : alpha value at endTime (mitigates rounding errors)
+        //  .killOnAlphaZero: stop animating this object if alpha goes to 0
         //  .vRotation    : rotation "velocity" amount of rotation over startTime to endTime
         //  .endRotation  : rotation value at endTime (mitigates rounding errors)
         //  .vXScale      : amount to scale-X each tick
@@ -143,12 +144,14 @@ MemoryMatch.AnimationHandler = {
             animatingObject = null,
             i,
             keepAnimating,
-            isAnimating;
+            isAnimating,
+            queueLength = this.activeCardQueue.length;
 
         if (this.isQuitPending) {
             return;
         }
-        for (i = 0; i < this.activeCardQueue.length; i ++) {
+//        MemoryMatch.debugLog("updateAnimations processing " + queueLength + " objects");
+        for (i = 0; i < queueLength; i ++) {
             animatingObject = this.activeCardQueue[i];
 //            MemoryMatch.debugLog("Animating Actor " + i + "; " + animatingObject.actor.name);
             if (timeNow >= animatingObject.startTime) {
@@ -197,7 +200,7 @@ MemoryMatch.AnimationHandler = {
                 }
 
                 // update x,y scale
-                if (animatingObject.vXScale != undefined && animatingObject.vXScale != 0) {
+                if (animatingObject.vXScale != null && animatingObject.vXScale != 0) {
                     isAnimating = true;
                     animatingObject.actor.scaleX += animatingObject.vXScale;
                     if (animatingObject.endXScale != undefined) {
@@ -212,7 +215,7 @@ MemoryMatch.AnimationHandler = {
                         }
                     }
                 }
-                if (animatingObject.vYScale != undefined && animatingObject.vYScale != 0) {
+                if (animatingObject.vYScale != null && animatingObject.vYScale != 0) {
                     isAnimating = true;
                     animatingObject.actor.scaleY += animatingObject.vYScale;
                     if (animatingObject.endYScale != undefined) {
@@ -253,7 +256,7 @@ MemoryMatch.AnimationHandler = {
                         if (animatingObject.vRotation > 0 && animatingObject.actor.rotation >= animatingObject.endRotation) {
                             animatingObject.actor.rotation = animatingObject.endRotation;
                             animatingObject.vRotation = null;
-                            animatingObject.endAlpha = null;
+                            animatingObject.endRotation = null;
                         } else if (animatingObject.vRotation < 0 && animatingObject.actor.rotation <= animatingObject.endRotation) {
                             animatingObject.actor.rotation = animatingObject.endRotation;
                             animatingObject.vRotation = null;
@@ -273,6 +276,9 @@ MemoryMatch.AnimationHandler = {
                             animatingObject.endAlpha = null;
                         } else if (animatingObject.vAlpha < 0 && animatingObject.actor.alpha <= animatingObject.endAlpha) {
                             animatingObject.actor.alpha = animatingObject.endAlpha;
+                            if (animatingObject.endAlpha == 0 && animatingObject.killOnAlphaZero) {
+                                animatingObject.markedForRemoval = true;
+                            }
                             animatingObject.vAlpha = null;
                             animatingObject.endAlpha = null;
                         }
