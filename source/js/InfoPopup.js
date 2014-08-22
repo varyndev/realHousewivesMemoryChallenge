@@ -42,6 +42,7 @@ MemoryMatch = MemoryMatch || {};
     p.fadeTime = 1;
     p.borderColor = MemoryMatch.GameSetup.achievementBorderColor; // '#d640d6';
     p.backgroundColor = MemoryMatch.GameSetup.achievementBackgroundColor; // '#521852';
+    p.autoClose = true;
 
     p.setParameters = function (displayObject, parameters) {
         this.parentDisplayObject = displayObject;
@@ -113,6 +114,9 @@ MemoryMatch = MemoryMatch || {};
             if (parameters.callback !== null) {
                 this.stateCompleteCallback = parameters.callback;
             }
+            if (parameters.autoClose !== null) {
+                this.autoClose = parameters.autoClose;
+            }
         }
     };
 
@@ -154,7 +158,9 @@ MemoryMatch = MemoryMatch || {};
 
     p.start = function () {
         // begin animation, then wait for user event to end this state and alert callback
-        this.closeStartAnimation();
+        if (this.autoClose) {
+            this.closeStartAnimation();
+        }
         if (this.sound != null) {
             MemoryMatch.triggerSoundFx(this.sound, {delay: 0});
         }

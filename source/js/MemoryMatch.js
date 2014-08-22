@@ -11,7 +11,7 @@ var enginesisSession = enginesis || {};
 
 
 this.MemoryMatch = {
-    GameVersion: "1.0.78",
+    GameVersion: "1.0.79",
     platform: "unknown",
     locale: "en-US",
     debugMode: true,
@@ -1247,24 +1247,29 @@ this.MemoryMatch = {
         // This method will scale the background image to fit the current stage.
         var bgImage = new createjs.Bitmap(MemoryMatch.backgroundImage),
             xScale,
-            yScale;
+            yScale,
+            infoToDisplay;
 
-        if (MemoryMatch.backgroundImage.width > canvas.width) {
-            xScale = canvas.width / MemoryMatch.backgroundImage.width;
+        if (MemoryMatch.backgroundImage != null) {
+            if (MemoryMatch.backgroundImage.width > canvas.width) {
+                xScale = canvas.width / MemoryMatch.backgroundImage.width;
+            } else {
+                xScale = MemoryMatch.backgroundImage.width / canvas.width;
+            }
+            if (MemoryMatch.backgroundImage.height > canvas.height) {
+                yScale = canvas.height / MemoryMatch.backgroundImage.height;
+            } else {
+                yScale = MemoryMatch.backgroundImage.height / canvas.height;
+            }
+            bgImage.cache(0, 0, MemoryMatch.backgroundImage.width, MemoryMatch.backgroundImage.height);
+            bgImage.alpha = 1;
+            bgImage.scaleX = xScale;
+            bgImage.scaleY = yScale;
+            MemoryMatch.stage.addChild(bgImage);
+            MemoryMatch.stageUpdated = true;
         } else {
-            xScale = MemoryMatch.backgroundImage.width / canvas.width;
+            infoToDisplay = new MemoryMatch.InfoPopup(MemoryMatch.stage, true, {title: "LOAD ERROR", message: 'Could not load game files, please check your internet connection.', messageFontSize: 56, autoClose: false});
         }
-        if (MemoryMatch.backgroundImage.height > canvas.height) {
-            yScale = canvas.height / MemoryMatch.backgroundImage.height;
-        } else {
-            yScale = MemoryMatch.backgroundImage.height / canvas.height;
-        }
-        bgImage.cache(0, 0, MemoryMatch.backgroundImage.width, MemoryMatch.backgroundImage.height);
-        bgImage.alpha = 1;
-        bgImage.scaleX = xScale;
-        bgImage.scaleY = yScale;
-        MemoryMatch.stage.addChild(bgImage);
-        MemoryMatch.stageUpdated = true;
     },
 
     setBoardSize: function (numRows, numColumns) {
@@ -1324,6 +1329,11 @@ this.MemoryMatch = {
         if (item != null) {
             if (error == null) {
                 error = "unknown error";
+            } else {
+                error = error.toString();
+            }
+            if (event.text != null) {
+                error += " " + event.text;
             }
             if (item.ext == 'json' && item.id != null && item.src != null) {
                 jQuery.getJSON(item.src, function(jsonObject) {
@@ -1344,6 +1354,8 @@ this.MemoryMatch = {
                             break;
                     }
                 });
+            } else {
+                MemoryMatch.debugLog("assetLoadError triggered on " + item.src + " (" + item.id + ") " + error);
             }
         }
     },
