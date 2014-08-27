@@ -124,7 +124,8 @@ this.MemoryMatch = {
     stageScaleFactor: 1,
     cardScaleFactor: 1,
     stageAspectRatio: 1.3333,
-    fps: 60,
+    fps: 50,                 // expected number of frames per second
+    frameTime: 25,           // expected milliseconds per frame
     gamePaused: false,       // game is paused
     gamePausePending: false, // game is in process to pause or unpause but need to complete animations
     runAnimations: true,     // flag to override animation engine
@@ -179,7 +180,8 @@ this.MemoryMatch = {
     cardShowTime: 0,
     cardSelected: null,
     cardTargetValue: 0,
-    cardFlipSpeed: 9,
+    cardFlipTime: 0.2,      // Seconds to flip a card half-way
+    cardFlipDx: 0,          // cache the card flip d/t calc as it won't change unless the framerate changes
     allCardsOnBoard: null,  // Tracks all the cards on the board
     simonBag: null,         // holds the randomized value list for the Simon, Haystack, EyeSpy games
     simonPlaybackIndex: 0,
@@ -287,6 +289,8 @@ this.MemoryMatch = {
         MemoryMatch.AnimationHandler.init(canvas, this.stage);
         MemoryMatch.gameWasInitialized = true;
 
+        MemoryMatch.frameTime = 1000 / MemoryMatch.fps; // milliseconds per frame
+        MemoryMatch.cardFlipDx = MemoryMatch.cardFlipTime * MemoryMatch.fps;
         createjs.Ticker.setFPS(this.fps);
         createjs.Ticker.addEventListener("tick", this.onEnterFrame.bind(this));
 
@@ -5178,16 +5182,19 @@ this.MemoryMatch = {
         }
 
         card.flip = function () {
+            var endSkew = 90,
+                cardAnimator;
+
             if (MemoryMatch.gamePaused && ! MemoryMatch.showingDemo) {
                 return;
             }
             // begin card flip animation
             this.isEnabled = false;
             this.state = MemoryMatch.CARDSTATE.FLIPPING;
-            var cardAnimator = MemoryMatch.AnimationHandler.addToAnimationQueue(this, 0, 0, false, null, this.flipAnimationPhaseTwo);
+            cardAnimator = MemoryMatch.AnimationHandler.addToAnimationQueue(this, 0, 0, false, null, this.flipAnimationPhaseTwo);
             if (cardAnimator != null) {
-                cardAnimator.vYSkew = MemoryMatch.cardFlipSpeed;
-                cardAnimator.endYSkew = 90;
+                cardAnimator.vYSkew = endSkew / MemoryMatch.cardFlipDx;
+                cardAnimator.endYSkew = endSkew;
             }
             MemoryMatch.triggerSoundFx("soundCardFlip");
         }
@@ -5207,7 +5214,8 @@ this.MemoryMatch = {
 
         card.flipAnimationPhaseTwo = function (card) {
             var cardAnimator,
-                cardImage = card.getChildAt(card.SPRITEINDEX.SPRITE_CARDFACE);
+                cardImage = card.getChildAt(card.SPRITEINDEX.SPRITE_CARDFACE),
+                endSkew = -90;
 
             cardImage.visible = true;
             card.seenCount ++;
@@ -5219,7 +5227,7 @@ this.MemoryMatch = {
             } else {
                 cardAnimator = MemoryMatch.AnimationHandler.addToAnimationQueue(card, 0, 0, false, null, card.flipAnimationComplete);
                 if (cardAnimator != null) {
-                    cardAnimator.vYSkew = -1.0 * MemoryMatch.cardFlipSpeed;
+                    cardAnimator.vYSkew = endSkew / MemoryMatch.cardFlipDx;
                     cardAnimator.endYSkew = 0;
                 }
             }
@@ -5229,6 +5237,7 @@ this.MemoryMatch = {
         card.unflipAnimationPhaseTwo = function (card) {
             var cardBack = card.getChildAt(card.SPRITEINDEX.SPRITE_CARDBACK),
                 cardImage = card.getChildAt(card.SPRITEINDEX.SPRITE_CARDFACE),
+                endSkew = -90,
                 cardAnimator;
 
             cardBack.visible = true;
@@ -5241,7 +5250,7 @@ this.MemoryMatch = {
             } else {
                 cardAnimator = MemoryMatch.AnimationHandler.addToAnimationQueue(card, 0, 0, false, null, card.flipAnimationComplete);
                 if (cardAnimator != null) {
-                    cardAnimator.vYSkew = -1.0 * MemoryMatch.cardFlipSpeed;
+                    cardAnimator.vYSkew = endSkew / MemoryMatch.cardFlipDx;
                     cardAnimator.endYSkew = 0;
                 }
             }
@@ -5272,18 +5281,21 @@ this.MemoryMatch = {
         }
 
         card.flipBack = function () {
+            var endSkew = 90,
+                cardAnimator;
+
             if (MemoryMatch.gamePaused && ! MemoryMatch.showingDemo) {
                 return;
             }
             // begin card flip animation
             this.isEnabled = false;
             this.state = MemoryMatch.CARDSTATE.FLIPPING;
-            var cardAnimator = MemoryMatch.AnimationHandler.addToAnimationQueue(this, 0, 0, false, null, this.unflipAnimationPhaseTwo);
+            cardAnimator = MemoryMatch.AnimationHandler.addToAnimationQueue(this, 0, 0, false, null, this.unflipAnimationPhaseTwo);
 
             this.unselect();
             if (cardAnimator != null) {
-                cardAnimator.vYSkew = MemoryMatch.cardFlipSpeed;
-                cardAnimator.endYSkew = 90;
+                cardAnimator.vYSkew = endSkew / MemoryMatch.cardFlipDx;
+                cardAnimator.endYSkew = endSkew;
             }
         }
 
