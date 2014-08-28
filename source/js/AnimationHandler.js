@@ -34,7 +34,7 @@ MemoryMatch.AnimationHandler = {
         this.canvas = _canvas;
         this.stage = _stage;
         this.fps = MemoryMatch.fps;
-        this.frameTime = 1000 / this.fps;
+        this.frameTime = MemoryMatch.frameTime;
         this.imgSeq = new Image();
         // set up an animation instance, which we will clone when we need to
         this.spriteTemplateParticles = new createjs.Sprite(new createjs.SpriteSheet(spriteDataParticles));

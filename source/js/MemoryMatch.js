@@ -279,7 +279,10 @@ this.MemoryMatch = {
         // create a new stage and point it at our canvas:
         this.stage = new createjs.Stage(canvas);
         if ( ! MemoryMatch.isTouchDevice) {
+            MemoryMatch.fps = 50;
             this.stage.enableMouseOver(10); // detecting mouseover is a performance drain, so only do it if we need it
+        } else {
+            MemoryMatch.fps = 40;
         }
         createjs.Touch.enable(this.stage, true, false);
 
