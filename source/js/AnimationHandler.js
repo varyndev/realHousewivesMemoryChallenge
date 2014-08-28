@@ -20,7 +20,8 @@ MemoryMatch.AnimationHandler = {
     isQuitPending: false,
     maxWidth: 0,
     maxHeight: 0,
-    fps: 60,
+    fps: 0,
+    frameTime: 0,
 
 
     init: function (_canvas, _stage) {
@@ -33,6 +34,7 @@ MemoryMatch.AnimationHandler = {
         this.canvas = _canvas;
         this.stage = _stage;
         this.fps = MemoryMatch.fps;
+        this.frameTime = 1000 / this.fps;
         this.imgSeq = new Image();
         // set up an animation instance, which we will clone when we need to
         this.spriteTemplateParticles = new createjs.Sprite(new createjs.SpriteSheet(spriteDataParticles));
@@ -346,12 +348,12 @@ MemoryMatch.AnimationHandler = {
             isAnimating = true;
 
             // update position, scale, and alpha:
-            particle.x += particle.vX;
-            particle.y += particle.vY;
-            particle.alpha += particle.vA;
-            particle.scaleX += particle.vScale;
-            particle.scaleY += particle.vScale;
-            particle.rotation += particle.vRotation;
+            particle.x += particle.vX * deltaTime;
+            particle.y += particle.vY * deltaTime;
+            particle.alpha += particle.vA * deltaTime;
+            particle.scaleX += particle.vScale * deltaTime;
+            particle.scaleY += particle.vScale * deltaTime;
+            particle.rotation += particle.vRotation * deltaTime;
 
             // remove sparkles that are no longer visible or are stalled:
             if (particle.alpha <= 0 || particle.y >= this.maxHeight && particle.vY < 1) {
@@ -394,6 +396,7 @@ MemoryMatch.AnimationHandler = {
         var angle = 0,
             v,
             i,
+            speed,
             particle;
 
         if (MemoryMatch.gamePaused) {
@@ -417,10 +420,11 @@ MemoryMatch.AnimationHandler = {
 
             // set up velocities for x, y, and alpha:
             angle = 2 * Math.PI * Math.random();
-            v = (Math.random() - 0.5) * 40;
+            speed = 40 / this.frameTime;
+            v = (Math.random() - 0.5) * speed;
             particle.vX = Math.cos(angle) * v;
             particle.vY = Math.sin(angle) * v;
-            particle.vA = -Math.random() * 0.05 - 0.01;
+            particle.vA = (-Math.random() * 0.05 - 0.01) / this.frameTime;
             if (particle.vX === 0) {
                 particle.vX = 0.5;
             }
@@ -442,7 +446,8 @@ MemoryMatch.AnimationHandler = {
 
     startSplatterParticles: function (numberOfParticles, x, y) {
         // create the specified number of particles and send them off in random directions
-        var angle = 0,
+        var angle,
+            speed,
             v,
             i,
             particle;
@@ -460,7 +465,7 @@ MemoryMatch.AnimationHandler = {
             particle.alpha = Math.random() * 0.5 + 0.5;
             particle.scaleX = particle.scaleY = Math.random() + 0.8;
             particle.vScale = 0;
-            particle.vRotation = Math.random() * 10 - 5;
+            particle.vRotation = (Math.random() * 10 - 5) / this.frameTime;
             particle.compositeOperation = "lighter";
             particle.bounce = false;
             particle.applyGravity = false;
@@ -468,10 +473,11 @@ MemoryMatch.AnimationHandler = {
 
             // set up velocities for x, y, and alpha:
             angle = 2 * Math.PI * Math.random();
-            v = (Math.random() - 0.5) * 40;
+            speed = 40 / this.frameTime;
+            v = (Math.random() - 0.5) * speed;
             particle.vX = Math.cos(angle) * v;
             particle.vY = Math.sin(angle) * v;
-            particle.vA = -Math.random() * 0.05 - 0.01;
+            particle.vA = (-Math.random() * 0.05 - 0.01) / this.frameTime;
             if (particle.vX === 0) {
                 particle.vX = 0.5;
             }
@@ -493,7 +499,8 @@ MemoryMatch.AnimationHandler = {
 
     startSplatterStars: function (numberOfStars, x, y) {
         // create the specified number of particles and send them off in random directions
-        var angle = 0,
+        var angle,
+            speed,
             v,
             i,
             particle;
@@ -512,7 +519,7 @@ MemoryMatch.AnimationHandler = {
             particle.alpha = Math.random() * 0.5 + 0.5;
             particle.scaleX = particle.scaleY = Math.random() + 0.8;
             particle.vScale = 0;
-            particle.vRotation = Math.random() * 30 - 15;
+            particle.vRotation = (Math.random() * 30 - 15) / this.frameTime;
             particle.compositeOperation = "lighter";
             particle.bounce = false;
             particle.applyGravity = false;
@@ -520,10 +527,11 @@ MemoryMatch.AnimationHandler = {
 
             // set up velocities for x, y, and alpha:
             angle = 2 * Math.PI * Math.random();
-            v = (Math.random() - 0.5) * 80;
+            speed = 80 / this.frameTime;
+            v = (Math.random() - 0.5) * speed;
             particle.vX = Math.cos(angle) * v;
             particle.vY = Math.sin(angle) * v;
-            particle.vA = -Math.random() * 0.05 - 0.01;
+            particle.vA = (-Math.random() * 0.05 - 0.01) / this.frameTime;
             if (particle.vX === 0) {
                 particle.vX = 0.5;
             }
@@ -543,6 +551,7 @@ MemoryMatch.AnimationHandler = {
         // create the specified number of particles and send them off in a burst
         var angleIncrement = (360 / numberOfParticles) * (Math.PI / 180),
             angle = 0,
+            speed,
             v,
             i,
             particle;
@@ -559,8 +568,8 @@ MemoryMatch.AnimationHandler = {
             particle.y = y;
             particle.alpha = Math.random() * 0.5 + 0.5;
             particle.scaleX = particle.scaleY = Math.random() + 0.9;
-            particle.vScale = 0.02;
-            particle.vRotation = Math.random() * 10 - 5;
+            particle.vScale = (0.02 / this.frameTime);
+            particle.vRotation = (Math.random() * 10 - 5) / this.frameTime;
             particle.compositeOperation = "lighter";
             particle.bounce = false;
             particle.applyGravity = true;
@@ -568,10 +577,11 @@ MemoryMatch.AnimationHandler = {
 
             // set up velocities for x, y, and alpha:
             angle += angleIncrement;
-            v = (0.8 + (Math.random() * 0.2)) * 20;
+            speed = 20 / this.frameTime;
+            v = (0.8 + (Math.random() * 0.2)) * speed;
             particle.vX = Math.cos(angle) * v;
             particle.vY = Math.sin(angle) * v;
-            particle.vA = -0.01; // -Math.random() * 0.01 - 0.005;
+            particle.vA = -0.01 / this.frameTime;
             if (particle.vX === 0) {
                 particle.vX = 0.5;
             }
@@ -673,8 +683,10 @@ MemoryMatch.AnimationHandler = {
             // reset gravity and friction
             particle.vY = 0;
             particle.vX = 0;
+            particle.vA = 0;
             particle.vScale = 0;
-            particle.y = -10;
+            particle.vRotation = 0;
+            particle.y = -100;
             particle.alpha = 0;
             this.stage.removeChild(particle);
         }
