@@ -177,12 +177,9 @@ MemoryMatch.GameResults = {
     },
 
     startAnimationComplete: function (sprite) {
+        this.isEnabled = true;
         if (MemoryMatch.isChallengeGame) {
-            this.isEnabled = true;
             this.flashNextButton();
-        }
-        if (this.stateCompleteCallback !== null) {
-            // stateCompleteCallback();
         }
     },
 
@@ -217,6 +214,7 @@ MemoryMatch.GameResults = {
         if (MemoryMatch.GameResults.isShowing()) {
             MemoryMatch.GameResults.closeStartAnimation();
         }
+        MemoryMatch.stageUpdated = true;
     },
 
     onClickNext: function (event) {
@@ -257,11 +255,9 @@ MemoryMatch.GameResults = {
 
     onCloseAdInterstital: function (event) {
         if ( ! MemoryMatch.gamePaused) {
-//            MemoryMatch.debugLog("onCloseAdInterstital and game is NOT PAUSED");
             MemoryMatch.GameResults.close();
             MemoryMatch.GameResults.pausedWhileShowingAd = false;
         } else {
-//            MemoryMatch.debugLog("onCloseAdInterstital but game is PAUSED");
             MemoryMatch.GameResults.pausedWhileShowingAd = true;
         }
     },

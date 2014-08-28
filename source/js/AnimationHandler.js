@@ -304,11 +304,17 @@ MemoryMatch.AnimationHandler = {
                 }
                 if (animatingObject.markedForRemoval) {
                     objectsToRemove ++;
-                    if (animatingObject.showAtEnd != null) {
-                        animatingObject.actor.visible = animatingObject.showAtEnd;
-                    }
                     if (animatingObject.endFunction != null) {
                         animatingObject.endFunction(animatingObject.actor);
+                    }
+                    if (animatingObject.removeFromStage) {
+                        if (animatingObject.actor != null && animatingObject.actor.parent != null && animatingObject.actor.parent.removeChild != null) {
+                            animatingObject.actor.parent.removeChild(animatingObject.actor);
+                        }
+                    } else {
+                        if (animatingObject.showAtEnd != null) {
+                            animatingObject.actor.visible = animatingObject.showAtEnd;
+                        }
                     }
                 }
             }
@@ -645,6 +651,9 @@ MemoryMatch.AnimationHandler = {
 //            MemoryMatch.debugLog("Removing Actor " + i + "; " + animatingObject.actor.name);
             if (animatingObject.tag == tag) {
                 animatingObject.markedForRemoval = true;
+                if (animatingObject.actor != null && animatingObject.actor.parent != null && animatingObject.actor.parent.removeChild != null) {
+                    animatingObject.actor.parent.removeChild(animatingObject.actor);
+                }
                 objectsToRemove ++;
             }
         }
