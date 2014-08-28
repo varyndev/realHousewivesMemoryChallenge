@@ -5931,6 +5931,8 @@ this.MemoryMatch = {
     },
 
     onCloseAdPopup: function () {
+        MemoryMatch.adIsShowing = false;
+        MemoryMatch.returnToPriorGameState();
         if (MemoryMatch.isTouchDevice && MemoryMatch.mainMenuViewCount < 2) {
             MemoryMatch.playBackgroundMusic();
         }
