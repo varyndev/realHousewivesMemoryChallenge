@@ -2663,7 +2663,7 @@ this.MemoryMatch = {
                 }
                 break;
             case MemoryMatch.GAMEPLAYTYPE.EYESPY:
-                if (MemoryMatch.gameNumber >= 14) {
+                if (MemoryMatch.gameNumber > 14) {
                     earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.EAGLEEYE) | earnedAchievement;
                 }
                  break;
