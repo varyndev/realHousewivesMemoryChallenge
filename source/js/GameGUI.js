@@ -120,6 +120,8 @@ MemoryMatch.GameGUI = {
     show: function (showFlag) {
         // show or hide the HUD. This triggers the animation so it will take some time before it is in a ready state.
         var finalY,
+            guiAnimator,
+            duration,
             distance;
 
         if (this.groupDisplayObject == null) {
@@ -144,8 +146,9 @@ MemoryMatch.GameGUI = {
         if (finalY != this.groupDisplayObject.y && ! this.isAnimating) {
             this.messageField.visible = false; // hide message field until animation completes
             this.isAnimating = true;
-            var guiAnimator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.groupDisplayObject, 0, 0, false, null, this.showAnimationComplete.bind(this));
-            guiAnimator.vY = distance / (0.2 * MemoryMatch.fps);
+            duration = 0.2;
+            guiAnimator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.groupDisplayObject, 0, 0, false, null, this.showAnimationComplete.bind(this));
+            guiAnimator.vY = distance / (duration * MemoryMatch.fps);
             guiAnimator.endY = finalY;
         }
     },
@@ -234,8 +237,8 @@ MemoryMatch.GameGUI = {
     },
 
     flashMatchCountDisplayUpdate: function (event) {
-        var stillFlashing = true;
-        var newAlpha = 1;
+        var stillFlashing = true,
+            newAlpha = 1;
 
         if (this.matchCountField == null) {
             return;
@@ -293,8 +296,8 @@ MemoryMatch.GameGUI = {
     },
 
     updateComboMultiplier: function (newValue) {
-        var displayString = '';
-        var startAnimation = false;
+        var displayString = '',
+            startAnimation = false;
 
         if (this.comboMultiplierSprite != null) {
             if (newValue == null || newValue < 2) {
@@ -439,10 +442,10 @@ MemoryMatch.GameGUI = {
             if (timerTextFieldAnimate != null) {
                 animator = MemoryMatch.AnimationHandler.addToAnimationQueue(timerTextFieldAnimate, 0, 900, false, null, null);
                 animator.showAtBegin = true;
-                animator.vAlpha = -0.0167;
-                animator.vXScale = 0.0093;
+                animator.vAlpha = -1 / MemoryMatch.fps;
+                animator.vXScale = 0.5 / MemoryMatch.fps;
                 animator.endXScale = 1.5;
-                animator.vYScale = 0.0093;
+                animator.vYScale = animator.vXScale;
                 animator.endYScale = 1.5;
                 this.timerCountdownTimer = window.setTimeout(this.onTimerCountdownTick.bind(this), 1000);
                 this.lastUpdateTime = Date.now();
@@ -704,30 +707,29 @@ MemoryMatch.GameGUI = {
     },
 
     startComboSpriteAnimation: function () {
-        var animator;
+        var animator,
+            duration = 0.25;
 
         if (this.comboMultiplierSprite != null) {
             // grow & rotate
             animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.comboMultiplierSprite, 0, 0, false, null, this.comboSpriteAnimationPhaseTwo.bind(this));
             animator.showAtBegin = true;
-            animator.vXScale = 0.08;
-            animator.endXScale = 1.2;
-            animator.vYScale = 0.08;
-            animator.endYScale = 1.2;
-            animator.vRotation = -1.2;
+            animator.endXScale = animator.endXScale = 1.2;
+            animator.vXScale = animator.vYScale = animator.endXScale / (duration * MemoryMatch.fps);
             animator.endRotation = -12;
+            animator.vRotation = animator.endRotation / (duration * MemoryMatch.fps);
         }
     },
 
     comboSpriteAnimationPhaseTwo: function () {
-        var animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.comboMultiplierSprite, 0, 0, false, null, this.killComboSpriteAnimation.bind(this));
+        var animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.comboMultiplierSprite, 0, 0, false, null, this.killComboSpriteAnimation.bind(this)),
+            duration = 0.25;
+
         animator.showAtBegin = true;
-        animator.vXScale = -0.08;
-        animator.endXScale = 1.0;
-        animator.vYScale = -0.08;
-        animator.endYScale = 1.0;
-        animator.vRotation = 1.2;
+        animator.endXScale = animator.endYScale = 1.0;
+        animator.vXScale = animator.vYScale = (animator.endXScale - this.comboMultiplierSprite.scaleX) / (duration * MemoryMatch.fps);
         animator.endRotation = 0;
+        animator.vRotation = -1 * this.comboMultiplierSprite.rotation / (duration * MemoryMatch.fps);
     },
 
     killComboSpriteAnimation: function () {

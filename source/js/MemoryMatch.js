@@ -98,7 +98,8 @@ this.MemoryMatch = {
         PICASSO:           20,
         EAGLEEYE:          21
     },
-    BOARD_ANIMATION_TAG: 990,
+    BOARD_ANIMATION_TAG:       990,
+    GAMERESULTS_ANIMATION_TAG: 991,
 
     cacheStatusValues: ['uncached', 'idle', 'checking', 'downloading', 'updateready', 'obsolete'],
     gameWasInitialized: false,
@@ -124,8 +125,8 @@ this.MemoryMatch = {
     stageScaleFactor: 1,
     cardScaleFactor: 1,
     stageAspectRatio: 1.3333,
-    fps: 50,                 // expected number of frames per second
-    frameTime: 25,           // expected milliseconds per frame
+    fps: 40,                 // expected number of frames per second
+    frameTime: 25,           // expected milliseconds per frame (1000 / fps)
     gamePaused: false,       // game is paused
     gamePausePending: false, // game is in process to pause or unpause but need to complete animations
     runAnimations: true,     // flag to override animation engine
@@ -2515,7 +2516,7 @@ this.MemoryMatch = {
             MemoryMatch.cardsDoNotMatch();
             MemoryMatch.triggerSoundFx("soundMiss", {delay: 100});
             // unselect card then unflip after a delay
-            cardAnimator = MemoryMatch.AnimationHandler.addToAnimationQueue(cardSelected, 400, 0, false, null, MemoryMatch.onCardMissWaitComplete);
+            MemoryMatch.AnimationHandler.addToAnimationQueue(cardSelected, 400, 0, false, null, MemoryMatch.onCardMissWaitComplete);
             if ( ! (MemoryMatch.moveCountDown > 0 || MemoryMatch.levelTolerance == 0)) { // game over? show target card
                 for (i = 0; i < MemoryMatch.allCardsOnBoard.length; i ++) {
                     card = MemoryMatch.allCardsOnBoard[i];
@@ -3161,7 +3162,8 @@ this.MemoryMatch = {
             yOffset,
             controlPoint,
             cardAnimator,
-            cardSpeed;
+            numberOfPoints,
+            animationDuration;
 
         if (MemoryMatch.gamePaused || MemoryMatch.allCardsOnBoard == null || MemoryMatch.allCardsOnBoard.length == 0) {
             return;
@@ -3193,7 +3195,8 @@ this.MemoryMatch = {
                 secondCardIndex = MemoryMatch.monteMoves[MemoryMatch.monteIndex][1];
                 firstCard = MemoryMatch.allCardsOnBoard[firstCardIndex];
                 secondCard = MemoryMatch.allCardsOnBoard[secondCardIndex];
-                cardSpeed = 15;
+                animationDuration = 0.25;
+                numberOfPoints = animationDuration * MemoryMatch.fps;
 
                 // move first card to second, and second to first
                 halfTheDistance = (secondCard.x - firstCard.x) * 0.5;
@@ -3206,13 +3209,13 @@ this.MemoryMatch = {
 
                 cardAnimator = MemoryMatch.AnimationHandler.addToAnimationQueue(firstCard, 0, 0, false, null, null);
                 cardAnimator.currentPointIndex = 0;
-                cardAnimator.arrayOfPoints = MemoryMatch.makeBezierPointArray(firstCard, controlPoint, secondCard, cardSpeed);
+                cardAnimator.arrayOfPoints = MemoryMatch.makeBezierPointArray(firstCard, controlPoint, secondCard, numberOfPoints);
                 cardAnimator.continueChain = false;
                 cardAnimator.tickFunction = MemoryMatch.moveSpriteOnPath;
 
                 cardAnimator = MemoryMatch.AnimationHandler.addToAnimationQueue(secondCard, 0, 0, false, null, null);
                 cardAnimator.currentPointIndex = 0;
-                cardAnimator.arrayOfPoints = MemoryMatch.makeBezierPointArray(secondCard, controlPoint, firstCard, cardSpeed);
+                cardAnimator.arrayOfPoints = MemoryMatch.makeBezierPointArray(secondCard, controlPoint, firstCard, numberOfPoints);
                 cardAnimator.continueChain = true;
                 cardAnimator.tickFunction = MemoryMatch.moveSpriteOnPath;
             } else { // we played all the shuffles, clean up and let the user find the card
@@ -3485,6 +3488,7 @@ this.MemoryMatch = {
     showScoreBalloon: function (score, cardPoint) {
         var animator,
             bounds,
+            animationTime = 3,
             comboBonusText = new createjs.Text("+ " + score.toString(), MemoryMatch.getScaledFontSize(64) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColorBonus);
 
         comboBonusText.textAlign = "center";
@@ -3496,14 +3500,12 @@ this.MemoryMatch = {
         MemoryMatch.stage.addChild(comboBonusText);
         animator = MemoryMatch.AnimationHandler.addToAnimationQueue(comboBonusText, 250, 0, true, null, null);
         animator.showAtBegin = true;
-        animator.vAlpha = -0.011;
+        animator.vAlpha = -1 / (animationTime * MemoryMatch.fps); // reduce alpha to 0 over time
         animator.endAlpha = 0;
         animator.killOnAlphaZero = true;
-        animator.vY = -1.5;
-        animator.vXScale = 0.003;
-        animator.endXScale = 1.25;
-        animator.vYScale = 0.003;
-        animator.endYScale = 1.25;
+        animator.vY = -1 * (72 / MemoryMatch.fps) // move up 72px/s until alpha reaches 0
+        animator.endXScale = animator.endYScale = 1.25;
+        animator.vXScale = animator.vYScale = 0.5 / (animationTime * MemoryMatch.fps);
         return true;
     },
 
@@ -3515,6 +3517,7 @@ this.MemoryMatch = {
             startY,
             width,
             height,
+            animationTime = 3,
             groupDisplayObject = new createjs.Container(),
             iconSprite,
             iconSize,
@@ -3579,14 +3582,12 @@ this.MemoryMatch = {
         groupDisplayObject.cache(startX, startY, width, height);
         animator = MemoryMatch.AnimationHandler.addToAnimationQueue(groupDisplayObject, 250, 0, true, null, null);
         animator.showAtBegin = true;
-        animator.vAlpha = -0.011;
+        animator.vAlpha = -1 / (animationTime * MemoryMatch.fps); // reduce alpha to 0 over time
         animator.endAlpha = 0;
         animator.killOnAlphaZero = true;
-        animator.vY = -1.5;
-        animator.vXScale = 0.003;
-        animator.endXScale = 1.25;
-        animator.vYScale = 0.003;
-        animator.endYScale = 1.25;
+        animator.vY = -1 * (72 / MemoryMatch.fps) // move up 72px/s until alpha reaches 0
+        animator.endXScale = animator.endYScale = 1.25;
+        animator.vXScale = animator.vYScale = 0.5 / (animationTime * MemoryMatch.fps);
     },
 
     changeGameState: function (newState) {
@@ -5134,6 +5135,7 @@ this.MemoryMatch = {
                 centerY = MemoryMatch.cardHeight * 0.5,
                 cardHighlight = this.getChildAt(this.SPRITEINDEX.SPRITE_HIGHLIGHT),
                 shapeFx,
+                duration,
                 cardAnimator;
 
             if (showHighlight) {
@@ -5148,6 +5150,9 @@ this.MemoryMatch = {
                 shapeFx.setTransform(centerX, centerY, 1, 1);
                 shapeFx.alpha = 0.6;
                 shapeFx.mask = cardHighlight;
+                duration = 0.25; // animation should take 250 milliseconds
+                shapeFx.dScaleX = 1 + (5.0 / (duration * MemoryMatch.fps));
+                shapeFx.dAlpha = 0.9 - 0.95 / (duration * MemoryMatch.fps);
                 cardAnimator = MemoryMatch.AnimationHandler.addToAnimationQueue(this, 0, 0, false, null, null);
                 cardAnimator.tickFunction = this.updateSelect;
             }
@@ -5166,10 +5171,10 @@ this.MemoryMatch = {
             if (card != null) {
                 shapeFx = card.getChildAt(card.SPRITEINDEX.SPRITE_SPECIALFX);
                 if (shapeFx != null) {
-                    newScale = shapeFx.scaleX * 1.3;
+                    newScale = shapeFx.scaleX * shapeFx.dScaleX;
                     shapeFx.scaleX = newScale;
                     shapeFx.scaleY = newScale;
-                    newAlpha = shapeFx.alpha * 0.91;
+                    newAlpha = shapeFx.alpha * shapeFx.dAlpha;
                     shapeFx.alpha = newAlpha;
                     if (newAlpha < 0.05) {
                         keepAnimating = false;

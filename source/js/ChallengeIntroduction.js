@@ -57,9 +57,6 @@ MemoryMatch.ChallengeIntroduction = {
         this.isEnabled = true;
         MemoryMatch.stopBackgroundMusic();
         MemoryMatch.playInterstitialMusic("soundChallenge", true);
-        if (this.stateCompleteCallback !== null) {
-            // stateCompleteCallback();
-        }
     },
 
     resumeFromPause: function () {

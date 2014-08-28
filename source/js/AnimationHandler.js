@@ -20,6 +20,7 @@ MemoryMatch.AnimationHandler = {
     isQuitPending: false,
     maxWidth: 0,
     maxHeight: 0,
+    fps: 60,
 
 
     init: function (_canvas, _stage) {
@@ -31,6 +32,7 @@ MemoryMatch.AnimationHandler = {
 
         this.canvas = _canvas;
         this.stage = _stage;
+        this.fps = MemoryMatch.fps;
         this.imgSeq = new Image();
         // set up an animation instance, which we will clone when we need to
         this.spriteTemplateParticles = new createjs.Sprite(new createjs.SpriteSheet(spriteDataParticles));

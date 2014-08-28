@@ -357,6 +357,7 @@ MemoryMatch.GameResults = {
                 } else {
                     animator = MemoryMatch.AnimationHandler.addToAnimationQueue(starSpriteCloned, starAnimationDelay + (500 * i), 0, false, null, this.showStar.bind(this));
                     animator.showAtBegin = true;
+                    animator.tag = MemoryMatch.GAMERESULTS_ANIMATION_TAG;
                 }
             }
             startX += slotWidth + starGap;
@@ -394,6 +395,7 @@ MemoryMatch.GameResults = {
         if (this.holdThirdStar !== null) {
             animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.holdThirdStar, delay, 0, false, null, this.showStar.bind(this));
             animator.showAtBegin = true;
+            animator.tag = MemoryMatch.GAMERESULTS_ANIMATION_TAG;
             this.holdThirdStar = null;
             MemoryMatch.triggerSoundFx("soundBonus", {delay: delay});
         }
@@ -561,6 +563,7 @@ MemoryMatch.GameResults = {
             groupDisplayObject.addChild(levelTextField);
             animator = MemoryMatch.AnimationHandler.addToAnimationQueue(levelTextField, starAnimationDelay + (500 * fieldOffset), 0, false, null, this.animateTextMisses.bind(this));
             animator.showAtBegin = true;
+            animator.tag = MemoryMatch.GAMERESULTS_ANIMATION_TAG;
             if (this.movesRemainingBonus > 0) {
                 this.matchBonusText = new createjs.Text("+ " + this.movesRemainingBonus.toString(), fontSizeBold, fontColorBonus);
                 this.matchBonusText.textAlign = "left";
@@ -573,10 +576,11 @@ MemoryMatch.GameResults = {
                 animationDisplayObject.addChild(this.matchBonusText);
                 animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.matchBonusText, starAnimationDelay + (750 * fieldOffset), 0, false, null, null);
                 animator.showAtBegin = true;
-                animator.vAlpha = -0.02;
+                animator.tag = MemoryMatch.GAMERESULTS_ANIMATION_TAG;
+                animator.vAlpha = -1 / 3 * MemoryMatch.fps; // reduce alpha to 0 over 3 seconds
                 animator.endAlpha = 0;
                 animator.killOnAlphaZero = true;
-                animator.vY = -1.2;
+                animator.vY = -1 * (72 / MemoryMatch.fps) // move up 72px/s until alpha reaches 0
                 animator.vXscale = 0.1;
                 animator.vYscale = 0.1;
             }
@@ -604,6 +608,7 @@ MemoryMatch.GameResults = {
             groupDisplayObject.addChild(levelTextField);
             animator = MemoryMatch.AnimationHandler.addToAnimationQueue(levelTextField, starAnimationDelay + (500 * fieldOffset), 0, false, null, this.animateText.bind(this));
             animator.showAtBegin = true;
+            animator.tag = MemoryMatch.GAMERESULTS_ANIMATION_TAG;
             fieldOffset ++;
 
             if (MemoryMatch.gameType != MemoryMatch.GAMEPLAYTYPE.CHAINS) {
@@ -628,6 +633,7 @@ MemoryMatch.GameResults = {
                 groupDisplayObject.addChild(levelTextField);
                 animator = MemoryMatch.AnimationHandler.addToAnimationQueue(levelTextField, starAnimationDelay + (500 * fieldOffset), 0, false, null, this.animateTextComboBonus.bind(this));
                 animator.showAtBegin = true;
+                animator.tag = MemoryMatch.GAMERESULTS_ANIMATION_TAG;
                 this.matchBonusText = null;
                 if (this.comboBonus > 0) {
                     this.comboBonusText = new createjs.Text("+ " + this.comboBonus.toString(), fontSizeBold, fontColorBonus);
@@ -641,10 +647,11 @@ MemoryMatch.GameResults = {
                     animationDisplayObject.addChild(this.comboBonusText);
                     animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.comboBonusText, starAnimationDelay + (500 * fieldOffset), 0, false, null, null);
                     animator.showAtBegin = true;
-                    animator.vAlpha = -0.02;
+                    animator.tag = MemoryMatch.GAMERESULTS_ANIMATION_TAG;
+                    animator.vAlpha = -1 / 3 * MemoryMatch.fps; // reduce alpha to 0 over 3 seconds
                     animator.endAlpha = 0;
                     animator.killOnAlphaZero = true;
-                    animator.vY = -1.2;
+                    animator.vY = -1 * (72 / MemoryMatch.fps) // move up 72px/s until alpha reaches 0
                     animator.vXscale = 0.1;
                     animator.vYscale = 0.1;
                 }
@@ -676,6 +683,7 @@ MemoryMatch.GameResults = {
             groupDisplayObject.addChild(levelTextField);
             animator = MemoryMatch.AnimationHandler.addToAnimationQueue(levelTextField, starAnimationDelay + (500 * fieldOffset), 0, false, null, this.animateTextTimeBonus.bind(this));
             animator.showAtBegin = true;
+            animator.tag = MemoryMatch.GAMERESULTS_ANIMATION_TAG;
 
             Y += this.lineHeight;
         } else {
@@ -961,6 +969,7 @@ MemoryMatch.GameResults = {
             this.animationDisplayObject.addChild(this.gemSprite);
             steps = MemoryMatch.fps * duration;
             animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.gemSprite, 300, 0, false, null, this.gemAnimationComplete.bind(this));
+            animator.tag = MemoryMatch.GAMERESULTS_ANIMATION_TAG;
             animator.vX = (this.gemSpriteFinalPosition.x - this.gemSprite.x) / steps;
             animator.endX = this.gemSpriteFinalPosition.x;
             animator.vY = (this.gemSpriteFinalPosition.y - this.gemSprite.y) / steps;
