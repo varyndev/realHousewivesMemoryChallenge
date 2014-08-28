@@ -280,11 +280,11 @@ MemoryMatch.AnimationHandler = {
                             animatingObject.endAlpha = null;
                         } else if (animatingObject.vAlpha < 0 && animatingObject.actor.alpha <= animatingObject.endAlpha) {
                             animatingObject.actor.alpha = animatingObject.endAlpha;
-                            if (animatingObject.endAlpha == 0 && animatingObject.killOnAlphaZero) {
-                                animatingObject.markedForRemoval = true;
-                            }
                             animatingObject.vAlpha = null;
                             animatingObject.endAlpha = null;
+                        }
+                        if (animatingObject.endAlpha == null && animatingObject.killOnAlphaZero) {
+                            animatingObject.markedForRemoval = true;
                         }
                     }
                 }
@@ -442,6 +442,7 @@ MemoryMatch.AnimationHandler = {
             this.stage.addChild(particle);
             this.allParticles.push(particle);
         }
+        MemoryMatch.stageUpdated = true;
     },
 
     startSplatterParticles: function (numberOfParticles, x, y) {
@@ -495,6 +496,7 @@ MemoryMatch.AnimationHandler = {
             this.stage.addChild(particle);
             this.allParticles.push(particle);
         }
+        MemoryMatch.stageUpdated = true;
     },
 
     startSplatterStars: function (numberOfStars, x, y) {
@@ -545,6 +547,7 @@ MemoryMatch.AnimationHandler = {
             this.stage.addChild(particle);
             this.allParticles.push(particle);
         }
+        MemoryMatch.stageUpdated = true;
     },
 
     startBurstParticles: function (numberOfParticles, x, y) {
@@ -599,6 +602,7 @@ MemoryMatch.AnimationHandler = {
             this.stage.addChild(particle);
             this.allParticles.push(particle);
         }
+        MemoryMatch.stageUpdated = true;
     },
 
     removeActor: function (actor) {
@@ -670,6 +674,7 @@ MemoryMatch.AnimationHandler = {
             this.stage.removeChild(sprite);
         }
         this.activeCardQueue = [];
+        MemoryMatch.stageUpdated = true;
     },
 
     clearAllParticles: function () {
@@ -691,5 +696,6 @@ MemoryMatch.AnimationHandler = {
             this.stage.removeChild(particle);
         }
         this.allParticles = [];
+        MemoryMatch.stageUpdated = true;
     }
 };

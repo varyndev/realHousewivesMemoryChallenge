@@ -32,9 +32,7 @@ MemoryMatch.GameGUI = {
     matchCountFieldFlashCount: 0,
     matchCountFlashTimer: null,
     optionsButton: null,
-    optionsButtonHelper: null,
     gameOptionsButton: null,
-    gameOptionsButtonHelper: null,
     isAnimating: false,
     flashThreshold: 2,
     comboMultiplier: 1,
@@ -96,9 +94,7 @@ MemoryMatch.GameGUI = {
         this.gameTimerField = null;
         this.messageField = null;
         this.optionsButton = null;
-        this.optionsButtonHelper = null;
         this.gameOptionsButton = null;
-        this.gameOptionsButtonHelper = null;
         this.groupDisplayObject.removeAllChildren();
         this.parentDisplayObject.removeChild(this.groupDisplayObject);
         this.groupDisplayObject = null;
@@ -150,6 +146,7 @@ MemoryMatch.GameGUI = {
             guiAnimator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.groupDisplayObject, 0, 0, false, null, this.showAnimationComplete.bind(this));
             guiAnimator.vY = distance / (duration * MemoryMatch.fps);
             guiAnimator.endY = finalY;
+            MemoryMatch.stageUpdated = true;
         }
     },
 
@@ -158,10 +155,12 @@ MemoryMatch.GameGUI = {
         this.messageField.visible = isShowing; // only show message field if GUI is showing
         this.comboMultiplierSprite.visible = isShowing;
         this.isAnimating = false;
+        MemoryMatch.stageUpdated = true;
     },
 
     setMessage: function (message) {
         this.messageField.text = message;
+        MemoryMatch.stageUpdated = true;
     },
 
     getHeight: function () {
@@ -184,6 +183,7 @@ MemoryMatch.GameGUI = {
         this.levelNumber = level;
         this.levelIcon.gotoAndStop(MemoryMatch.GameSetup.levels[level - 1].iconHUD);
         this.levelField.text = displayGameNumber.toString();
+        MemoryMatch.stageUpdated = true;
     },
 
     updateScoreDisplay: function (newScoreValue) {
@@ -195,6 +195,7 @@ MemoryMatch.GameGUI = {
         } else {
             this.scoreField.text = "0";
         }
+        MemoryMatch.stageUpdated = true;
     },
 
     updateMatchCountDisplay: function (newValue) {
@@ -217,6 +218,7 @@ MemoryMatch.GameGUI = {
             this.matchCountField.alpha = 1;
             this.matchCountFieldFlash = false;
         }
+        MemoryMatch.stageUpdated = true;
     },
 
     flashMatchCountDisplay: function (flashFlag, flashCount) {
@@ -234,6 +236,7 @@ MemoryMatch.GameGUI = {
                 this.matchCountFlashTimer = null;
             }
         }
+        MemoryMatch.stageUpdated = true;
     },
 
     flashMatchCountDisplayUpdate: function (event) {
@@ -262,6 +265,7 @@ MemoryMatch.GameGUI = {
             } else {
                 this.matchCountFlashTimer = null;
             }
+            MemoryMatch.stageUpdated = true;
         }
     },
 
@@ -293,6 +297,7 @@ MemoryMatch.GameGUI = {
             timeToShow = MemoryMatch.formatTimeAsString(newValue, true, false);
         }
         this.gameTimerField.text = timeToShow;
+        MemoryMatch.stageUpdated = true;
     },
 
     updateComboMultiplier: function (newValue) {
@@ -315,24 +320,29 @@ MemoryMatch.GameGUI = {
             if (startAnimation) {
                 this.startComboSpriteAnimation();
             }
+            MemoryMatch.stageUpdated = true;
         }
     },
 
     showOptionsButton: function (showFlag) {
         this.optionsButton.visible = showFlag;
+        MemoryMatch.stageUpdated = true;
     },
 
     showLevelField: function (showFlag) {
         this.levelField.visible = showFlag;
+        MemoryMatch.stageUpdated = true;
     },
 
     showMatchCountField: function (showFlag) {
         this.matchCountLabel.visible = showFlag;
         this.matchCountField.visible = showFlag;
+        MemoryMatch.stageUpdated = true;
     },
 
     showTimer: function (showFlag) {
         this.gameTimerField.visible = showFlag;
+        MemoryMatch.stageUpdated = true;
     },
 
     showTimerCountdown: function (message, startSeconds) {
@@ -410,6 +420,7 @@ MemoryMatch.GameGUI = {
             }
         }
         this.lastUpdateTime = 0;
+        MemoryMatch.stageUpdated = true;
     },
 
     hideTimerCountdown: function () {
@@ -422,6 +433,7 @@ MemoryMatch.GameGUI = {
             this.timerCountdownStarted = false;
             this.lastUpdateTime = 0;
             this.showTimer(true);
+            MemoryMatch.stageUpdated = true;
         }
     },
 
@@ -449,6 +461,7 @@ MemoryMatch.GameGUI = {
                 animator.endYScale = 1.5;
                 this.timerCountdownTimer = window.setTimeout(this.onTimerCountdownTick.bind(this), 1000);
                 this.lastUpdateTime = Date.now();
+                MemoryMatch.stageUpdated = true;
             }
         }
     },
@@ -485,6 +498,7 @@ MemoryMatch.GameGUI = {
                     this.timerCountdownStarted = false;
                     this.timerCountdownTimer = null;
                 }
+                MemoryMatch.stageUpdated = true;
             }
         }
     },
@@ -614,31 +628,28 @@ MemoryMatch.GameGUI = {
     },
 
     setupOptionsButton: function () {
-        var spriteFrame = "mapOptionsButtonUp",
-            optionsButton = new createjs.Sprite(new createjs.SpriteSheet(MemoryMatch.GameSetup.mapSpritesheetFrames), spriteFrame),
-            optionsButtonMargin = 20 * MemoryMatch.stageScaleFactor, // a little extra margin for the hit-area of the button
-            buttonSize = MemoryMatch.getSpriteFrameSize(MemoryMatch.GameSetup.mapSpritesheetFrames, spriteFrame);
+        var optionsButton,
+            position;
 
-        optionsButton.hitArea = new createjs.Shape(new createjs.Graphics().beginFill('909090').drawRect(-1 * optionsButtonMargin, 0, buttonSize.width + optionsButtonMargin, buttonSize.height + optionsButtonMargin));
-        optionsButton.setTransform(this.width * 0.946, this.height * 0.04);
-        optionsButton.framerate = 1;
-        this.optionsButtonHelper = new createjs.ButtonHelper(optionsButton, "mapOptionsButtonUp", "mapOptionsButtonOver", "mapOptionsButtonDown", false);
-        optionsButton.addEventListener("click", this.onOptions);
+        if (MemoryMatch.stageScaleFactor < 0.5) {
+            position = {x: 0.95, y: 0.04};
+        } else {
+            position = {x: 0.94, y: 0.03};
+        }
+        optionsButton = MemoryMatch.GUIButton({name: "optionsButton", tag: 1, disabled: false, callback: this.onOptions.bind(this), spriteFrames: MemoryMatch.GameSetup.mapSpritesheetFrames, expandHitArea: 20 * MemoryMatch.stageScaleFactor, baseUp: "mapOptionsButtonUp", baseOver: "mapOptionsButtonDown", baseDown: "mapOptionsButtonDown"});
+        optionsButton.setTransform(this.width * position.x, this.height * position.y);
         this.parentDisplayObject.addChild(optionsButton);
         optionsButton.visible = true;
         this.optionsButton = optionsButton;
     },
 
     setupGameOptionsButton: function () {
-        var spriteFrame = "optionsUp",
-            optionsButton = new createjs.Sprite(this.spriteData, spriteFrame),
-            buttonSize = MemoryMatch.getSpriteFrameSize(MemoryMatch.GameSetup.guiSpritesheet1Frames, spriteFrame);
+        var optionsButton,
+            buttonSize;
 
-        optionsButton.hitArea = new createjs.Shape(new createjs.Graphics().beginFill('909090').drawRect(0, 0, buttonSize.width, buttonSize.height));
+        optionsButton = MemoryMatch.GUIButton({name: "gameOptionsButton", tag: 2, disabled: false, callback: this.onGameOptions.bind(this), baseUp: "optionsUp", baseOver: "optionsDown", baseDown: "optionsDown"});
+        buttonSize = optionsButton.getSize();
         optionsButton.setTransform(this.width * 0.93, (this.hudHeight - buttonSize) * 0.5);
-        optionsButton.framerate = 1;
-        this.gameOptionsButtonHelper = new createjs.ButtonHelper(optionsButton, "optionsUp", "optionsOver", "optionsDown", false);
-        optionsButton.addEventListener("click", this.onGameOptions);
         this.groupDisplayObject.addChild(optionsButton);
         optionsButton.visible = true;
         this.gameOptionsButton = optionsButton;
@@ -651,7 +662,6 @@ MemoryMatch.GameGUI = {
 
     onOptions: function (eventType) {
         MemoryMatch.triggerSoundFx("soundTap");
-        MemoryMatch.GameGUI.optionsButton.gotoAndStop("optionsDown");
 
         // Show the Options popup
         if ( ! MemoryMatch.GameOptions.isShowing()) {
@@ -676,7 +686,6 @@ MemoryMatch.GameGUI = {
 
     onGameOptions: function (eventType) {
         MemoryMatch.triggerSoundFx("soundTap");
-        MemoryMatch.GameGUI.optionsButton.gotoAndStop("optionsDown");
 
         // Show the Game Paused popup
         if ( ! MemoryMatch.GameOptions.isShowing()) {
@@ -714,7 +723,7 @@ MemoryMatch.GameGUI = {
             // grow & rotate
             animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.comboMultiplierSprite, 0, 0, false, null, this.comboSpriteAnimationPhaseTwo.bind(this));
             animator.showAtBegin = true;
-            animator.endXScale = animator.endXScale = 1.2;
+            animator.endXScale = animator.endYScale = 1.2;
             animator.vXScale = animator.vYScale = animator.endXScale / (duration * MemoryMatch.fps);
             animator.endRotation = -12;
             animator.vRotation = animator.endRotation / (duration * MemoryMatch.fps);

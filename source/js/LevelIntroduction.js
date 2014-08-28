@@ -87,7 +87,7 @@ MemoryMatch.LevelIntroduction = {
         } else {
             this.isEnabled = true;
             this.groupDisplayObject.setTransform(this.parentDisplayObject.canvas.width * 0.5, this.parentDisplayObject.canvas.height * 0.5, 1, 1, 0, 0, 0, this.backgroundWidth * 0.5, this.backgroundHeight * 0.5);
-            this.scheduleDemoAnimation(1000);
+            this.demoAnimationStep();
         }
 //        this.groupDisplayObject.cache(0, 0, this.backgroundWidth, this.backgroundHeight);
     },
@@ -98,10 +98,12 @@ MemoryMatch.LevelIntroduction = {
 
         animator.endYScale = animator.endXScale = 1.0;
         animator.vYScale = animator.vXScale = -1 * (animator.endXScale / (duration * MemoryMatch.fps));
+        MemoryMatch.stageUpdated = true;
     },
 
     startAnimationComplete: function (sprite) {
         this.isEnabled = true;
+        MemoryMatch.stageUpdated = true;
         this.scheduleDemoAnimation(1000);
     },
 
@@ -483,6 +485,7 @@ MemoryMatch.LevelIntroduction = {
         matchCountField.maxWidth = width * 0.25;
         matchCountField.name = 'matchCounter';
         groupDisplayObject.addChild(matchCountField);
+        MemoryMatch.stageUpdated = true;
     },
 
     setupGameTimerTextField: function (groupDisplayObject, x, y) {
@@ -545,6 +548,7 @@ MemoryMatch.LevelIntroduction = {
         timerCountdownGroup.setTransform(x - (containerWidth * 0.5), y);
         timerCountdownGroup.name = 'studyGroup';
         groupDisplayObject.addChild(timerCountdownGroup);
+        MemoryMatch.stageUpdated = true;
     },
 
     showChainsPath: function (groupDisplayObject, x, y, scale) {
@@ -659,6 +663,7 @@ MemoryMatch.LevelIntroduction = {
                 offset += 4 * MemoryMatch.stageScaleFactor;
             }
         }
+        MemoryMatch.stageUpdated = true;
     },
 
     clearChainsMatches: function (groupDisplayObject, matchesToShow) {
@@ -676,6 +681,7 @@ MemoryMatch.LevelIntroduction = {
             }
             matchesToShow --;
         }
+        MemoryMatch.stageUpdated = true;
     },
 
 
@@ -710,6 +716,7 @@ MemoryMatch.LevelIntroduction = {
     flashContinueButton: function () {
         if (this.buttonInstances.length > 1) {
             this.buttonInstances[1].setFlashing(true);
+            MemoryMatch.stageUpdated = true;
         }
     },
 
@@ -773,6 +780,7 @@ MemoryMatch.LevelIntroduction = {
             default:
                 break;
         }
+        MemoryMatch.stageUpdated = true;
         this.scheduleDemoAnimation(1000);
     },
 

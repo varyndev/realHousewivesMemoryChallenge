@@ -65,6 +65,7 @@ MemoryMatch.AdPopup = {
         this.parentDisplayObject.addChild(this.groupDisplayObject);
         this.groupDisplayObject.setTransform(this.parentDisplayObject.canvas.width * 0.5, this.parentDisplayObject.canvas.height * 0.5, 1, 1, 0, 0, 0, this.backgroundWidth * 0.5, this.backgroundHeight * 0.5);
         this.setupDOMElement(); // need to do this after the transformation
+        MemoryMatch.stageUpdated = true;
         if (autoStart == null) {
             autoStart = false;
         }

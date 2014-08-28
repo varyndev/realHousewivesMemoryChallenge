@@ -21,6 +21,7 @@
  *      name: unique name of this button
  *      tag: unique tag number of this button
  *      disabled: show button is the disabled state, otherwise the button is enabled
+ *      expandHitArea: px to add to expand the hit area rect, eg. 2 will expand it 2px in all directions
  *
  */
 MemoryMatch = MemoryMatch || {};
@@ -61,6 +62,7 @@ MemoryMatch.GUIButton = function (parameters) {
     guiButton.flashingTimerId = null;
     guiButton.flashingCounter = null;
     guiButton.flashingInterval = 500;
+    guiButton.expandHitArea = 0;
 
     guiButton.setParameters = function (parameters) {
         if (parameters != null) {
@@ -120,6 +122,11 @@ MemoryMatch.GUIButton = function (parameters) {
             } else {
                 guiButton.spriteFrames = MemoryMatch.GameSetup.guiSpritesheet1Frames;
             }
+            if (parameters.expandHitArea != null) {
+                guiButton.expandHitArea = parameters.expandHitArea;
+            } else {
+                guiButton.expandHitArea = 0;
+            }
             // set defaults for things not provided
             if (guiButton.buttonBaseOver == null) {
                 guiButton.buttonBaseOver = guiButton.buttonBaseActive;
@@ -166,7 +173,7 @@ MemoryMatch.GUIButton = function (parameters) {
         buttonSize = MemoryMatch.getSpriteFrameSize(this.spriteFrames, spriteFrame);
         this.width = buttonSize.width * this.buttonScale;
         this.height = buttonSize.height * this.buttonScale;
-        this.buttonSprite.hitArea = new createjs.Shape(new createjs.Graphics().beginFill('909090').drawRect(0, 0, this.width, this.height));
+        this.buttonSprite.hitArea = new createjs.Shape(new createjs.Graphics().beginFill('909090').drawRect(0 - this.expandHitArea, 0 - this.expandHitArea, this.width + (2 * this.expandHitArea), this.height + (2 * this.expandHitArea)));
         this.flashingCounter = 0;
         this.setTransform(0, 0, this.buttonScale, this.buttonScale);
         this.createButtonIcon();
@@ -187,6 +194,7 @@ MemoryMatch.GUIButton = function (parameters) {
         } else {
             this.showEnabled(false);
         }
+        MemoryMatch.stageUpdated = true;
     };
 
     guiButton.createButtonText = function () {
@@ -226,6 +234,7 @@ MemoryMatch.GUIButton = function (parameters) {
         } else {
             buttonText.text = this.text;
         }
+        MemoryMatch.stageUpdated = true;
     };
 
     guiButton.setText = function (text) {
@@ -260,6 +269,7 @@ MemoryMatch.GUIButton = function (parameters) {
     guiButton.setIcon = function (spriteFrame) {
         if (this.iconSprite != null) {
             this.iconSprite.gotoAndStop(spriteFrame);
+            MemoryMatch.stageUpdated = true;
         }
     };
 
@@ -283,6 +293,7 @@ MemoryMatch.GUIButton = function (parameters) {
                 if (this.buttonBaseRollOverColor != null) {
                     this.buttonSprite.filters = [this.buttonRollOverColorFilter];
                     this.buttonSprite.updateCache();
+                    MemoryMatch.stageUpdated = true;
                 }
                 break;
             case "rollover":
@@ -322,9 +333,11 @@ MemoryMatch.GUIButton = function (parameters) {
         }
         if (this.buttonSprite != null && spriteFrameBase != null) {
             this.buttonSprite.gotoAndStop(spriteFrameBase);
+            MemoryMatch.stageUpdated = true;
         }
         if (this.iconSprite != null && spriteFrameIcon != null) {
             this.iconSprite.gotoAndStop(spriteFrameIcon);
+            MemoryMatch.stageUpdated = true;
         }
         if (this.refreshParent != null && this.refreshParent.refreshCache != null) {
             this.refreshParent.refreshCache();
@@ -423,6 +436,7 @@ MemoryMatch.GUIButton = function (parameters) {
             if (this.flashingTimerId != null) {
                 window.clearTimeout(this.flashingTimerId);
                 this.flashingTimerId = null;
+                MemoryMatch.stageUpdated = true;
             }
         }
     };
@@ -443,6 +457,7 @@ MemoryMatch.GUIButton = function (parameters) {
         }
         if (buttonText != null) {
             buttonText.alpha = alpha;
+            MemoryMatch.stageUpdated = true;
         }
     };
 

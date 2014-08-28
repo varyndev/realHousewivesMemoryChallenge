@@ -400,6 +400,7 @@ MemoryMatch.MainMenu = {
         }
         this.showAwardedGems();
         this.groupDisplayObject.updateCache();
+        MemoryMatch.stageUpdated = true;
     },
 
     connectPath: function (firstPoint, secondPoint) {

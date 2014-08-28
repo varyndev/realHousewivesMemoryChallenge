@@ -170,6 +170,7 @@ MemoryMatch.AwardsPopup = {
         }
         this.contentDisplayObject.y = newY;
         this.scrollButtonSprite.y = this.scrollButtonMin + (((newY - this.scrollLimitMin) / (this.scrollLimitMax - this.scrollLimitMin)) * (this.scrollButtonMax - this.scrollButtonMin));
+        MemoryMatch.stageUpdated = true;
     },
 
     onScrollHandleDown: function (event) {
@@ -188,6 +189,7 @@ MemoryMatch.AwardsPopup = {
         this.scrollButtonSprite.y = newY;
         percentScroll = (newY - this.scrollButtonMin) / (this.scrollButtonMax - this.scrollButtonMin);
         this.contentDisplayObject.y = this.scrollLimitMin + ((this.scrollLimitMax - this.scrollLimitMin) * percentScroll);
+        MemoryMatch.stageUpdated = true;
     },
 
     setupBackground: function () {

@@ -2276,7 +2276,7 @@ this.MemoryMatch = {
                 isMatch = true;
                 earnedAchievement = MemoryMatch.cardsMatch(MemoryMatch.cardSelected, secondCardSelected);
                 if ( ! earnedAchievement) {
-                    MemoryMatch.triggerSoundFx("soundCorrect", {delay: 100});
+                    MemoryMatch.triggerSoundFx("soundCorrect", {delay: 0});
                 }
 
                 // unselect both and remove cards
@@ -2293,7 +2293,7 @@ this.MemoryMatch = {
             } else {
                 isMiss = true;
                 MemoryMatch.cardsDoNotMatch();
-                MemoryMatch.triggerSoundFx("soundMiss", {delay: 100});
+                MemoryMatch.triggerSoundFx("soundMiss", {delay: 0});
 
                 // unselect the first card then unflip it after a delay
                 MemoryMatch.cardSelected.unselect();
@@ -2347,12 +2347,12 @@ this.MemoryMatch = {
                 MemoryMatch.updateChainCount(true);
                 if ((MemoryMatch.matchCount >= MemoryMatch.gameMatchCount)) {
                     MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.WIN;
-                    MemoryMatch.triggerSoundFx("soundCorrect", {delay: 100});
+                    MemoryMatch.triggerSoundFx("soundCorrect", {delay: 0});
                     MemoryMatch.gameEndTime = Date.now();
                     MemoryMatch.removeAllCards(MemoryMatch.gameCompleteRemoveCardThenAdvance); // user completed the game, but wait for cards to dissolve before advancing
                     MemoryMatch.showChainsMatches();
                 } else {
-                    MemoryMatch.triggerSoundFx("soundCorrectLess", {delay: 100});
+                    MemoryMatch.triggerSoundFx("soundCorrectLess", {delay: 0});
                     MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.CHOOSE_FIRST_CARD;
                 }
             } else {
@@ -2361,7 +2361,7 @@ this.MemoryMatch = {
                 MemoryMatch.updateChainCount(false);
                 MemoryMatch.showChainsMatches();
                 MemoryMatch.cardsDoNotMatch();
-                MemoryMatch.triggerSoundFx("soundMiss", {delay: 100});
+                MemoryMatch.triggerSoundFx("soundMiss", {delay: 0});
                 // unselect both cards then unflip after a delay
                 MemoryMatch.cardSelected.unselect();
                 MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.cardSelected, 400, 0, false, null, MemoryMatch.onCardMissWaitComplete);
@@ -2391,7 +2391,7 @@ this.MemoryMatch = {
             if (MemoryMatch.matchCount >= MemoryMatch.gameMatchCount) {
                 MemoryMatch.gameEndTime = Date.now();
                 MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.WIN;
-                MemoryMatch.triggerSoundFx("soundCorrect", {delay: 100});
+                MemoryMatch.triggerSoundFx("soundCorrect", {delay: 0});
                 MemoryMatch.GameGUI.updateMatchCountDisplay(MemoryMatch.gameNumber);
                 MemoryMatch.removeAllCards(MemoryMatch.gameCompleteRemoveCardThenAdvance); // user completed the game, but wait for cards to dissolve before advancing
                 MemoryMatch.awardChallengeStreakMilestone();
@@ -2400,7 +2400,7 @@ this.MemoryMatch = {
             }
         } else {
             MemoryMatch.cardsDoNotMatch();
-            MemoryMatch.triggerSoundFx("soundMiss", {delay: 100});
+            MemoryMatch.triggerSoundFx("soundMiss", {delay: 0});
             if (MemoryMatch.moveCountDown > 0 || MemoryMatch.levelTolerance == 0) {
                 MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.CHOOSE_SECOND_CARD;
             } else {
@@ -2425,13 +2425,13 @@ this.MemoryMatch = {
         cardSelected.select();
         if (cardSelected.value == MemoryMatch.cardSelected.value) {
             MemoryMatch.cardsMatch(cardSelected, null);
-            MemoryMatch.triggerSoundFx("soundCorrect", {delay: 100});
+            MemoryMatch.triggerSoundFx("soundCorrect", {delay: 0});
             MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.CHOOSE_SECOND_CARD;
             MemoryMatch.AnimationHandler.addToAnimationQueue(cardSelected, 500, 0, false, null, MemoryMatch.onCardFlipBackWaitComplete);
             MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.cardSelected, 500, 0, false, null, MemoryMatch.onCardFlipBackWaitCompleteTargetCard);
         } else {
             MemoryMatch.cardsDoNotMatch();
-            MemoryMatch.triggerSoundFx("soundMiss", {delay: 100});
+            MemoryMatch.triggerSoundFx("soundMiss", {delay: 0});
             if (MemoryMatch.matchCount >= MemoryMatch.gameMatchCount) {
                 MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.LOSE;
             } else {
@@ -2509,7 +2509,7 @@ this.MemoryMatch = {
             MemoryMatch.cardsMatch(cardSelected, null);
             MemoryMatch.gamePlayState = priorState;
             MemoryMatch.gameEndTime = Date.now();
-            MemoryMatch.triggerSoundFx("soundCorrect", {delay: 100});
+            MemoryMatch.triggerSoundFx("soundCorrect", {delay: 0});
             globalCardPoint = MemoryMatch.boardContainer.localToGlobal(cardSelected.x, cardSelected.y);
             MemoryMatch.matchEffectsStars(globalCardPoint.x, globalCardPoint.y, 1);
             MemoryMatch.GameGUI.updateMatchCountDisplay(MemoryMatch.gameNumber);
@@ -2517,7 +2517,7 @@ this.MemoryMatch = {
             MemoryMatch.awardChallengeStreakMilestone();
         } else {
             MemoryMatch.cardsDoNotMatch();
-            MemoryMatch.triggerSoundFx("soundMiss", {delay: 100});
+            MemoryMatch.triggerSoundFx("soundMiss", {delay: 0});
             // unselect card then unflip after a delay
             MemoryMatch.AnimationHandler.addToAnimationQueue(cardSelected, 400, 0, false, null, MemoryMatch.onCardMissWaitComplete);
             if ( ! (MemoryMatch.moveCountDown > 0 || MemoryMatch.levelTolerance == 0)) { // game over? show target card
@@ -2548,7 +2548,7 @@ this.MemoryMatch = {
             MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.WIN;
             MemoryMatch.gameEndTime = Date.now();
             MemoryMatch.cardSelected.flip(); // Show user the card briefly before moving on
-            MemoryMatch.triggerSoundFx("soundCorrect", {delay: 100});
+            MemoryMatch.triggerSoundFx("soundCorrect", {delay: 0});
             globalCardPoint = MemoryMatch.boardContainer.localToGlobal(cardSelected.x, cardSelected.y);
             MemoryMatch.matchEffectsStars(globalCardPoint.x, globalCardPoint.y, 1);
             MemoryMatch.GameGUI.updateMatchCountDisplay(MemoryMatch.gameNumber);
@@ -2556,7 +2556,7 @@ this.MemoryMatch = {
             MemoryMatch.awardChallengeStreakMilestone();
         } else {
             MemoryMatch.cardsDoNotMatch();
-            MemoryMatch.triggerSoundFx("soundMiss", {delay: 100});
+            MemoryMatch.triggerSoundFx("soundMiss", {delay: 0});
             // unselect card then unflip after a delay
             MemoryMatch.AnimationHandler.addToAnimationQueue(cardSelected, 400, 0, false, null, MemoryMatch.onCardMissWaitComplete);
             if (MemoryMatch.moveCountDown == 0) {
@@ -4510,8 +4510,10 @@ this.MemoryMatch = {
         if (this.runAnimations || ! this.gamePaused || this.gamePausePending) {
             this.AnimationHandler.onEnterFrame(event, deltaTime); // only process the animations if the game is not paused
         }
-        this.stage.update(event); // TODO: to improve performance, try not to call stage.update()
-        this.stageUpdated = false;
+        if (this.stageUpdated) {
+            this.stage.update(event); // TODO: to improve performance, try not to call stage.update()
+            this.stageUpdated = false;
+        }
     },
 
     //====================================================================================
@@ -5063,6 +5065,7 @@ this.MemoryMatch = {
             this.value = cardValue;
             cardFace.gotoAndStop(cardValue);
             this.updateCache();
+            MemoryMatch.stageUpdated = true;
         }
 
         card.kill = function () {
@@ -5093,6 +5096,7 @@ this.MemoryMatch = {
             }
             this.showMatchCounter(showingMatchCounter);
             this.updateCache();
+            MemoryMatch.stageUpdated = true;
         }
 
         card.highlight = function () {
@@ -5102,6 +5106,7 @@ this.MemoryMatch = {
                 cardHighlight = this.getChildAt(this.SPRITEINDEX.SPRITE_HIGHLIGHT);
                 cardHighlight.alpha = 0.5;
                 this.updateCache();
+                MemoryMatch.stageUpdated = true;
             }
         }
 
@@ -5112,6 +5117,7 @@ this.MemoryMatch = {
                 cardHighlight = this.getChildAt(this.SPRITEINDEX.SPRITE_HIGHLIGHT);
                 cardHighlight.alpha = 0.0;
                 this.updateCache();
+                MemoryMatch.stageUpdated = true;
             }
         }
 
@@ -5122,6 +5128,7 @@ this.MemoryMatch = {
                 cardHighlight = this.getChildAt(this.SPRITEINDEX.SPRITE_HIGHLIGHT);
                 cardHighlight.alpha = 0.8;
                 this.updateCache();
+                MemoryMatch.stageUpdated = true;
             }
         }
 
@@ -5131,6 +5138,7 @@ this.MemoryMatch = {
             this.isSelected = true;
             this.flip();
             this.updateCache();
+            MemoryMatch.stageUpdated = true;
         }
 
         card.specialSelect = function (cardSelectType, showHighlight) {
@@ -5161,6 +5169,7 @@ this.MemoryMatch = {
             }
             if (showHighlight || cardSelectType == 1) {
                 this.updateCache();
+                MemoryMatch.stageUpdated = true;
             }
         }
 
@@ -5185,6 +5194,7 @@ this.MemoryMatch = {
                     }
                 }
                 card.updateCache();
+                MemoryMatch.stageUpdated = true;
             }
             return keepAnimating;
         }
@@ -5218,6 +5228,7 @@ this.MemoryMatch = {
                 matchCounterBg.visible = showFlag;
                 matchCounter.visible = showFlag;
             }
+            MemoryMatch.stageUpdated = true;
         }
 
         card.flipAnimationPhaseTwo = function (card) {
@@ -5240,6 +5251,7 @@ this.MemoryMatch = {
                 }
             }
             card.updateCache();
+            MemoryMatch.stageUpdated = true;
         }
 
         card.unflipAnimationPhaseTwo = function (card) {
@@ -5263,6 +5275,7 @@ this.MemoryMatch = {
                 }
             }
             card.updateCache();
+            MemoryMatch.stageUpdated = true;
         }
 
         card.flipAnimationComplete = function (card) {
@@ -5274,8 +5287,9 @@ this.MemoryMatch = {
             } else {
                 card.state = MemoryMatch.CARDSTATE.DOWN;
             }
-            card.updateCache();
             card.isEnabled = true;
+            card.updateCache();
+            MemoryMatch.stageUpdated = true;
         }
 
         card.unselect = function () {
@@ -5286,6 +5300,7 @@ this.MemoryMatch = {
             cardHighlight.scaleX = 1.0;
             cardHighlight.scaleY = 1.0;
             this.updateCache();
+            MemoryMatch.stageUpdated = true;
         }
 
         card.flipBack = function () {
@@ -5316,6 +5331,7 @@ this.MemoryMatch = {
             card.state = MemoryMatch.CARDSTATE.DOWN;
             card.updateCache();
             card.isEnabled = true;
+            MemoryMatch.stageUpdated = true;
         }
 
         card.showCard = function (cardToShow) {
@@ -5332,6 +5348,7 @@ this.MemoryMatch = {
             cardToShow.actor.state = MemoryMatch.CARDSTATE.DOWN;
             MemoryMatch.checkBoardIsReadyForPlay();
             cardToShow.actor.updateCache();
+            MemoryMatch.stageUpdated = true;
         }
 
         card.showCardDemo = function () {
@@ -5343,6 +5360,7 @@ this.MemoryMatch = {
             this.regY = MemoryMatch.cardHeight * 0.5;
             this.state = MemoryMatch.CARDSTATE.DOWN;
             this.updateCache();
+            MemoryMatch.stageUpdated = true;
         }
 
         card.removeCard = function (callMeWhenComplete) {
@@ -5357,6 +5375,7 @@ this.MemoryMatch = {
             cardHighlight.scaleX = 1.0;
             cardHighlight.scaleY = 1.0;
             this.updateCache();
+            MemoryMatch.stageUpdated = true;
 
             // begin card fade animation
             cardAnimator = MemoryMatch.AnimationHandler.addToAnimationQueue(this, 500, 0, false, null, callMeWhenComplete);
@@ -5379,6 +5398,7 @@ this.MemoryMatch = {
             }
             this.showMatchCounter(showingMatchCounter);
             this.updateCache();
+            MemoryMatch.stageUpdated = true;
         }
 
         card.updateMatchCounter = function () {
@@ -5396,6 +5416,7 @@ this.MemoryMatch = {
             }
             this.showMatchCounter(showingMatchCounter);
             this.updateCache();
+            MemoryMatch.stageUpdated = true;
         }
 
         card.toString = function () {

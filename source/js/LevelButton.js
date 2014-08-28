@@ -504,6 +504,7 @@ MemoryMatch.LevelButton = function (parameters) {
         }
         this.bestScore = this.bestScore;
         this.changeEvent();
+        MemoryMatch.stageUpdated = true;
     };
 
     levelButton.setEnabled = function (enableFlag) {
@@ -540,6 +541,7 @@ MemoryMatch.LevelButton = function (parameters) {
 
     levelButton.changeEvent = function () {
         this.updateCache();
+        MemoryMatch.stageUpdated = true;
         if (this.changeEventNotification != null) {
             this.changeEventNotification();
         }

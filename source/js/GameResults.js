@@ -205,7 +205,6 @@ MemoryMatch.GameResults = {
     },
 
     closeComplete: function () {
-//        MemoryMatch.debugLog("GameResults:closeComplete ");
         if (this.stateCompleteCallback !== null) {
             this.stateCompleteCallback(this.closeEventType);
         }
@@ -213,8 +212,8 @@ MemoryMatch.GameResults = {
     },
 
     close: function () {
-//        MemoryMatch.debugLog("GameResults:close ");
         MemoryMatch.GameResults.isEnabled = false;
+        MemoryMatch.AnimationHandler.removeWithTag(MemoryMatch.GAMERESULTS_ANIMATION_TAG);
         if (MemoryMatch.GameResults.isShowing()) {
             MemoryMatch.GameResults.closeStartAnimation();
         }
@@ -269,6 +268,7 @@ MemoryMatch.GameResults = {
 
     refreshCache: function (fromWhere) {
         this.groupDisplayObject.updateCache();
+        MemoryMatch.stageUpdated = true;
     },
 
     flashNextButton: function () {
@@ -398,6 +398,7 @@ MemoryMatch.GameResults = {
             animator.tag = MemoryMatch.GAMERESULTS_ANIMATION_TAG;
             this.holdThirdStar = null;
             MemoryMatch.triggerSoundFx("soundBonus", {delay: delay});
+            MemoryMatch.stageUpdated = true;
         }
     },
 
@@ -569,6 +570,7 @@ MemoryMatch.GameResults = {
                 this.matchBonusText.textAlign = "left";
                 this.matchBonusText.x = rightX;
                 this.matchBonusText.y = Y;
+                this.matchBonusText.alpha = 1;
                 this.matchBonusText.maxWidth = fieldWidth;
                 this.matchBonusText.visible = false;
                 this.matchBonusText.height = this.matchBonusText.getMeasuredLineHeight();
@@ -577,7 +579,7 @@ MemoryMatch.GameResults = {
                 animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.matchBonusText, starAnimationDelay + (750 * fieldOffset), 0, false, null, null);
                 animator.showAtBegin = true;
                 animator.tag = MemoryMatch.GAMERESULTS_ANIMATION_TAG;
-                animator.vAlpha = -1 / 3 * MemoryMatch.fps; // reduce alpha to 0 over 3 seconds
+                animator.vAlpha = -1 / (2 * MemoryMatch.fps); // reduce alpha to 0 over 2 seconds
                 animator.endAlpha = 0;
                 animator.killOnAlphaZero = true;
                 animator.vY = -1 * (72 / MemoryMatch.fps) // move up 72px/s until alpha reaches 0
@@ -640,6 +642,7 @@ MemoryMatch.GameResults = {
                     this.comboBonusText.textAlign = "left";
                     this.comboBonusText.x = rightX;
                     this.comboBonusText.y = Y;
+                    this.comboBonusText.alpha = 1;
                     this.comboBonusText.maxWidth = fieldWidth;
                     this.comboBonusText.visible = false;
                     this.comboBonusText.height = this.comboBonusText.getMeasuredLineHeight();
@@ -648,7 +651,7 @@ MemoryMatch.GameResults = {
                     animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.comboBonusText, starAnimationDelay + (500 * fieldOffset), 0, false, null, null);
                     animator.showAtBegin = true;
                     animator.tag = MemoryMatch.GAMERESULTS_ANIMATION_TAG;
-                    animator.vAlpha = -1 / 3 * MemoryMatch.fps; // reduce alpha to 0 over 3 seconds
+                    animator.vAlpha = -1 / (2 * MemoryMatch.fps); // reduce alpha to 0 over 2 seconds
                     animator.endAlpha = 0;
                     animator.killOnAlphaZero = true;
                     animator.vY = -1 * (72 / MemoryMatch.fps) // move up 72px/s until alpha reaches 0
@@ -771,6 +774,7 @@ MemoryMatch.GameResults = {
         if (MemoryMatch.isChallengeGame) {
             window.setTimeout(this.showBestScoreBurstIfBeatBestScore.bind(this), 500);
         }
+        MemoryMatch.stageUpdated = true;
     },
 
     animateText: function (textSprite) {
