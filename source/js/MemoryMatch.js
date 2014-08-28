@@ -809,7 +809,6 @@ this.MemoryMatch = {
             MemoryMatch.gameStartTime = 0;
             MemoryMatch.nextTimerUpdateTime = 0;
             MemoryMatch.lastMatchTime = 0;
-            MemoryMatch.chainsStreakCount = 0;
         }
         if (MemoryMatch.isChallengeGame) {
             MemoryMatch.priorBestGameScore = MemoryMatch.getPriorBestScoreForGameNumber(MemoryMatch.gameLevel, 99);
@@ -3380,7 +3379,7 @@ this.MemoryMatch = {
                 } else {
                     MemoryMatch.chainsStreakCount = 0;
                 }
-                if (MemoryMatch.chainsStreakCount > 1) { // two chains in a row without a miss?
+                if (MemoryMatch.chainsStreakCount > 2) { // three chains in a row without a miss?
                     earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.CHAINGANG) | earnedAchievement;
                 }
             }

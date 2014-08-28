@@ -126,7 +126,7 @@ MemoryMatch.GameSetup = {
             startMatchCount: 2,
             removeMatches: 1,
             cardShowTime: 5000,
-            progression: [{tolerance: 2, matchCount: 3, columns:2, rows:2}, {tolerance: 2, matchCount: 3, columns:2, rows:2}, {tolerance: 5, matchCount: 5, columns:2, rows:3}, {tolerance: 4, matchCount: 5, columns:3, rows:2}, {tolerance: 4, matchCount: 4, columns:3, rows:2}, {tolerance: 5, matchCount: 5, columns:3, rows:3}]
+            progression: [{tolerance: 2, matchCount: 3, columns:2, rows:2}, {tolerance: 2, matchCount: 3, columns:2, rows:2}, {tolerance: 5, matchCount: 5, columns:2, rows:3}, {tolerance: 4, matchCount: 5, columns:3, rows:2}, {tolerance: 4, matchCount: 8, columns:3, rows:2}, {tolerance: 5, matchCount: 8, columns:3, rows:3}]
         },
         {gameId: 3, gameType: 3, games:20, tolerance: 1, columns:7, rows:4,
             cardSprites: ["OC1.png", "OC2.png", "BH1.png", "BH2.png"],
@@ -252,7 +252,7 @@ MemoryMatch.GameSetup = {
         {id: 10, name: "250 Matches", value: 250, icon: "250match", description: "Make 250 matches."},
         {id: 11, name: "Lucky Guess", value: 50, icon: "luckyguess", description: "Make a match without seeing the second card."},
         {id: 12, name: "Clairvoyant", value: 250, icon: "clairvoyant", description: "Make a match without seeing either card."},
-        {id: 13, name: "Chain Gang", value: 100, icon: "chaingang", description: "Complete two chain boards without a miss."},
+        {id: 13, name: "Chain Gang", value: 100, icon: "chaingang", description: "Complete three chain boards without a miss."},
         {id: 14, name: "Chaintastic", value: 250, icon: "chaintastic", description: "Complete last chain board without a miss."},
         {id: 15, name: "A Contender", value: 250, icon: "acontender", description: "Beat all 4 challenges."},
         {id: 16, name: "3-Star", value: 500, icon: "3star", description: "Earn 3 stars on all levels."},
