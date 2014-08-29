@@ -3198,7 +3198,7 @@ this.MemoryMatch = {
                 firstCard = MemoryMatch.allCardsOnBoard[firstCardIndex];
                 secondCard = MemoryMatch.allCardsOnBoard[secondCardIndex];
                 animationDuration = 0.25;
-                numberOfPoints = animationDuration * MemoryMatch.fps;
+                numberOfPoints = Math.ceil(animationDuration * MemoryMatch.fps);
 
                 // move first card to second, and second to first
                 halfTheDistance = (secondCard.x - firstCard.x) * 0.5;
@@ -3251,6 +3251,7 @@ this.MemoryMatch = {
         } else {
             keepAnimating = false;
         }
+        MemoryMatch.stageUpdated = true;
         return keepAnimating;
     },
 
