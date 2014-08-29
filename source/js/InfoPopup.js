@@ -47,6 +47,7 @@ MemoryMatch = MemoryMatch || {};
     p.setParameters = function (displayObject, parameters) {
         this.parentDisplayObject = displayObject;
         if (parameters !== null) {
+            this.fadeTime = 1;
             if (parameters.x != null) {
                 this.x = parameters.x;
             } else if (this.x < 1) {
@@ -60,13 +61,13 @@ MemoryMatch = MemoryMatch || {};
             if (parameters.width != null) {
                 this.width = parameters.width;
             } else if (this.width < 1) {
-                this.width = 900;
+                this.width = 900; // will be adjusted for screen resolution
             }
             this.width *= MemoryMatch.stageScaleFactor;
             if (parameters.height != null) {
                 this.height = parameters.height;
             } else if (this.height < 1) {
-                this.height = 270;
+                this.height = 270; // will be adjusted for screen resolution
             }
             this.height *= MemoryMatch.stageScaleFactor;
             if (parameters.title != null) {
@@ -101,30 +102,39 @@ MemoryMatch = MemoryMatch || {};
             }
             if (parameters.backgroundColor != null) {
                 this.backgroundColor = parameters.backgroundColor;
+            } else {
+                this.backgroundColor = MemoryMatch.GameSetup.achievementBackgroundColor;
             }
             if (parameters.borderColor != null) {
                 this.borderColor = parameters.borderColor;
+            } else {
+                this.borderColor = MemoryMatch.GameSetup.achievementBorderColor;
             }
             if (parameters.sound != null) {
                 this.sound = parameters.sound;
             }
             if (parameters.duration != null) {
                 this.displayDuration = parameters.duration;
+            } else {
+                this.displayDuration = 2.5;
             }
-            if (parameters.callback !== null) {
+            if (parameters.callback != null) {
                 this.stateCompleteCallback = parameters.callback;
             }
-            if (parameters.autoClose !== null) {
+            if (parameters.autoClose != null) {
                 this.autoClose = parameters.autoClose;
+            } else {
+                this.autoClose = true;
             }
         }
     };
 
     p.drawBackground = function () {
-        var shape = new createjs.Shape();
+        var shape = new createjs.Shape(),
+            graphics;
         shape.x = 0;
         shape.y = 0;
-        var graphics = shape.graphics;
+        graphics = shape.graphics;
         graphics.beginFill(this.backgroundColor);
         graphics.beginStroke(this.borderColor);
         graphics.setStrokeStyle(3);
@@ -224,6 +234,7 @@ MemoryMatch = MemoryMatch || {};
 
     p.killObject = function () {
         // remove all display objects and object references:
+        this.groupDisplayObject.removeAllChildren();
         this.parentDisplayObject.removeChild(this.groupDisplayObject);
         this.stateCompleteCallback = null;
         this.parentDisplayObject = null;
