@@ -17,7 +17,7 @@ MemoryMatch.AdPopup = {
     isEnabled: false,
     title: null,
     closeButton: true,
-    domElement: null,
+    domElementName: null,
     refreshOnDisplay: true,
     noscale: false,
     closeEventType: null,
@@ -33,9 +33,9 @@ MemoryMatch.AdPopup = {
                 this.title = "Advertisement";
             }
             if (parameters.domElement != null) {
-                this.domElement = parameters.domElement;
+                this.domElementName = parameters.domElement;
             } else {
-                this.domElement = 'adPlacement';
+                this.domElementName = 'adPlacement';
             }
             if (parameters.closeButton != null) {
                 this.closeButton = parameters.closeButton;
@@ -110,7 +110,7 @@ MemoryMatch.AdPopup = {
         this.isEnabled = false;
         if (domElement != null) {
             domElement.visible = false;
-            pageElement = document.getElementById(this.domElement);
+            pageElement = document.getElementById(this.domElementName);
             if (pageElement != null) {
                 pageElement.style.display = 'none';
             }
@@ -154,7 +154,7 @@ MemoryMatch.AdPopup = {
         var pageElement;
 
         this.showAdTimer = null;
-        pageElement = document.getElementById(this.domElement);
+        pageElement = document.getElementById(this.domElementName);
         if (pageElement != null) {
             pageElement.style.display = 'block';
         }
@@ -180,28 +180,44 @@ MemoryMatch.AdPopup = {
     setupDOMElement: function () {
         // Position a DOM element in the center of the popup. Expecting the element to be a div containing what we want to show.
         // Register domElement to its center
+        // <iframe id="adFramed" name="adFramed" width="300" height="250" scrolling="no" marginwidth="0" marginheight="0" frameborder="0" src="adLoader.html" style="border: 0px; vertical-align: bottom;"></iframe>
         var pageElement,
             domElement,
             iframe;
 
-        pageElement = document.getElementById(this.domElement);
+        pageElement = document.getElementById(this.domElementName);
         if (pageElement != null) {
+            iframe = document.createElement("IFRAME");
+            iframe.setAttribute("src", "adLoader.html");
+            iframe.setAttribute("id", "adFramed");
+            iframe.setAttribute("name", "adFramed");
+            iframe.setAttribute("width", "300");
+            iframe.setAttribute("height", "250");
+            iframe.setAttribute("scrolling", "no");
+            iframe.setAttribute("marginwidth", "0");
+            iframe.setAttribute("marginheight", "0");
+            iframe.setAttribute("frameborder", "0");
+            iframe.style.width = "300px";
+            iframe.style.height = "250px";
+            pageElement.appendChild(iframe);
             domElement = new createjs.DOMElement(pageElement);
             if (domElement != null) {
                 domElement.name = 'ad';
                 this.groupDisplayObject.addChild(domElement);
                 this.showAdTimer = window.setTimeout(this.onShowAdTimerExpired.bind(this), 1000);
-                if (this.refreshOnDisplay) {
-                    iframe = window.frames['adFramed'];
-                    if (iframe == null) {
-                        iframe = window.frames[0];
-                    }
-                    if (iframe == null) {
-                        iframe = document.getElementById('adFramed').contentWindow;
-                    }
-                    iframe.location.reload(true);
-                }
             }
+        }
+    },
+
+    killDOMElement: function () {
+        // destroy the iframe we created
+        var pageElement = document.getElementById(this.domElementName);
+        if (pageElement != null) {
+            while (pageElement.firstChild != null) {
+                pageElement.removeChild(pageElement.firstChild);
+            }
+            pageElement.style.visibility = "hidden";
+            pageElement.style.display = "none";
         }
     },
 
@@ -248,14 +264,8 @@ MemoryMatch.AdPopup = {
             this.showAdTimer = null;
         }
         this.buttonInstances = null;
-        if (this.domElement != null) {
-            pageElement = document.getElementById(this.domElement);
-            if (pageElement != null) {
-                pageElement.style.visibility = "hidden";
-                pageElement.style.display = "none";
-            }
-        }
-        this.domElement = null;
+        this.killDOMElement();
+        this.domElementName = null;
         this.title = null;
         this.message = null;
         this.groupDisplayObject.removeAllChildren();
