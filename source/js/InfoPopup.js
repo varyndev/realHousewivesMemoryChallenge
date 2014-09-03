@@ -37,6 +37,7 @@ MemoryMatch = MemoryMatch || {};
     p.messageFontSize = 48;
     p.messageFont = null;
     p.icon = null;
+    p.iconWidth = 0;
     p.sound = null;
     p.displayDuration = 2.5;
     p.fadeTime = 1;
@@ -100,6 +101,7 @@ MemoryMatch = MemoryMatch || {};
             } else if (this.icon == null) {
                 this.icon = null;
             }
+            this.iconWidth = 0;
             if (parameters.backgroundColor != null) {
                 this.backgroundColor = parameters.backgroundColor;
             } else {
@@ -152,7 +154,7 @@ MemoryMatch = MemoryMatch || {};
         this.marginTop = 8 * MemoryMatch.stageScaleFactor;
         this.marginLeft = 8 * MemoryMatch.stageScaleFactor;
         this.drawBackground();
-        this.setupIcon();
+        this.setupIcon(); // must be done before text is placed
         this.setupTitleText();
         this.setupMessageText();
         this.parentDisplayObject.addChild(this.groupDisplayObject);
@@ -191,15 +193,21 @@ MemoryMatch = MemoryMatch || {};
     };
 
     p.setupIcon = function () {
-        // add the icon on top of the button frame
+        var spriteData,
+            iconSize,
+            iconSprite;
+
         if (this.icon != null) {
-            var spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.guiSpritesheet1Frames);
-            var iconSize = MemoryMatch.getSpriteFrameSize(MemoryMatch.GameSetup.guiSpritesheet1Frames, this.icon);
-            var iconSprite = new createjs.Sprite(spriteData, this.icon);
+            spriteData = new createjs.SpriteSheet(MemoryMatch.GameSetup.guiSpritesheet1Frames);
+            iconSize = MemoryMatch.getSpriteFrameSize(MemoryMatch.GameSetup.guiSpritesheet1Frames, this.icon);
+            iconSprite = new createjs.Sprite(spriteData, this.icon);
             iconSprite.setTransform(this.width * 0.02, (this.height - iconSize.height) * 0.5, 1, 1);
             iconSprite.framerate = 1;
             iconSprite.name = "icon";
+            this.iconWidth = iconSize.width;
             this.groupDisplayObject.addChild(iconSprite);
+        } else {
+            this.iconWidth = 0;
         }
     };
 
@@ -219,10 +227,10 @@ MemoryMatch = MemoryMatch || {};
         var titleTextField;
         titleTextField = new createjs.Text(this.message, MemoryMatch.getScaledFontSize(this.messageFontSize) + " " + this.messageFont, MemoryMatch.GameSetup.guiFontColor);
         titleTextField.textAlign = "center";
-        titleTextField.x = this.width * 0.5;
+        titleTextField.x = this.iconWidth + ((this.width - this.iconWidth) * 0.5);
         titleTextField.y = this.height * 0.34;
-        titleTextField.lineWidth = this.width * 0.8;
-        titleTextField.maxWidth = this.width * 0.8;
+        titleTextField.lineWidth = (this.width - this.iconWidth) * 0.9;
+        titleTextField.maxWidth = (this.width - this.iconWidth) * 0.9;
         titleTextField.lineHeight = titleTextField.getMeasuredLineHeight() * 1.5;
         titleTextField.name = "message";
         this.groupDisplayObject.addChild(titleTextField);
