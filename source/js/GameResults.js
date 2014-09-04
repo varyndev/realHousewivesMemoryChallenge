@@ -55,6 +55,7 @@ MemoryMatch.GameResults = {
     cacheRefreshCount: 0,
     showingTip: true,
     pausedWhileShowingAd: false,
+    resultsScreenStartedTime: 0,
 
 
     setup: function (displayObject, nextLevelData, stateCompleteCallbackFunction) {
@@ -111,11 +112,10 @@ MemoryMatch.GameResults = {
     },
 
     buildScreen: function (autoStart) {
-        var hiFiveWord;
-
         if (this.groupDisplayObject !== null) {
             return;
         }
+        this.resultsScreenStartedTime = (new Date()).getTime();
         this.showingTip = (! MemoryMatch.isChallengeGame) || (MemoryMatch.gamePlayState != MemoryMatch.GAMEPLAYSTATE.WIN);
         // layout the screen
         this.groupDisplayObject = new createjs.Container();
@@ -129,10 +129,6 @@ MemoryMatch.GameResults = {
         this.setupTitleText(this.groupDisplayObject);
         if (MemoryMatch.isChallengeGame) {
             this.setupAward(this.groupDisplayObject);
-            hiFiveWord = MemoryMatch.hiFiveEarnedInCurrentGame();
-            if (hiFiveWord != null && hiFiveWord.length > 0) {
-                MemoryMatch.showMessageBalloon(null, hiFiveWord + '!', 0, this.backgroundWidth * 0.5, this.backgroundHeight * 0.2);
-            }
         } else {
             this.setupStars(this.groupDisplayObject);
         }
@@ -144,6 +140,7 @@ MemoryMatch.GameResults = {
         this.groupDisplayObject.setTransform(this.parentDisplayObject.canvas.width * 0.5, this.parentDisplayObject.canvas.height * 0.5, 0, 0, 0, 0, 0, this.backgroundWidth * 0.5, this.backgroundHeight * 0.5);
         this.groupDisplayObject.cache(0, 0, this.backgroundWidth, this.backgroundHeight);
         this.animationDisplayObject.setTransform(this.parentDisplayObject.canvas.width * 0.5, this.parentDisplayObject.canvas.height * 0.5, 1, 1, 0, 0, 0, this.backgroundWidth * 0.5, this.backgroundHeight * 0.5);
+//        MemoryMatch.debugLog("GameResults total build time is " + ((new Date()).getTime() - this.resultsScreenStartedTime).toString());
         if (autoStart === null) {
             autoStart = false;
         }
@@ -177,9 +174,15 @@ MemoryMatch.GameResults = {
     },
 
     startAnimationComplete: function (sprite) {
+        var hiFiveWord;
+
         this.isEnabled = true;
         if (MemoryMatch.isChallengeGame) {
             this.flashNextButton();
+            hiFiveWord = MemoryMatch.hiFiveEarnedInCurrentGame();
+            if (hiFiveWord != null && hiFiveWord.length > 0) {
+                MemoryMatch.showMessageBalloon(null, hiFiveWord + '!', 0, this.backgroundWidth * 0.5, this.backgroundHeight * 0.2);
+            }
         }
     },
 
@@ -187,7 +190,6 @@ MemoryMatch.GameResults = {
         var duration = 0.1, // seconds of animation
             animator = MemoryMatch.AnimationHandler.addToAnimationQueue(this.groupDisplayObject, 0, duration * 1000, false, null, this.closeShrink.bind(this));
 
-//        MemoryMatch.debugLog("GameResults:closeStartAnimation ");
         animator.endYScale = animator.endXScale = 1.08;
         animator.vYScale = animator.vXScale = animator.endXScale / (duration * MemoryMatch.fps);
         MemoryMatch.stopInterstitialMusic();
@@ -368,9 +370,17 @@ MemoryMatch.GameResults = {
             globalStarPoint = this.groupDisplayObject.localToGlobal(starSprite.x, starSprite.y);
 
         if (starSprite.starNumber < 3) {
-            numberOfParticles = Math.random() * 100 + 30;
+            if (MemoryMatch.isTouchDevice) {
+                numberOfParticles = Math.random() * 50 + 20;
+            } else {
+                numberOfParticles = Math.random() * 100 + 30;
+            }
         } else {
-            numberOfParticles = Math.random() * 120 + 50;
+            if (MemoryMatch.isTouchDevice) {
+                numberOfParticles = Math.random() * 60 + 40;
+            } else {
+                numberOfParticles = Math.random() * 120 + 50;
+            }
             hiFiveWord = MemoryMatch.hiFiveEarnedInCurrentGame();
             if (hiFiveWord != null && hiFiveWord.length > 0) {
                 MemoryMatch.showMessageBalloon(null, hiFiveWord + '!', 0, starSprite.x, starSprite.y);
@@ -826,6 +836,7 @@ MemoryMatch.GameResults = {
     showBestScoreBurstIfBeatBestScore: function () {
         // display particle effect if player beat her best score
         var globalTextPoint,
+            numberOfParticles,
             fontSizeBoldBig = MemoryMatch.getScaledFontSize(64) + " " + MemoryMatch.GameSetup.guiBoldFontName;
 
         if (this.bestScoreTextField !== null) {
@@ -833,8 +844,13 @@ MemoryMatch.GameResults = {
                 this.playerBestScore = this.playerScore;
                 this.bestScoreTextField.text = MemoryMatch.formatNumberWithGroups(this.playerBestScore);
                 if (MemoryMatch.levelComplete) {
+                    if (MemoryMatch.isTouchDevice) {
+                        numberOfParticles = Math.random() * 50 + 20;
+                    } else {
+                        numberOfParticles = Math.random() * 100 + 30;
+                    }
                     globalTextPoint = this.groupDisplayObject.localToGlobal(this.bestScoreTextField.x, this.bestScoreTextField.y);
-                    MemoryMatch.AnimationHandler.startSplatterParticles(Math.random() * 100 + 30, globalTextPoint.x, globalTextPoint.y);
+                    MemoryMatch.AnimationHandler.startSplatterParticles(numberOfParticles, globalTextPoint.x, globalTextPoint.y);
                 }
                 this.bestScoreTextField.font = fontSizeBoldBig;
                 this.refreshCache('showBestScoreBurstIfBeatBestScore');
@@ -1014,6 +1030,13 @@ MemoryMatch.GameResults = {
             window.clearTimeout(this.refreshTimerId);
             this.refreshTimerId = null;
         }
+        if (this.matchBonusText != null) {
+            this.matchBonusText.uncache();
+        }
+        if (this.comboBonusText != null) {
+            this.comboBonusText.uncache();
+        }
+        this.groupDisplayObject.uncache();
         this.spriteData = null;
         this.primaryColorFilter = null;
         this.secondaryColorFilter = null;

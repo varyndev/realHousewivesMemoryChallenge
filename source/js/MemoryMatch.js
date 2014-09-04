@@ -11,10 +11,11 @@ var enginesisSession = enginesis || {};
 
 
 this.MemoryMatch = {
-    GameVersion: "1.0.79",
+    GameVersion: "1.0.80",
     platform: "unknown",
     locale: "en-US",
-    debugMode: true,
+    debugMode: false,
+    frameRateDebugText: null,
     isTouchDevice: false,
     minimumSplashScreenDisplayTime: 2000,
     assetLoader: null,
@@ -3492,14 +3493,16 @@ this.MemoryMatch = {
         var animator,
             bounds,
             animationTime = 3,
-            comboBonusText = new createjs.Text("+ " + score.toString(), MemoryMatch.getScaledFontSize(64) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColorBonus);
+            comboBonusText = new createjs.Text("+ " + score.toString(), MemoryMatch.getScaledFontSize(64) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColorAchievement);
 
         comboBonusText.textAlign = "center";
         bounds = comboBonusText.getBounds();
         comboBonusText.maxWidth = bounds.width;;
         comboBonusText.visible = true;
         comboBonusText.setTransform(cardPoint.x, cardPoint.y);
-        comboBonusText.shadow = new createjs.Shadow("#000000", 2, 2, 10);
+        if ( ! MemoryMatch.isTouchDevice) {
+            comboBonusText.shadow = new createjs.Shadow("#000000", 2, 2, 10);
+        }
         MemoryMatch.stage.addChild(comboBonusText);
         animator = MemoryMatch.AnimationHandler.addToAnimationQueue(comboBonusText, 250, 0, true, null, null);
         animator.showAtBegin = true;
@@ -3544,7 +3547,7 @@ this.MemoryMatch = {
             height = 0;
         }
         startX = 0;
-        messageText = new createjs.Text(message, MemoryMatch.getScaledFontSize(64) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColor);
+        messageText = new createjs.Text(message, MemoryMatch.getScaledFontSize(64) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColorAchievement);
         messageText.textAlign = "left";
         if (height > 0) {
             messageText.textBaseline = "middle";
@@ -3563,10 +3566,12 @@ this.MemoryMatch = {
         }
         messageText.maxWidth = bounds.width;
         messageText.visible = true;
-        messageText.shadow = new createjs.Shadow("#000000", 2, 2, 10);
+        if ( ! MemoryMatch.isTouchDevice) {
+            messageText.shadow = new createjs.Shadow("#000000", 2, 2, 10);
+        }
         groupDisplayObject.addChild(messageText);
         if (points != null && points.length > 0) {
-            pointsText = new createjs.Text(points, MemoryMatch.getScaledFontSize(72) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColor);
+            pointsText = new createjs.Text(points, MemoryMatch.getScaledFontSize(72) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColorAchievement);
             pointsText.textAlign = "left";
             pointsText.x = (20 * MemoryMatch.stageScaleFactor) + width;
             bounds = pointsText.getBounds();
@@ -3575,7 +3580,9 @@ this.MemoryMatch = {
                 height = bounds.height;
             }
             pointsText.visible = true;
-            pointsText.shadow = messageText.shadow;
+            if ( ! MemoryMatch.isTouchDevice) {
+                pointsText.shadow = messageText.shadow;
+            }
             groupDisplayObject.addChild(pointsText);
         }
         width += (12 * MemoryMatch.stageScaleFactor); // need to account for shadows
@@ -4506,13 +4513,35 @@ this.MemoryMatch = {
         if ( ! this.gamePaused) { // do not do these things if the game is paused
             this.updateGameTimers();
             this.processAchievementQueue();
+            this.showFrameRate();
         }
         if (this.runAnimations || ! this.gamePaused || this.gamePausePending) {
             this.AnimationHandler.onEnterFrame(event, deltaTime); // only process the animations if the game is not paused
         }
-        if (this.stageUpdated) {
-            this.stage.update(event); // TODO: to improve performance, try not to call stage.update()
+        if (this.stageUpdated) { // only if another process indicated a stage update is required should we call update()
+            this.stage.update(event);
             this.stageUpdated = false;
+        }
+    },
+
+    showFrameRate: function () {
+        var measuredFPS,
+            frameRateDebugText;
+
+        if (this.debugMode) {
+            measuredFPS = 'FPS: ' + Math.floor(createjs.Ticker.getMeasuredFPS()).toString() + ' (expect ' + this.fps.toString() +  '); Tick time: ' + Math.floor(createjs.Ticker.getMeasuredTickTime());
+            if (this.frameRateDebugText == null) {
+                frameRateDebugText = new createjs.Text(measuredFPS, MemoryMatch.getScaledFontSize(36) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColorBonus);
+                frameRateDebugText.textAlign = "left";
+                frameRateDebugText.x = this.stageWidth * 0.02;
+                frameRateDebugText.y = this.stageHeight * 0.96;
+                frameRateDebugText.maxWidth = this.stageWidth;
+                frameRateDebugText.name = 'debugText';
+                this.stage.addChild(frameRateDebugText);
+                this.frameRateDebugText = frameRateDebugText;
+            } else {
+                this.frameRateDebugText.text = measuredFPS;
+            }
         }
     },
 
@@ -5554,6 +5583,8 @@ this.MemoryMatch = {
             resolutionIndex = supportedResolutions.length - 1;
         }
 
+        // if we are on the ipad UIWebView we want to force it to 2046x1534
+
         // remember what we decided so our graphics placement logic can do the right thing
         MemoryMatch.assetFileNamePostfix = supportedResolutions[resolutionIndex].assetPostfix;
         MemoryMatch.cardsFileNamePostfix = supportedResolutions[resolutionIndex].cardsPostfix;
@@ -5578,7 +5609,7 @@ this.MemoryMatch = {
         containerDiv.style.marginLeft = (currentWidth * -0.5) + 'px';
         MemoryMatch.cssScaledWidth = currentWidth;
         MemoryMatch.cssScaledHeight = currentHeight;
-//        MemoryMatch.debugLog("setCanvasSize: Width: " + MemoryMatch.stageWidth + ", Height: " + MemoryMatch.stageHeight +  ", prefix: " + MemoryMatch.assetFileNamePostfix +  ", aspect: " + MemoryMatch.stageAspectRatio +  ", scale: " + MemoryMatch.stageScaleFactor);
+        MemoryMatch.debugLog("setCanvasSize: (" + MemoryMatch.stageWidth + ", " + MemoryMatch.stageHeight +  "), CSS scale: (" + currentWidth + ", " + currentHeight + "), prefix: " + MemoryMatch.assetFileNamePostfix +  ", aspect: " + MemoryMatch.stageAspectRatio +  ", scale: " + MemoryMatch.stageScaleFactor);
     },
 
     isPortrait: function () {

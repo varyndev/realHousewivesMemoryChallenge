@@ -470,6 +470,10 @@ MemoryMatch.GUIButton = function (parameters) {
             window.clearTimeout(this.flashingTimerId);
             this.flashingTimerId = null;
         }
+        if (this.buttonSprite != null) {
+            this.buttonSprite.uncache();
+            this.buttonSprite = null;
+        }
         this.buttonColorFilter = null;
         this.buttonRollOverColorFilter = null;
         this.removeAllEventListeners();

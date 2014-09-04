@@ -89,7 +89,7 @@ MemoryMatch.LevelButton = function (parameters) {
                 levelButton.changeEventNotification = parameters.changeEventNotification;
             }
         }
-    }
+    };
 
     levelButton.createGameNumberText = function () {
         var gameNumber = this.gameNumber.toString(),
@@ -467,11 +467,7 @@ MemoryMatch.LevelButton = function (parameters) {
             lockIcon.visible = true;
             bestScoreField.visible = false;
             gameNumberText.visible = false;
-            if (this.isChallengeGame) {
-                buttonRing.visible = true;
-            } else {
-                buttonRing.visible = false;
-            }
+            buttonRing.visible = this.isChallengeGame;
         } else {
             this.setEnabled(true);
             lockIcon.visible = false;
@@ -502,7 +498,6 @@ MemoryMatch.LevelButton = function (parameters) {
         if (showStarsFlag) {
             this.setStarsEarned(this.starsEarned);
         }
-        this.bestScore = this.bestScore;
         this.changeEvent();
         MemoryMatch.stageUpdated = true;
     };
@@ -525,13 +520,36 @@ MemoryMatch.LevelButton = function (parameters) {
             this.removeEventListener("pressup", this.onTouchUp.bind(this));
             this.removeEventListener("rollout", this.onTouchUp.bind(this));
         }
-    }
+    };
 
     levelButton.kill = function () {
+        var buttonRing,
+            rolloverFrame,
+            lockIcon,
+            gameButton = this.getChildByName("button");
+
         this.setEnabled(false);
-        levelButton.shadowSource = null;
-        levelButton.callback = null;
-        levelButton.spriteData = null;
+        if (this.isChallengeGame) {
+            buttonRing = this.getChildByName("ring");
+            if (buttonRing != null) {
+                buttonRing.uncache();
+            }
+            rolloverFrame = this.getChildByName("rollover");
+            if (rolloverFrame != null) {
+                rolloverFrame.uncache();
+            }
+            lockIcon = this.getChildByName("lock");
+            if (lockIcon != null) {
+                lockIcon.uncache();
+            }
+        }
+        if (gameButton != null) {
+            gameButton.uncache();
+        }
+        this.shadowSource = null;
+        this.callback = null;
+        this.spriteData = null;
+        this.uncache();
         this.removeAllChildren();
     };
 

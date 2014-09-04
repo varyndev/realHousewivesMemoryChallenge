@@ -464,6 +464,7 @@ MemoryMatch.MainMenu = {
     killScreen: function () {
         // remove all display objects and references
         this.stateCompleteCallback = null;
+        this.groupDisplayObject.uncache();
         this.levelData = null;
         this.spriteData = null;
         this.mapSpriteFrames = null;

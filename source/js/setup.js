@@ -29,6 +29,7 @@ MemoryMatch.GameSetup = {
     guiMediumFontName: "open_sanscondensed_light",
     guiFontColor: "#FFFFFF",
     guiFontColorBonus: "#30BED2",
+    guiFontColorAchievement: "#30BED2",
     guiInfoColor: "#FFFFFF",
     guiAlertFontColor: "#FFFFFF",
     guiHUDMatchCountHeight: 0.7,
