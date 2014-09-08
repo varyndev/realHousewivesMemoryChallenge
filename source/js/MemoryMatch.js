@@ -11,7 +11,7 @@ var enginesisSession = enginesis || {};
 
 
 this.MemoryMatch = {
-    GameVersion: "1.0.80",
+    GameVersion: "1.0.81",
     platform: "unknown",
     locale: "en-US",
     debugMode: false,
@@ -5814,6 +5814,7 @@ this.MemoryMatch = {
             MemoryMatch.debugLog('logCacheEvent: ' + message);
             if (status == 'updateready') {
                 cache.swapCache();
+                MemoryMatch.setCanvasSize(null); // Force a reload of the game assets
             }
         }
     },
