@@ -11,7 +11,7 @@ var enginesisSession = enginesis || {};
 
 
 this.MemoryMatch = {
-    GameVersion: "1.0.81",
+    GameVersion: "1.0.82",
     platform: "unknown",
     locale: "en-US",
     debugMode: false,
@@ -1453,7 +1453,7 @@ this.MemoryMatch = {
                 error = "unknown error";
             }
         }
-        MemoryMatch.debugLog("Secondary error " + item.toString() + " " + error);
+        MemoryMatch.debugLog("SecondaryAsset load error " + item.src + " (" + item.id + ") " + error);
     },
 
     secondaryAssetsLoaded: function () {
@@ -5809,11 +5809,15 @@ this.MemoryMatch = {
             message += ', event: ' + type;
             message += ', status: ' + status;
             if (type == 'error' && navigator.onLine) {
-                message += ' There was an unknown error, check your Cache Manifest.';
+                message += ' There was an unknown error, check index.appcache.';
             }
             MemoryMatch.debugLog('logCacheEvent: ' + message);
             if (status == 'updateready') {
-                cache.swapCache();
+                try {
+                    cache.swapCache();
+                } catch (e) {
+                    MemoryMatch.debugLog("Error with swapCache()");
+                }
                 MemoryMatch.setCanvasSize(null); // Force a reload of the game assets
             }
         }
@@ -5904,7 +5908,7 @@ this.MemoryMatch = {
                 }
             }
         }
-        assetLoader = new createjs.LoadQueue(false, '', 'Anonymous');
+        assetLoader = new createjs.LoadQueue(true, '', 'anonymous');
         if ( ! reloadFlag) { // these assets are not resolution dependent and only need to be loaded once
             // All sounds are located in the structure GameSetup.Sounds
             for (soundAssetName in MemoryMatch.GameSetup.Sounds) {
