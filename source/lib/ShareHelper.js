@@ -237,7 +237,7 @@ var ShareHelper = {
     GoogleFeed: function (parameters, callbackWhenComplete) {
         var options = {
             contenturl: parameters.link,
-            clientid: '972925239064-mgco9a8lvqu00tuf9pv3q9c385834h66.apps.googleusercontent.com',
+            clientid: parameters.googleClientId,
             cookiepolicy: 'single_host_origin',
             prefilltext: parameters.description,
             calltoactionlabel: 'CHALLENGE',

@@ -337,6 +337,7 @@ MemoryMatch.LevelButton = function (parameters) {
         levelButton.cache(0, 0, this.width, this.height);
         hitArea = new createjs.Shape();
         hitArea.graphics.beginFill("#ff0000").drawRect(0, 0, this.width, this.height);
+        hitArea.cache(0, 0, this.width, this.height);
         levelButton.hitArea = hitArea;
         if ( ! this.isLocked) {
             this.setEnabled(true);

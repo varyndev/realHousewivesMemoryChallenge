@@ -174,7 +174,8 @@ MemoryMatch.SharePopup = {
                         this.networkShare(networkId);
                     } else {
                         parameters = {
-                            facebookAppId: MemoryMatch.GameSetup.facebookAppId
+                            facebookAppId: MemoryMatch.GameSetup.facebookAppId,
+                            googleClientId: MemoryMatch.GameSetup.googlePlusClientId
                         };
                         enginesisSession.ShareHelper.initialize(networkId, parameters, this.onNetworkInitializeComplete.bind(this));
                     }
@@ -254,7 +255,8 @@ MemoryMatch.SharePopup = {
                 picture: MemoryMatch.GameSetup.promoImage,
                 socialHashTags: MemoryMatch.GameSetup.socialHashTag,
                 viaId: MemoryMatch.GameSetup.twitterId,
-                link: MemoryMatch.GameSetup.gameLink
+                googleClientId: MemoryMatch.GameSetup.googlePlusClientId,
+                link: MemoryMatch.GameSetup.gameShortLink
             };
             if (this.shareMessage != null) {
                 parameters.description = this.shareMessage;

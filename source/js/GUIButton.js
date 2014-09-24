@@ -157,7 +157,8 @@ MemoryMatch.GUIButton = function (parameters) {
     guiButton.createButton = function () {
         var spriteFrame,
             buttonSize,
-            buttonColor;
+            buttonColor,
+            hitAreaShape;
 
         if (this.disabled) {
             spriteFrame = this.buttonBaseDisabled;
@@ -173,7 +174,9 @@ MemoryMatch.GUIButton = function (parameters) {
         buttonSize = MemoryMatch.getSpriteFrameSize(this.spriteFrames, spriteFrame);
         this.width = buttonSize.width * this.buttonScale;
         this.height = buttonSize.height * this.buttonScale;
-        this.buttonSprite.hitArea = new createjs.Shape(new createjs.Graphics().beginFill('909090').drawRect(0 - this.expandHitArea, 0 - this.expandHitArea, this.width + (2 * this.expandHitArea), this.height + (2 * this.expandHitArea)));
+        hitAreaShape = new createjs.Shape(new createjs.Graphics().beginFill('909090').drawRect(0 - this.expandHitArea, 0 - this.expandHitArea, this.width + (2 * this.expandHitArea), this.height + (2 * this.expandHitArea)));
+        hitAreaShape.cache(0 - this.expandHitArea, 0 - this.expandHitArea, this.width + (2 * this.expandHitArea), this.height + (2 * this.expandHitArea));
+        this.buttonSprite.hitArea = hitAreaShape;
         this.flashingCounter = 0;
         this.setTransform(0, 0, this.buttonScale, this.buttonScale);
         this.createButtonIcon();
