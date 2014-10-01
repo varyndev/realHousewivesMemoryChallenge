@@ -84,10 +84,13 @@ MemoryMatch.GameComplete = {
     },
 
     onClickShare: function (event) {
-        var shareMessage = '';
+        var shareMessage,
+            shareShortMessage;
+
         if (MemoryMatch.GameComplete.isEnabled) {
-            shareMessage = 'I just completed ' + MemoryMatch.GameSetup.gameTitle + ' with a score of ' + MemoryMatch.totalScore + '. can you beat me?';
-            MemoryMatch.showSharePopup(shareMessage);
+            shareMessage = MemoryMatch.tokenReplace(MemoryMatch.GameSetup.GUIStrings.shareGameOverMessage, {'gamename': MemoryMatch.GameSetup.gameTitle, 'score': MemoryMatch.totalScore});
+            shareShortMessage = MemoryMatch.tokenReplace(MemoryMatch.GameSetup.GUIStrings.shareGameOverShortMessage, {'gamename': MemoryMatch.GameSetup.gameTitle, 'score': MemoryMatch.totalScore});
+            MemoryMatch.showSharePopup(shareMessage, shareShortMessage);
         }
     },
 

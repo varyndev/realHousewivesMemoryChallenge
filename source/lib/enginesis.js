@@ -8,17 +8,15 @@
  * git $Header$
  *
  **/
-// namespace under enginesis object
-enginesis = enginesis || {};
+
 "use strict";
 
 var enginesis = function (siteId, gameId, gameGroupId, enginesisServerStage, authToken, developerKey, languageCode, callBackFunction) {
 
-    var VERSION = '2.2.16';
+    var VERSION = '2.2.17';
     var debugging = true;
     var disabled = false; // use this flag to turn off communicating with the server
     var errorLevel = 15; // bitmask: 1=info, 2=warning, 4=error, 8=severe
-
     var useHTTPS = false;
     var serverStage = null;
     var serverHost = null;
@@ -37,7 +35,8 @@ var enginesis = function (siteId, gameId, gameGroupId, enginesisServerStage, aut
 
     var requestComplete = function (enginesisResponseData, overRideCallBackFunction) {
         var enginesisResponseObject;
-        debugLog("CORS request complete " + enginesisResponseData);
+
+        //debugLog("CORS request complete " + enginesisResponseData);
         try {
             enginesisResponseObject = JSON.parse(enginesisResponseData);
         } catch (exception) {
@@ -52,9 +51,10 @@ var enginesis = function (siteId, gameId, gameGroupId, enginesisServerStage, aut
     };
 
     var sendRequest = function (fn, parameters, overRideCallBackFunction) {
-        var enginesisParameters = serverParamObjectMake(fn, parameters);
-        var crossOriginRequest = new XMLHttpRequest();
-        if (typeof crossOriginRequest.withCredentials === undefined) {
+        var enginesisParameters = serverParamObjectMake(fn, parameters),
+            crossOriginRequest = new XMLHttpRequest();
+
+        if (typeof crossOriginRequest.withCredentials == undefined) {
             debugLog("CORS is not supported");
         } else if ( ! disabled) {
             crossOriginRequest.onload = function(e) {

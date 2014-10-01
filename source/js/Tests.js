@@ -51,7 +51,7 @@ function runTests() {
 
     testNum ++;
     for (i=0; i < 10; i ++) {
-        a = MemoryMatch.shuffleUniqueDeck(i, i+12);
+        a = MemoryMatch.shuffleUniqueDeck(i, i + 12);
         MemoryMatch.debugLog("Test " + testNum + " Expect: " + '{%a} array of 13 numbers, ' + i + '-' + (i+12) + ', no duplicates');
         MemoryMatch.debugLog("Test " + testNum + " Result: " + JSON.stringify(a));
     }
@@ -187,5 +187,19 @@ function runTests() {
     ri = MemoryMatch.formatNumberWithGroups(-90909);
     MemoryMatch.debugLog("Test " + testNum + " Expect: -90,909");
     MemoryMatch.debugLog("Test " + testNum + " Result: " + ri);
-};
+
+    testNum ++;
+    MemoryMatch.debugLog("Test " + testNum + " Expect array with 3 values: [10%,40%,50%]");
+    a = [10,40,50];
+    testData = [];
+    for (i = 0; i < 1000; i ++) {
+        ri = MemoryMatch.getRandomValueFromProbabilitySet(a);
+        if (testData[ri] == null) {
+            testData[ri] = 1;
+        } else {
+            testData[ri] ++;
+        }
+    }
+    MemoryMatch.debugLog("Test " + testNum + " Result: " + JSON.stringify(testData));
+}
 

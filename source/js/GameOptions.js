@@ -219,7 +219,7 @@ MemoryMatch.GameOptions = {
 
     onClickShare: function (event) {
         if (MemoryMatch.GameOptions.isEnabled) {
-            MemoryMatch.showSharePopup(MemoryMatch.GameSetup.gameSubTitle);
+            MemoryMatch.showSharePopup(MemoryMatch.GameSetup.gameSubTitle, MemoryMatch.GameSetup.gameShortSubTitle);
         }
     },
 
@@ -237,10 +237,10 @@ MemoryMatch.GameOptions = {
         if (MemoryMatch.GameOptions.isEnabled) {
             if (MemoryMatch.unlockAllLevelsCounter > 2) {
                 MemoryMatch.unlockAllLevels();
-                objectToDisplay = new MemoryMatch.InfoPopup(MemoryMatch.stage, true, {title: "UNLOCKED", message: 'You have unlocked all levels.', messageFontSize: 64, sound: 'soundCorrect'});
+                objectToDisplay = new MemoryMatch.InfoPopup(MemoryMatch.stage, true, {title: "UNLOCKED", message: MemoryMatch.GameSetup.GUIStrings.allLevelsUnlocked, messageFontSize: 64, sound: 'soundCorrect'});
             } else {
                 MemoryMatch.resetUserData();
-                objectToDisplay = new MemoryMatch.InfoPopup(MemoryMatch.stage, true, {title: "CLEARED", message: 'You have reset all levels.', messageFontSize: 64, sound: 'soundCorrect'});
+                objectToDisplay = new MemoryMatch.InfoPopup(MemoryMatch.stage, true, {title: "CLEARED", message: MemoryMatch.GameSetup.GUIStrings.allLevelsLocked, messageFontSize: 64, sound: 'soundCorrect'});
             }
             MemoryMatch.unlockAllLevelsCounter = 0;
             if (MemoryMatch.MainMenu != null) {

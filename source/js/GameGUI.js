@@ -301,6 +301,8 @@ MemoryMatch.GameGUI = {
     },
 
     updateComboMultiplier: function (newValue) {
+
+        // comboMultiplier is 1+ combo, so when it is 2 that is 1 combo
         var displayString = '',
             startAnimation = false;
 
@@ -544,8 +546,12 @@ MemoryMatch.GameGUI = {
             matchCountField,
             matchCountWidth,
             matchCountHeight,
-            backgroundShape;
+            backgroundShape,
+            topMargin = MemoryMatch.GameSetup.guiHUDMatchCountTopMargin;
 
+        if (topMargin == null) {
+            topMargin = 0.5;
+        }
         matchCountWidth = this.width * 0.18;
         matchCountHeight = this.hudHeight * MemoryMatch.GameSetup.guiHUDMatchCountHeight;
         backgroundShape = new createjs.Shape();
@@ -557,7 +563,7 @@ MemoryMatch.GameGUI = {
         matchCountLabel = new createjs.Text("Misses:", MemoryMatch.getScaledFontSize(60) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiFontColor);
         matchCountLabel.textAlign = "right";
         matchCountLabel.textBaseline = "middle";
-        matchCountLabel.setTransform(this.width * 0.52, this.hudHeight * 0.5);
+        matchCountLabel.setTransform(this.width * 0.52, this.hudHeight * topMargin);
         matchCountLabel.maxWidth = this.width * 0.1;
         this.matchCountLabel = matchCountLabel;
         this.groupDisplayObject.addChild(matchCountLabel);
@@ -565,7 +571,7 @@ MemoryMatch.GameGUI = {
         matchCountField = new createjs.Text("0", MemoryMatch.getScaledFontSize(84) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiFontColor);
         matchCountField.textAlign = "left";
         matchCountField.textBaseline = "middle";
-        matchCountField.setTransform(this.width * 0.54, this.hudHeight * 0.44);
+        matchCountField.setTransform(this.width * 0.54, this.hudHeight * topMargin);
         matchCountField.maxWidth = this.width * 0.03;
         this.matchCountField = matchCountField;
         this.groupDisplayObject.addChild(matchCountField);
@@ -649,7 +655,7 @@ MemoryMatch.GameGUI = {
 
         optionsButton = MemoryMatch.GUIButton({name: "gameOptionsButton", tag: 2, disabled: false, callback: this.onGameOptions.bind(this), baseUp: "optionsUp", baseOver: "optionsDown", baseDown: "optionsDown"});
         buttonSize = optionsButton.getSize();
-        optionsButton.setTransform(this.width * 0.93, (this.hudHeight - buttonSize) * 0.5);
+        optionsButton.setTransform(this.width * 0.92, (this.hudHeight - buttonSize) * 0.5);
         this.groupDisplayObject.addChild(optionsButton);
         optionsButton.visible = true;
         this.gameOptionsButton = optionsButton;

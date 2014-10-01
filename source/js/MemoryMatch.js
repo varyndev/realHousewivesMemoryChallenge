@@ -11,7 +11,7 @@ var enginesisSession = enginesis || {};
 
 
 this.MemoryMatch = {
-    GameVersion: "1.0.83",
+    GameVersion: "1.0.86",
     platform: "unknown",
     locale: "en-US",
     debugMode: false,
@@ -515,8 +515,9 @@ this.MemoryMatch = {
         }
     },
 
-    showSharePopup: function (shareMessage) {
-        MemoryMatch.SharePopup.setup(MemoryMatch.stage, {title: "Share", message: "Share " + MemoryMatch.GameSetup.gameTitle + " with your favorite social network:", callback: MemoryMatch.onShareClosed.bind(MemoryMatch), closeButton: true, continueButton: false, noscale: true, shareMessage: shareMessage, domElementEmailForm: 'emailshare'});
+    showSharePopup: function (shareMessage, shareShortMessage) {
+        var shareTitle = MemoryMatch.tokenReplace(MemoryMatch.GameSetup.GUIStrings.sharePopupTitle, {"gamename": MemoryMatch.GameSetup.gameTitle});
+        MemoryMatch.SharePopup.setup(MemoryMatch.stage, {title: "Share", message: shareTitle, callback: MemoryMatch.onShareClosed.bind(MemoryMatch), closeButton: true, continueButton: false, noscale: true, shareMessage: shareMessage, shareShortMessage: shareShortMessage, domElementEmailForm: 'emailshare'});
         MemoryMatch.SharePopup.buildScreen(true);
     },
 
@@ -803,7 +804,6 @@ this.MemoryMatch = {
         }
         if ( ! (MemoryMatch.isChallengeGame && MemoryMatch.gameNumber > 1)) { // do not reset if continuing the Challenge game
             MemoryMatch.gameScore = 0;
-            MemoryMatch.consecutiveMatchCount = 0;
             MemoryMatch.numberOfCombos = 0;
             MemoryMatch.luckyGuessCount = 0;
             MemoryMatch.missCount = 0;
@@ -820,6 +820,7 @@ this.MemoryMatch = {
         }
         MemoryMatch.GameGUI.updateComboMultiplier(0);
         MemoryMatch.matchCount = 0;
+        MemoryMatch.consecutiveMatchCount = 0;
         MemoryMatch.chainCount = null;
         MemoryMatch.numberOfCardsShowing = 0;
         MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.BOARD_SETUP;
@@ -1166,6 +1167,7 @@ this.MemoryMatch = {
         MemoryMatch.gameInProgress = false;
         MemoryMatch.gameScore = 0;
         MemoryMatch.levelScore = 0;
+        MemoryMatch.MatchCount = 0;
         MemoryMatch.consecutiveMatchCount = 0;
         MemoryMatch.GameGUI.updateComboMultiplier(0);
         MemoryMatch.numberOfCombos = 0;
@@ -2588,9 +2590,9 @@ this.MemoryMatch = {
         if ( ! MemoryMatch.isChallengeGame && MemoryMatch.gameType != MemoryMatch.GAMEPLAYTYPE.CHAINS && MemoryMatch.gameType != MemoryMatch.GAMEPLAYTYPE.HAYSTACK) {
             if (MemoryMatch.consecutiveMatchCount > 1) {
                 MemoryMatch.numberOfCombos ++;
-                if (MemoryMatch.consecutiveMatchCount == 3) {
+                if (MemoryMatch.consecutiveMatchCount == 4) {
                     earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.TRIPLECOMBO) | earnedAchievement;
-                } else if (MemoryMatch.consecutiveMatchCount == 4) {
+                } else if (MemoryMatch.consecutiveMatchCount == 5) {
                     earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.QUADBO) | earnedAchievement;
                 }
                 if (MemoryMatch.numberOfCombos == 5) {
@@ -2656,7 +2658,6 @@ this.MemoryMatch = {
                     }
                 }
                 break;
-
             case MemoryMatch.GAMEPLAYTYPE.MONTE:
                 if (MemoryMatch.gameNumber == 10) {
                     earnedAchievement = MemoryMatch.achievementEarned(MemoryMatch.ACHIEVEMENT.MONTE) | earnedAchievement;
@@ -2780,7 +2781,11 @@ this.MemoryMatch = {
     onCardRemoveCompleteLastCard: function (card) {
         card.state = MemoryMatch.CARDSTATE.REMOVED;
         if ((MemoryMatch.matchCount >= MemoryMatch.gameMatchCount)) {
-            MemoryMatch.gameComplete(MemoryMatch.GAMEPLAYSTATE.WIN); // user completed the game
+            if (MemoryMatch.testIfAnyCardIsState(MemoryMatch.CARDSTATE.UP)) { // make sure no other cards will also report the game has ended, if so wait for them to complete flipping
+                MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.WIN;
+            } else {
+                MemoryMatch.gameComplete(MemoryMatch.GAMEPLAYSTATE.WIN); // user completed the game
+            }
         } else {
             MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.CHOOSE_FIRST_CARD;
         }
@@ -2829,7 +2834,7 @@ this.MemoryMatch = {
             if (MemoryMatch.matchCount >= MemoryMatch.gameMatchCount) {
                 MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.WIN;
                 MemoryMatch.gameEndTime = Date.now();
-                MemoryMatch.removeAllCards(MemoryMatch.gameCompleteRemoveCardThenAdvance); // user completed the game, but wait for cards to dissolve before advancing
+                MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.cardSelected, 500, 0, false, null, MemoryMatch.onHaystackBoardComplete); // user completed the game, but wait for cards to dissolve before advancing
             } else {
                 MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.cardSelected, 500, 0, false, null, MemoryMatch.onHaystackNextTargetCard);
             }
@@ -3001,6 +3006,26 @@ this.MemoryMatch = {
         }
     },
 
+    testIfAnyCardIsState: function (cardStateToCheck) {
+
+        // see if any card on the board is in the requested state
+
+        var i,
+            atLeastOneCardMatchesState = false,
+            card;
+
+        if (MemoryMatch.allCardsOnBoard != null && MemoryMatch.allCardsOnBoard.length > 0) {
+            for (i = 0; i < MemoryMatch.allCardsOnBoard.length; i ++) {
+                card = MemoryMatch.allCardsOnBoard[i];
+                if (card.state == cardStateToCheck) {
+                    atLeastOneCardMatchesState = true;
+                    break;
+                }
+            }
+        }
+        return atLeastOneCardMatchesState;
+    },
+
     removeAllCards: function (callMeWhenComplete) {
         var i,
             card;
@@ -3107,6 +3132,10 @@ this.MemoryMatch = {
         if ( ! aCardIsActive) {
             MemoryMatch.debugLog(whoCalledMe + ": no cards are on the stage");
         }
+    },
+
+    onHaystackBoardComplete: function () {
+        MemoryMatch.removeAllCards(MemoryMatch.gameCompleteRemoveCardThenAdvance);
     },
 
     onHaystackNextTargetCard: function () {
@@ -4718,6 +4747,42 @@ this.MemoryMatch = {
     },
 
     /**
+     * Return a random value from 0 to the number of provided entries (-1) given a set of probabilities.
+     * Provide a set of probabilities in any order order. Example:
+     * [10, 40, 50]
+     * For this set, 0 is returned 10% of the time, 1 is returned 40% of the time, and 2 is returned 50% of the time.
+     *
+     */
+    getRandomValueFromProbabilitySet: function (arrayOfProbabilities) {
+
+        var total = 0,
+            randomSample,
+            value,
+            i;
+
+        // Make a sum of the total possible range of values
+        for (i = 0; i < arrayOfProbabilities.length; i ++) {
+            total += arrayOfProbabilities[i];
+        }
+        randomSample = Math.random() * total;
+
+        // Go through the probabilities and find where our random sample falls
+        value = -1;
+        for (i = 0; i < arrayOfProbabilities.length; i ++) {
+            if (randomSample < arrayOfProbabilities[i]) {
+                value = i;
+                break;
+            } else {
+                randomSample -= arrayOfProbabilities[i];
+            }
+        }
+        if (value < 0) {
+            value = arrayOfProbabilities.length - 1;
+        }
+        return value;
+    },
+
+    /**
      * @description Replace key:value pairs into a string. This provides a template-like formatting using {key} string replacement.
      * @method tokenReplace
      * @param {sourceString} string that contains %TOKEN% to be replaced if matched by a params object key.
@@ -6000,7 +6065,11 @@ function onGooglePlusLoaded () {
 //====================================================================================
 function initApp() {
     MemoryMatch.setPlatform();
-    MemoryMatch.debugLog("Loading " + MemoryMatch.GameSetup.gameTitle + " version " + MemoryMatch.GameVersion + " on " + MemoryMatch.platform + " using locale " + MemoryMatch.locale + (MemoryMatch.isTouchDevice ? " / Touch" : " / Mouse"));
+    if (MemoryMatch.debugMode) {
+        MemoryMatch.debugLog("Loading " + MemoryMatch.GameSetup.gameTitle + " version " + MemoryMatch.GameVersion + " on " + MemoryMatch.platform + " using locale " + MemoryMatch.locale + (MemoryMatch.isTouchDevice ? " / Touch" : " / Mouse"));
+    } else {
+        console.log("Loading " + MemoryMatch.GameSetup.gameTitle + " version " + MemoryMatch.GameVersion + " on " + MemoryMatch.platform + " using locale " + MemoryMatch.locale + (MemoryMatch.isTouchDevice ? " / Touch" : " / Mouse"));
+    }
 
     // Listeners for all possible cache events
 

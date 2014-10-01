@@ -11,7 +11,6 @@
  *
  */
 
-var enginesis = enginesis || {};
 "use strict";
 
 var ShareHelper = {
@@ -22,12 +21,14 @@ var ShareHelper = {
     errorMessage: '',
     responseInfo: '',
     callBackWhenComplete: null,
+    enginesisSession: null,
 
-    initialize: function (networkList, parameters, callbackWhenComplete) {
+    initialize: function (enginesisInstance, networkList, parameters, callbackWhenComplete) {
         var objectType,
             networkName,
             i;
 
+        this.enginesisSession = enginesisInstance;
         // we expect the list of networks to initialize to be an array of strings or a single string or index
         this.networks = [
             {id: 'email',      init: this.initializeEmail.bind(this),      share: this.ShareByEmail.bind(this)},
@@ -150,7 +151,8 @@ var ShareHelper = {
             domId = 'twitter-jswidgets',
             twttr,
             twitterJS,
-            firstJS = document.getElementsByTagName('script')[0];
+            firstJS = document.getElementsByTagName('script')[0],
+            tweetCompleteCallBack = this.onTweetComplete;
 
         if (window.twttr == null && document.getElementById(domId) == null) {
             window.twttr = (function () {
@@ -161,7 +163,7 @@ var ShareHelper = {
                 return window.twttr || (twttr = { _e: [], ready: function(f) { twttr._e.push(f) } });
             })();
             window.twttr.ready(function (twttr) {
-                twttr.events.bind('tweet', this.onTweetComplete);
+                twttr.events.bind('tweet', tweetCompleteCallBack);
                 if (callbackWhenComplete != null) {
                     callbackWhenComplete('twitter');
                 }
@@ -178,7 +180,7 @@ var ShareHelper = {
         // TODO: the tweet was sent or it failed, how do we know?
 
         var result = event;
-        enginesis.debugLog('ShareHelper:onTweetComplete event=' + event);
+        this.enginesisSession.debugLog('ShareHelper:onTweetComplete event=' + event);
     },
 
     initializeGooglePlus: function (parameters, callbackWhenComplete) {
@@ -288,10 +290,14 @@ var ShareHelper = {
             via,
             url; // counts for 24 chars if t.co does its job
 
-        if (parameters.description == null) {
-            text = 'Status update';
+        if (parameters.shortDescription == null) {
+            if (parameters.description == null) {
+                text = 'Status update';
+            } else {
+                text = parameters.description;
+            }
         } else {
-            text = parameters.description;
+            text = parameters.shortDescription;
         }
         if (parameters.socialHashTags == null) {
             hashTags = '';
@@ -332,8 +338,14 @@ var ShareHelper = {
 
     ShareByEmail: function (parameters, callbackWhenComplete) {
         // Email parameters are From name, From email, To email list, Message
+        var referrer;
 
-        enginesis.gameDataCreate('bravotv.com', parameters.fromEmail, parameters.fromName, parameters.toEmail, '', parameters.message, '', '', '', false, 0,
+        if (parameters.referrer != null) {
+            referrer = parameters.referrer;
+        } else {
+            referrer = 'enginesis.com';
+        }
+        this.enginesisSession.gameDataCreate(referrer, parameters.fromEmail, parameters.fromName, parameters.toEmail, '', parameters.message, '', '', '', false, 0,
             function(enginesisResponse) {
                 if (enginesisResponse != null && enginesisResponse.fn != null && enginesisResponse.fn == 'GameDataCreate') {
                     // see if it was sent or we got an error
@@ -344,7 +356,6 @@ var ShareHelper = {
                     callbackWhenComplete('email');
                 }
             });
-
     },
 
     replaceChar: function (str, char) {

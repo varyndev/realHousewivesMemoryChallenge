@@ -32,6 +32,7 @@ MemoryMatch.SharePopup = {
     primaryColorValue: null,
     secondaryColorValue: null,
     shareMessage: null,
+    shareShortMessage: null,
 
 
     setParameters: function (parameters) {
@@ -63,6 +64,9 @@ MemoryMatch.SharePopup = {
             }
             if (parameters.shareMessage != null) {
                 this.shareMessage = parameters.shareMessage;
+            }
+            if (parameters.shareShortMessage != null) {
+                this.shareShortMessage = parameters.shareShortMessage;
             }
         }
     },
@@ -110,7 +114,7 @@ MemoryMatch.SharePopup = {
         };
         shareButtonsCount = this.shareNetworks.length;
         for (i = 0; i < shareButtonsCount; i ++) {
-            enginesisSession.ShareHelper.initialize(this.shareNetworks[i].id, parameters, this.onNetworksInitializeComplete.bind(this));
+            enginesisSession.ShareHelper.initialize(enginesisSession, this.shareNetworks[i].id, parameters, this.onNetworksInitializeComplete.bind(this));
         }
     },
 
@@ -142,12 +146,16 @@ MemoryMatch.SharePopup = {
     },
 
     closePopup: function (closeEventType) {
-        var domElement = this.groupDisplayObject.getChildByName(this.domElementEmailForm);
+        var domElement = this.parentDisplayObject.getChildByName(this.domElementEmailForm),
+            pageElement = document.getElementById(this.domElementEmailForm);
 
         this.isEnabled = false;
         this.closeEventType = closeEventType;
+        if (pageElement != null) {
+            pageElement.style.display = 'none';
+        }
         if (domElement != null) {
-            domElement.visible = false;
+            this.parentDisplayObject.removeChild(domElement);
         }
         // begin animation, then once close is complete send notification
         this.closeStartAnimation();
@@ -177,7 +185,7 @@ MemoryMatch.SharePopup = {
                             facebookAppId: MemoryMatch.GameSetup.facebookAppId,
                             googleClientId: MemoryMatch.GameSetup.googlePlusClientId
                         };
-                        enginesisSession.ShareHelper.initialize(networkId, parameters, this.onNetworkInitializeComplete.bind(this));
+                        enginesisSession.ShareHelper.initialize(enginesisSession, networkId, parameters, this.onNetworkInitializeComplete.bind(this));
                     }
                 }
             }
@@ -198,13 +206,13 @@ MemoryMatch.SharePopup = {
         toEmail = document.getElementById('toemail').value;
         message = document.getElementById('message').value;
         if (fromEmail.length < 4) {
-            message = 'Please provide your email address as the sender.';
+            message = MemoryMatch.GameSetup.GUIStrings.emailErrorSender;
         } else if (toEmail.length < 4) {
-            message = 'Please provide the email address of a recipient.';
+            message = MemoryMatch.GameSetup.GUIStrings.emailErrorTo;
         } else if ( ! MemoryMatch.isValidEmail(fromEmail)) {
-            message = 'Please provide a valid sender email address.';
+            message = MemoryMatch.GameSetup.GUIStrings.emailErrorFrom;
         } else if ( ! MemoryMatch.isValidEmail(toEmail)) {
-            message = 'Please provide a valid email address of a recipient.';
+            message = MemoryMatch.GameSetup.GUIStrings.emailErrorToEmail;
         } else {
             isOKToSend = true;
         }
@@ -218,8 +226,9 @@ MemoryMatch.SharePopup = {
                 fromEmail: fromEmail,
                 toEmail: toEmail,
                 message: message,
-                picture: null,
-                link: null
+                picture: MemoryMatch.GameSetup.promoImage,
+                link: MemoryMatch.GameSetup.gameShortLink,
+                referrer: MemoryMatch.GameSetup.siteDomain
             };
             enginesisSession.ShareHelper.share('email', parameters, this.onNetworkShareComplete.bind(this));
         } else {
@@ -250,6 +259,7 @@ MemoryMatch.SharePopup = {
         if (networkId != 'email') { // hand off to the network to ask the user to share
             parameters = {
                 description: '',
+                shortDescription: '',
                 title: MemoryMatch.GameSetup.gameTitle,
                 caption: MemoryMatch.GameSetup.gameSubTitle,
                 picture: MemoryMatch.GameSetup.promoImage,
@@ -262,6 +272,11 @@ MemoryMatch.SharePopup = {
                 parameters.description = this.shareMessage;
             } else {
                 parameters.description = MemoryMatch.GameSetup.gameSubTitle;
+            }
+            if (this.shareShortMessage != null) {
+                parameters.shortDescription = this.shareShortMessage;
+            } else {
+                parameters.shortDescription = MemoryMatch.GameSetup.gameSubTitle;
             }
             enginesisSession.ShareHelper.share(networkId, parameters, this.onNetworkShareComplete.bind(this));
         } else { // we need to prompt the user for the share info
@@ -324,43 +339,14 @@ MemoryMatch.SharePopup = {
         // Position a DOM element in the center of the popup. Expecting the element to be a div containing what we want to show.
         // Register domElement to its center
         var pageElement = document.getElementById(domElementId),
-            domElement,
-            scaleFactorX,
-            scaleFactorY,
-            x,
-            y,
-            width,
-            height;
+            domElement;
 
         if (pageElement != null) {
             domElement = new createjs.DOMElement(pageElement)
             if (domElement != null) {
                 domElement.name = domElementId;
-                width = pageElement.clientWidth;
-                height = pageElement.clientHeight;
-                // the div is independent of the CSS container to we need to center it and scale it based on where the background is placed
-                if (MemoryMatch.stageScaleFactor == 0.5) {
-                    scaleFactorX = 1;
-                    x = width * -0.12;
-                    y = MemoryMatch.stageHeight * 0.15; // Math.floor((MemoryMatch.stageHeight - height) * (-0.5 * scaleFactorX));
-                } else if (MemoryMatch.stageScaleFactor < 0.5) {
-//                    scaleFactorX = 0.8; // MemoryMatch.stageScaleFactor * (MemoryMatch.cssScaledWidth / MemoryMatch.stageWidth);
-//                    scaleFactorY = 0.8; // MemoryMatch.stageScaleFactor * (MemoryMatch.cssScaledHeight / MemoryMatch.stageHeight);
-                    scaleFactorX = 0.8;
-                    x = width * 0.05; // Math.floor((MemoryMatch.stageWidth - width) * 0.5);
-                    y = MemoryMatch.stageHeight * 0.15; // Math.floor((MemoryMatch.stageHeight - height) * 0.5);
-                } else {
-//                    scaleFactorX = 1; // MemoryMatch.stageScaleFactor * (MemoryMatch.cssScaledWidth / MemoryMatch.stageWidth);
-//                    scaleFactorY = 1; // MemoryMatch.stageScaleFactor * (MemoryMatch.cssScaledHeight / MemoryMatch.stageHeight);
-//                    x = Math.floor((MemoryMatch.stageWidth - width) * 0.5 * scaleFactorX);
-//                    y = Math.floor((MemoryMatch.stageHeight - height) * 0.5 * scaleFactorX);
-                    scaleFactorX = 1; // this.backgroundWidth / width;
-                    x = width * -0.12; // Math.floor((MemoryMatch.stageWidth - width) * (-0.5 * scaleFactorX));
-                    y = MemoryMatch.stageHeight * 0.15; // Math.floor((MemoryMatch.stageHeight - height) * (-0.5 * scaleFactorX));
-                }
-                MemoryMatch.debugLog("X,Y=(" + x + "," + y + "); Scale=" + scaleFactorX + "; Client w/h (" + width + "," + height + "); background (" + this.backgroundWidth + "," + this.backgroundHeight + "); stage(" + MemoryMatch.stageWidth + "," + MemoryMatch.stageHeight + ")");
-                this.groupDisplayObject.addChildAt(domElement, 0);
-                domElement.setTransform(x, y, scaleFactorX, scaleFactorX, 0, 0, 0, 0, 0);
+                pageElement.style.display = "table-cell";
+                this.parentDisplayObject.addChildAt(domElement, 0);
                 pageElement = document.getElementById('send');
                 if (pageElement != null) {
                     pageElement.onclick = this.onClickSend.bind(this);
@@ -443,6 +429,7 @@ MemoryMatch.SharePopup = {
             shareButtonsCount,
             networkId,
             userInfo,
+            emailShareMessage,
             i;
 
         this.isEnabled = true;
@@ -462,10 +449,11 @@ MemoryMatch.SharePopup = {
             this.setupDOMElement(this.domElementEmailForm);
         }
         userInfo = MemoryMatch.UserData.getById();
+        emailShareMessage = MemoryMatch.tokenReplace(MemoryMatch.GameSetup.GUIStrings.emailShareMessage, {"gamename": MemoryMatch.GameSetup.gameTitle});
         document.getElementById('fromname').value = userInfo.userName;
         document.getElementById('fromemail').value = userInfo.email;
         document.getElementById('toemail').value = '';
-        document.getElementById('message').value = 'Come play ' + MemoryMatch.GameSetup.gameTitle + '. I really enjoy this game, you will too!';
+        document.getElementById('message').value = emailShareMessage;
     },
 
     isShowing: function () {
