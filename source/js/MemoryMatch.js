@@ -2716,7 +2716,8 @@ this.MemoryMatch = {
         // incremented so we need to credit the player with one more as she just completed a board.
 
         var streakMilestoneValue = 5, // TODO: This number may be game dependent
-            streakValue;
+            streakValue,
+            awarded = false;
 
         if (MemoryMatch.isChallengeGame && MemoryMatch.gamePlayState != MemoryMatch.GAMESTATE.LOSE) {
             if (MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.SIMON) {
@@ -2725,6 +2726,12 @@ this.MemoryMatch = {
                 streakValue = MemoryMatch.gameNumber;
             }
             if (streakValue > 0 && streakValue % streakMilestoneValue == 0) {
+                awarded = true;
+                window.setTimeout(MemoryMatch.showChallengeStreakMilestone.bind(MemoryMatch), 1000);
+            }
+            if ( ! awarded && MemoryMatch.challengeAdvanceStreak == streakValue && MemoryMatch.challengeAdvanceStreak != streakMilestoneValue) {
+                // player beat the challenge but it was not at a milestone
+                awarded = true;
                 window.setTimeout(MemoryMatch.showChallengeStreakMilestone.bind(MemoryMatch), 1000);
             }
         }
