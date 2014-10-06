@@ -5685,6 +5685,14 @@ this.MemoryMatch = {
         return (window.innerWidth / window.innerHeight) >= 1.0;
     },
 
+    isIFrame: function () {
+        try {
+            return window.self !== window.top;
+        } catch (e) {
+            return true;
+        }
+    },
+
     isDesiredOrientation: function () {
         var orientationRequired = MemoryMatch.GameSetup.orientation,
             correctOrientation = false;
@@ -5702,13 +5710,14 @@ this.MemoryMatch = {
 
     shouldAskUserToBookmarkApp: function () {
         var isAppBookmarked = MemoryMatch.isAppBookmarked(),
+            isStandAloneApp = ! MemoryMatch.isIFrame(),
             isIosDevice = MemoryMatch.isDeviceiOS(),
             userDataObject = this.UserData.getUserDataObject(),
             askedUserToBookmark = userDataObject['askBookmark'] | 0,
             shouldAsk = false,
             isAdShowing = MemoryMatch.isAdShowing();
 
-        if (isIosDevice && ! isAppBookmarked && askedUserToBookmark < 5 && ! isAdShowing) {
+        if (isIosDevice && isStandAloneApp && ! isAppBookmarked && askedUserToBookmark < 5 && ! isAdShowing) {
             askedUserToBookmark ++;
             userDataObject['askBookmark'] = askedUserToBookmark;
             this.UserData.flush();
@@ -6066,9 +6075,9 @@ function onGooglePlusLoaded () {
 function initApp() {
     MemoryMatch.setPlatform();
     if (MemoryMatch.debugMode) {
-        MemoryMatch.debugLog("Loading " + MemoryMatch.GameSetup.gameTitle + " version " + MemoryMatch.GameVersion + " on " + MemoryMatch.platform + " using locale " + MemoryMatch.locale + (MemoryMatch.isTouchDevice ? " / Touch" : " / Mouse"));
+        MemoryMatch.debugLog("Loading " + MemoryMatch.GameSetup.gameTitle + " version " + MemoryMatch.GameVersion + " on " + MemoryMatch.platform + " using locale " + MemoryMatch.locale + (MemoryMatch.isTouchDevice ? " / Touch" : " / Mouse") + " in iframe: " + (MemoryMatch.isIFrame() ? 'YES' : 'NO'));
     } else {
-        console.log("Loading " + MemoryMatch.GameSetup.gameTitle + " version " + MemoryMatch.GameVersion + " on " + MemoryMatch.platform + " using locale " + MemoryMatch.locale + (MemoryMatch.isTouchDevice ? " / Touch" : " / Mouse"));
+        console.log("Loading " + MemoryMatch.GameSetup.gameTitle + " version " + MemoryMatch.GameVersion + " on " + MemoryMatch.platform + " using locale " + MemoryMatch.locale + (MemoryMatch.isTouchDevice ? " / Touch" : " / Mouse") + " in iframe: " + (MemoryMatch.isIFrame() ? 'YES' : 'NO'));
     }
 
     // Listeners for all possible cache events

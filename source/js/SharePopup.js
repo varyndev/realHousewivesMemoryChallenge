@@ -278,6 +278,9 @@ MemoryMatch.SharePopup = {
             } else {
                 parameters.shortDescription = MemoryMatch.GameSetup.gameSubTitle;
             }
+            if (networkId == 'facebook') {
+                parameters.link = MemoryMatch.GameSetup.gameLink;
+            }
             enginesisSession.ShareHelper.share(networkId, parameters, this.onNetworkShareComplete.bind(this));
         } else { // we need to prompt the user for the share info
             this.showEmailForm();
