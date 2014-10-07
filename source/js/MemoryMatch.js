@@ -11,7 +11,7 @@ var enginesisSession = enginesis || {};
 
 
 this.MemoryMatch = {
-    GameVersion: "1.0.86",
+    GameVersion: "1.0.87",
     platform: "unknown",
     locale: "en-US",
     debugMode: false,
@@ -2732,7 +2732,7 @@ this.MemoryMatch = {
             if ( ! awarded && MemoryMatch.challengeAdvanceStreak == streakValue && MemoryMatch.challengeAdvanceStreak != streakMilestoneValue) {
                 // player beat the challenge but it was not at a milestone
                 awarded = true;
-                window.setTimeout(MemoryMatch.showChallengeStreakMilestone.bind(MemoryMatch), 1000);
+                window.setTimeout(MemoryMatch.showChallengeStreakMilestoneNoPoints.bind(MemoryMatch), 1000);
             }
         }
     },
@@ -2742,7 +2742,15 @@ this.MemoryMatch = {
         MemoryMatch.triggerSoundFx("soundBonus");
         MemoryMatch.GameGUI.flashMatchCountDisplay(true, 6);
         MemoryMatch.updateScoreDisplay(bonusPoints);
-        MemoryMatch.showScoreBalloon(bonusPoints, {x: MemoryMatch.stageWidth * 0.8, y: MemoryMatch.stageHeight * 0.94});
+        MemoryMatch.showScoreBalloon(bonusPoints, {
+            x: MemoryMatch.stageWidth * 0.8,
+            y: MemoryMatch.stageHeight * 0.94
+        });
+    },
+
+    showChallengeStreakMilestoneNoPoints: function () {
+        MemoryMatch.triggerSoundFx("soundBonus");
+        MemoryMatch.GameGUI.flashMatchCountDisplay(true, 6);
     },
 
     matchEffects: function (x, y, level) {
