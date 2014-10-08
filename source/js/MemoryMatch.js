@@ -126,7 +126,7 @@ this.MemoryMatch = {
     stageScaleFactor: 1,
     cardScaleFactor: 1,
     stageAspectRatio: 1.3333,
-    fps: 40,                 // expected number of frames per second
+    fps: 50,                 // expected number of frames per second
     frameTime: 25,           // expected milliseconds per frame (1000 / fps)
     gamePaused: false,       // game is paused
     gamePausePending: false, // game is in process to pause or unpause but need to complete animations

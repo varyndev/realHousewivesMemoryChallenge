@@ -370,17 +370,9 @@ MemoryMatch.GameResults = {
             globalStarPoint = this.groupDisplayObject.localToGlobal(starSprite.x, starSprite.y);
 
         if (starSprite.starNumber < 3) {
-            if (MemoryMatch.isTouchDevice) {
-                numberOfParticles = Math.random() * 50 + 20;
-            } else {
-                numberOfParticles = Math.random() * 100 + 30;
-            }
+            numberOfParticles = Math.random() * 40 + 20;
         } else {
-            if (MemoryMatch.isTouchDevice) {
-                numberOfParticles = Math.random() * 60 + 40;
-            } else {
-                numberOfParticles = Math.random() * 120 + 50;
-            }
+            numberOfParticles = Math.random() * 50 + 40;
             hiFiveWord = MemoryMatch.hiFiveEarnedInCurrentGame();
             if (hiFiveWord != null && hiFiveWord.length > 0) {
                 MemoryMatch.showMessageBalloon(null, hiFiveWord + '!', 0, starSprite.x, starSprite.y);
@@ -844,11 +836,7 @@ MemoryMatch.GameResults = {
                 this.playerBestScore = this.playerScore;
                 this.bestScoreTextField.text = MemoryMatch.formatNumberWithGroups(this.playerBestScore);
                 if (MemoryMatch.levelComplete) {
-                    if (MemoryMatch.isTouchDevice) {
-                        numberOfParticles = Math.random() * 50 + 20;
-                    } else {
-                        numberOfParticles = Math.random() * 100 + 30;
-                    }
+                    numberOfParticles = Math.random() * 40 + 20;
                     globalTextPoint = this.groupDisplayObject.localToGlobal(this.bestScoreTextField.x, this.bestScoreTextField.y);
                     MemoryMatch.AnimationHandler.startSplatterParticles(numberOfParticles, globalTextPoint.x, globalTextPoint.y);
                 }
@@ -1014,7 +1002,7 @@ MemoryMatch.GameResults = {
 
     gemAnimationComplete: function (actor) {
         var globalCardPoint = this.animationDisplayObject.localToGlobal(this.gemSprite.x, this.gemSprite.y);
-        MemoryMatch.AnimationHandler.startSplatterStars(Math.random() * 120 + 100, globalCardPoint.x, globalCardPoint.y);
+        MemoryMatch.AnimationHandler.startSplatterStars(Math.random() * 100 + 80, globalCardPoint.x, globalCardPoint.y);
         MemoryMatch.triggerSoundFx("soundBump");
         this.animationDisplayObject.removeChild(this.gemSprite);
         this.gemSprite = null;
