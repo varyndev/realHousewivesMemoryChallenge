@@ -11,12 +11,13 @@ var enginesisSession = enginesis || {};
 
 
 this.MemoryMatch = {
-    GameVersion: "1.0.87",
+    GameVersion: "1.0.88",
     platform: "unknown",
     locale: "en-US",
     debugMode: false,
     frameRateDebugText: null,
     isTouchDevice: false,
+    isNativeBuild: false,
     minimumSplashScreenDisplayTime: 2000,
     assetLoader: null,
     secondaryAssetManifest: null,
@@ -215,7 +216,7 @@ this.MemoryMatch = {
     authToken: '',
     unlockAllLevelsCounter: 0,
     cheatChallengeNoMiss: false,
-    secondaryAssetLoaderProgress: 0,
+    secondaryAssetLoaderProgress: -1,
     mainMenuViewCount: 0,
     adModel: {
         showAds: true,
@@ -1376,7 +1377,9 @@ this.MemoryMatch = {
             progressText,
             canvas,
             context,
-            gradient;
+            gradient,
+            loadingStrings,
+            loadingStringIndex;
 
         if (document.getElementById("loaderProgress") != null && event.type == "progress") {
 
@@ -1412,14 +1415,18 @@ this.MemoryMatch = {
 
                 context.restore();
             }
+            loadingStrings = MemoryMatch.GameSetup.GUIStrings.loadingMessages;
             if (progress >= 100) {
-                progressText = "Ready to play!";
-            } else if (progress > 80) {
-                progressText = "Oh! This is looking good... " + progress + "%";
-            } else if (progress > 50) {
-                progressText = "It's getting amazing!... " + progress + "%";
+                progressText = loadingStrings[3];
             } else {
-                progressText = "We're loading... " + progress + "%";
+                if (progress > 80) {
+                    loadingStringIndex = 2;
+                } else if (progress > 50) {
+                    loadingStringIndex = 1;
+                } else {
+                    loadingStringIndex = 0;
+                }
+                progressText = loadingStrings[loadingStringIndex] + " " + progress + "%";
             }
             document.getElementById("loaderProgress").innerText = progressText;
         }
@@ -1433,6 +1440,7 @@ this.MemoryMatch = {
             assetLoader.addEventListener("complete", MemoryMatch.secondaryAssetsLoaded.bind(MemoryMatch));
             assetLoader.addEventListener("progress", MemoryMatch.secondaryAssetLoadProgress);
             assetLoader.addEventListener("error", MemoryMatch.secondaryAssetLoadError);
+            assetLoader.setMaxConnections(1);
             assetLoader.loadManifest(secondaryAssetManifest);
             MemoryMatch.secondaryAssetManifest = null;
             MemoryMatch.secondaryAssetLoaderProgress = 0;
@@ -1461,6 +1469,7 @@ this.MemoryMatch = {
     secondaryAssetsLoaded: function () {
         var assetLoader = MemoryMatch.assetLoader;
         assetLoader.removeAllEventListeners();
+        MemoryMatch.secondaryAssetLoaderProgress = -1;
 //        MemoryMatch.debugLog("Secondary load complete!");
     },
 
@@ -3130,7 +3139,7 @@ this.MemoryMatch = {
         if (MemoryMatch.allCardsOnBoard != null && MemoryMatch.allCardsOnBoard.length > 0) {
             for (i = 0; i < MemoryMatch.allCardsOnBoard.length; i ++) {
                 card = MemoryMatch.allCardsOnBoard[i];
-                MemoryMatch.debugLog(whoCalledMe + ": active card info " + card.toString());
+                MemoryMatch.debugLog(whoCalledMe + ": allCardsOnBoard card info " + card.toString());
             }
         } else {
             MemoryMatch.debugLog(whoCalledMe + ": board is EMPTY");
@@ -3140,7 +3149,7 @@ this.MemoryMatch = {
         for (i = 0; i < MemoryMatch.boardContainer.getNumChildren(); i ++) {
             card = MemoryMatch.boardContainer.getChildAt(i);
             if (card.state != null) {
-                MemoryMatch.debugLog(whoCalledMe + ": dead card info " + card.toString());
+                MemoryMatch.debugLog(whoCalledMe + ": boardContainer card info " + card.toString());
                 aCardIsActive = true;
             }
         }
@@ -4398,7 +4407,7 @@ this.MemoryMatch = {
             possibleMatches,
             accuracy,
             gameLevel = MemoryMatch.gameNumber,
-            wordsOfEncouragement = ['Amazing', 'Spectacular', 'Awesome', 'Sensational', 'Impressive', 'Inspiring', 'Magnificent', 'Wonderful'],
+            wordsOfEncouragement = MemoryMatch.GameSetup.GUIStrings.wordsOfEncouragement,
             sampleWord = wordsOfEncouragement[Math.floor(Math.random() * wordsOfEncouragement.length)];
 
         if (MemoryMatch.isChallengeGame || MemoryMatch.gamePlayState == MemoryMatch.GAMEPLAYSTATE.WIN) {
@@ -4959,6 +4968,7 @@ this.MemoryMatch = {
     setPlatform: function () {
         MemoryMatch.platform = navigator.platform;
         MemoryMatch.locale = navigator.language;
+        MemoryMatch.isNativeBuild = document.location.protocol == 'file:';
         if (Modernizr != null && Modernizr.touch != null) {
             MemoryMatch.isTouchDevice = Modernizr.touch;
         } else {
@@ -5175,7 +5185,7 @@ this.MemoryMatch = {
             cardFace.gotoAndStop(cardValue);
             this.updateCache();
             MemoryMatch.stageUpdated = true;
-        }
+        };
 
         card.kill = function () {
             cardBackSprite = null;
@@ -5186,7 +5196,7 @@ this.MemoryMatch = {
             card = null;
             guiSpriteFrames = null;
             guiSpriteData = null;
-        }
+        };
 
         card.toggleFace = function () {
             var cardBack = this.getChildAt(this.SPRITEINDEX.SPRITE_CARDBACK),
@@ -5206,7 +5216,7 @@ this.MemoryMatch = {
             this.showMatchCounter(showingMatchCounter);
             this.updateCache();
             MemoryMatch.stageUpdated = true;
-        }
+        };
 
         card.highlight = function () {
             var cardHighlight;
@@ -5217,7 +5227,7 @@ this.MemoryMatch = {
                 this.updateCache();
                 MemoryMatch.stageUpdated = true;
             }
-        }
+        };
 
         card.unhighlight = function () {
             var cardHighlight;
@@ -5228,7 +5238,7 @@ this.MemoryMatch = {
                 this.updateCache();
                 MemoryMatch.stageUpdated = true;
             }
-        }
+        };
 
         card.preSelect = function () {
             var cardHighlight;
@@ -5239,7 +5249,7 @@ this.MemoryMatch = {
                 this.updateCache();
                 MemoryMatch.stageUpdated = true;
             }
-        }
+        };
 
         card.select = function () {
             var cardHighlight = this.getChildAt(this.SPRITEINDEX.SPRITE_HIGHLIGHT);
@@ -5248,7 +5258,7 @@ this.MemoryMatch = {
             this.flip();
             this.updateCache();
             MemoryMatch.stageUpdated = true;
-        }
+        };
 
         card.specialSelect = function (cardSelectType, showHighlight) {
             var centerX = MemoryMatch.cardWidth * 0.5,
@@ -5280,7 +5290,7 @@ this.MemoryMatch = {
                 this.updateCache();
                 MemoryMatch.stageUpdated = true;
             }
-        }
+        };
 
         card.updateSelect = function (cardAnimator) {
             var keepAnimating = true,
@@ -5306,7 +5316,7 @@ this.MemoryMatch = {
                 MemoryMatch.stageUpdated = true;
             }
             return keepAnimating;
-        }
+        };
 
         card.flip = function () {
             var endSkew = 90,
@@ -5324,7 +5334,7 @@ this.MemoryMatch = {
                 cardAnimator.endYSkew = endSkew;
             }
             MemoryMatch.triggerSoundFx("soundCardFlip");
-        }
+        };
 
         card.showMatchCounter = function (showFlag) {
             var matchCounter = card.getChildAt(card.SPRITEINDEX.SPRITE_MATCHCOUNTER),
@@ -5338,13 +5348,14 @@ this.MemoryMatch = {
                 matchCounter.visible = showFlag;
             }
             MemoryMatch.stageUpdated = true;
-        }
+        };
 
         card.flipAnimationPhaseTwo = function (card) {
             var cardAnimator,
                 cardImage = card.getChildAt(card.SPRITEINDEX.SPRITE_CARDFACE),
                 endSkew = -90;
 
+            card.skewY = 90;
             cardImage.visible = true;
             card.seenCount ++;
             if (card.matchCounter > 0) {
@@ -5361,7 +5372,7 @@ this.MemoryMatch = {
             }
             card.updateCache();
             MemoryMatch.stageUpdated = true;
-        }
+        };
 
         card.unflipAnimationPhaseTwo = function (card) {
             var cardBack = card.getChildAt(card.SPRITEINDEX.SPRITE_CARDBACK),
@@ -5385,7 +5396,7 @@ this.MemoryMatch = {
             }
             card.updateCache();
             MemoryMatch.stageUpdated = true;
-        }
+        };
 
         card.flipAnimationComplete = function (card) {
             var cardFace = card.getChildAt(card.SPRITEINDEX.SPRITE_CARDFACE);
@@ -5399,7 +5410,7 @@ this.MemoryMatch = {
             card.isEnabled = true;
             card.updateCache();
             MemoryMatch.stageUpdated = true;
-        }
+        };
 
         card.unselect = function () {
             var cardHighlight = this.getChildAt(card.SPRITEINDEX.SPRITE_HIGHLIGHT);
@@ -5410,7 +5421,7 @@ this.MemoryMatch = {
             cardHighlight.scaleY = 1.0;
             this.updateCache();
             MemoryMatch.stageUpdated = true;
-        }
+        };
 
         card.flipBack = function () {
             var endSkew = 90,
@@ -5429,7 +5440,7 @@ this.MemoryMatch = {
                 cardAnimator.vYSkew = endSkew / MemoryMatch.cardFlipDx;
                 cardAnimator.endYSkew = endSkew;
             }
-        }
+        };
 
         card.forceDown = function () {
             var cardFace = card.getChildAt(card.SPRITEINDEX.SPRITE_CARDFACE),
@@ -5441,7 +5452,7 @@ this.MemoryMatch = {
             card.updateCache();
             card.isEnabled = true;
             MemoryMatch.stageUpdated = true;
-        }
+        };
 
         card.showCard = function (cardToShow) {
             var cardBackSprite = cardToShow.actor.getChildAt(card.SPRITEINDEX.SPRITE_CARDBACK);
@@ -5458,7 +5469,7 @@ this.MemoryMatch = {
             MemoryMatch.checkBoardIsReadyForPlay();
             cardToShow.actor.updateCache();
             MemoryMatch.stageUpdated = true;
-        }
+        };
 
         card.showCardDemo = function () {
             var cardBackSprite = this.getChildAt(card.SPRITEINDEX.SPRITE_CARDBACK);
@@ -5470,7 +5481,7 @@ this.MemoryMatch = {
             this.state = MemoryMatch.CARDSTATE.DOWN;
             this.updateCache();
             MemoryMatch.stageUpdated = true;
-        }
+        };
 
         card.removeCard = function (callMeWhenComplete) {
             var cardAnimator,
@@ -5492,7 +5503,7 @@ this.MemoryMatch = {
                 cardAnimator.vAlpha = -0.05;
                 cardAnimator.endAlpha = 0;
             }
-        }
+        };
 
         card.setMatchCounter = function (startValue) {
             var matchCounter = this.getChildAt(card.SPRITEINDEX.SPRITE_MATCHCOUNTER),
@@ -5508,7 +5519,7 @@ this.MemoryMatch = {
             this.showMatchCounter(showingMatchCounter);
             this.updateCache();
             MemoryMatch.stageUpdated = true;
-        }
+        };
 
         card.updateMatchCounter = function () {
             var matchCounter = this.getChildAt(card.SPRITEINDEX.SPRITE_MATCHCOUNTER),
@@ -5526,11 +5537,12 @@ this.MemoryMatch = {
             this.showMatchCounter(showingMatchCounter);
             this.updateCache();
             MemoryMatch.stageUpdated = true;
-        }
+        };
 
         card.toString = function () {
             return "CardNum=" + this.cardNum + "; Name=" + this.name + "; Value=" + this.value + "; State=" + this.state + "; Selected=" + (this.isSelected ? "YES" : "NO") + "; Seen=" + this.seenCount + "; MatchCount=" + this.matchCounter.toString();
-        }
+        };
+
         return card;
     },
 
@@ -5637,9 +5649,9 @@ this.MemoryMatch = {
         // this game is always landscape orientation. Also important the aspect ratio of every entry must be the same.
         // this logic assumes the game canvas is inside a container <div> and is placed relative to that container
         var supportedResolutions = [
-            {width: 2048, height: 1536, scaleFactor: 1, cardScaleFactor: 1, assetPostfix: "100", cardsPostfix: "100"},
-            {width: 1024, height: 768, scaleFactor: 0.5, cardScaleFactor: 0.5, assetPostfix: "50", cardsPostfix: "50"},
-            {width: 480, height: 360, scaleFactor: 0.24, cardScaleFactor: 0.25, assetPostfix: "24", cardsPostfix: "26"}],
+                {width: 2048, height: 1536, scaleFactor: 1, cardScaleFactor: 1, assetPostfix: "100", cardsPostfix: "100"},
+                {width: 1024, height: 768, scaleFactor: 0.5, cardScaleFactor: 0.5, assetPostfix: "50", cardsPostfix: "50"},
+                {width: 480, height: 360, scaleFactor: 0.24, cardScaleFactor: 0.25, assetPostfix: "24", cardsPostfix: "26"}],
             currentWidth = window.innerWidth,
             currentHeight = window.innerHeight,
             windowAspectRatio = currentWidth / currentHeight,
@@ -5662,9 +5674,6 @@ this.MemoryMatch = {
         if (resolutionIndex == -1) { // if nothing matches then use smallest resolution
             resolutionIndex = supportedResolutions.length - 1;
         }
-
-        // if we are on the ipad UIWebView we want to force it to 2046x1534
-
         // remember what we decided so our graphics placement logic can do the right thing
         MemoryMatch.assetFileNamePostfix = supportedResolutions[resolutionIndex].assetPostfix;
         MemoryMatch.cardsFileNamePostfix = supportedResolutions[resolutionIndex].cardsPostfix;
@@ -5676,13 +5685,19 @@ this.MemoryMatch = {
         canvas.width = MemoryMatch.stageWidth;
         canvas.height = MemoryMatch.stageHeight;
 
-        // Now let CSS scale and center the containing <div> based on the the best fit of our game stage relative
-        // to the maximum available screen space
-        if (windowAspectRatio > MemoryMatch.stageAspectRatio) { // window width is too wide relative to desired game width
-            currentWidth = Math.floor(currentHeight * MemoryMatch.stageAspectRatio);
-        } else { // window height is too high relative to desired game height
-            currentHeight = Math.floor(currentWidth / MemoryMatch.stageAspectRatio);
-        }
+        //if (MemoryMatch.isIFrame() || ! MemoryMatch.isTouchDevice) {
+            // Let CSS scale and center the containing <div> based on the the best fit of our game stage relative
+            // to the maximum available screen space
+            if (windowAspectRatio > MemoryMatch.stageAspectRatio) { // window width is too wide relative to desired game width
+                currentWidth = Math.floor(currentHeight * MemoryMatch.stageAspectRatio);
+            } else { // window height is too high relative to desired game height
+                currentHeight = Math.floor(currentWidth / MemoryMatch.stageAspectRatio);
+            }
+        //} else {
+        //    // if we are on the iphone/ipad UIWebView, don't allow the canvas to be larger than what we allow
+        //    currentWidth = supportedResolutions[resolutionIndex].width;
+        //    currentHeight = supportedResolutions[resolutionIndex].height;
+        //}
         containerDiv.style.width = currentWidth + 'px';
         containerDiv.style.height = currentHeight + 'px';
         containerDiv.style.marginTop = (currentHeight * -0.5) + 'px';
@@ -5750,6 +5765,10 @@ this.MemoryMatch = {
         debugData += '<p>CSS scale width: ' + (MemoryMatch.stageScaleFactor * (MemoryMatch.cssScaledWidth / MemoryMatch.stageWidth)) + ', CSS scale height: ' + (MemoryMatch.stageScaleFactor * (MemoryMatch.cssScaledHeight / MemoryMatch.stageHeight)) + '</p>';
         debugData += '</div>';
         return debugData;
+    },
+
+    getAppInfo: function () {
+        return MemoryMatch.GameSetup.gameTitle + " version " + MemoryMatch.GameVersion + " on " + MemoryMatch.platform + " " + MemoryMatch.locale + (MemoryMatch.isTouchDevice ? ", Touch" : ", Mouse") + (MemoryMatch.isIFrame() ? ', iframe' : ', standalone') + (MemoryMatch.isNativeBuild ? ', Native' : ', Web');
     },
 
     onVisibilityChange: function (event) {
@@ -5939,6 +5958,7 @@ this.MemoryMatch = {
             assetsFolder = MemoryMatch.qualifiedFolder(MemoryMatch.GameSetup.assetsFolder),
             guiSpritesArray,
             i,
+            useXHR,
             objectType,
             assetManifest = [
                 {src:MemoryMatch.makeResolutionBasedFileNameFromFileName(assetsFolder + MemoryMatch.GameSetup.backgroundImage), id:"background"},
@@ -5969,12 +5989,18 @@ this.MemoryMatch = {
                 objectType = Object.prototype.toString.call(gameData.cardSprites); // is it an Array or is it a String?
                 if (objectType.indexOf('String') >= 0) { // just a single card sprite reference
                     gameData.numberOfCardSets = 1;
-                    assetManifest.push({src: "assets/" + MemoryMatch.makeResolutionBasedFileNameFromFileName(gameData.cardSprites, true), id: 'cards' + gameData.gameId.toString() + '-0'});
+                    assetManifest.push({
+                        src: "assets/" + MemoryMatch.makeResolutionBasedFileNameFromFileName(gameData.cardSprites, true),
+                        id: 'cards' + gameData.gameId.toString() + '-0'
+                    });
                 } else {
                     gameData.numberOfCardSets = gameData.cardSprites.length;
                     chosenManifest = assetManifest;
-                    for (i = 0; i < gameData.numberOfCardSets; i ++) {
-                        chosenManifest.push({src: "assets/" + MemoryMatch.makeResolutionBasedFileNameFromFileName(gameData.cardSprites[i], true), id: 'cards' + gameData.gameId.toString() + '-' + i.toString()});
+                    for (i = 0; i < gameData.numberOfCardSets; i++) {
+                        chosenManifest.push({
+                            src: "assets/" + MemoryMatch.makeResolutionBasedFileNameFromFileName(gameData.cardSprites[i], true),
+                            id: 'cards' + gameData.gameId.toString() + '-' + i.toString()
+                        });
                         // First time through add the asset to load immediately. All remaining assets set to load later.
                         chosenManifest = secondaryAssetManifest;
                     }
@@ -5989,15 +6015,22 @@ this.MemoryMatch = {
                 imageArray = gameData.images;
                 for (imageIndex = 0; imageIndex < imageArray.length; imageIndex ++) {
                     if (imageArray[imageIndex].image != null && imageArray[imageIndex].image.length > 0) {
-                        assetManifest.push({src: assetsFolder + MemoryMatch.makeResolutionBasedFileNameFromFileName(imageArray[imageIndex].image), id: MemoryMatch.makeLevelImageAssetName(gameData.gameId, imageIndex)});
+                        assetManifest.push({
+                            src: assetsFolder + MemoryMatch.makeResolutionBasedFileNameFromFileName(imageArray[imageIndex].image),
+                            id: MemoryMatch.makeLevelImageAssetName(gameData.gameId, imageIndex)
+                        });
                     }
                     if (imageArray[imageIndex].cardSprites != null && imageArray[imageIndex].cardSprites.length > 0) {
-                        assetManifest.push({src: assetsFolder + MemoryMatch.makeResolutionBasedFileNameFromFileName(imageArray[imageIndex].cardSprites, true), id: MemoryMatch.makeLevelCardDeckAssetName(gameData.gameId, imageIndex)});
+                        assetManifest.push({
+                            src: assetsFolder + MemoryMatch.makeResolutionBasedFileNameFromFileName(imageArray[imageIndex].cardSprites, true),
+                            id: MemoryMatch.makeLevelCardDeckAssetName(gameData.gameId, imageIndex)
+                        });
                     }
                 }
             }
         }
-        assetLoader = new createjs.LoadQueue(true, '', 'anonymous');
+        useXHR = true; // ! MemoryMatch.isNativeBuild;
+        assetLoader = new createjs.LoadQueue(useXHR, "", "anonymous");
         if ( ! reloadFlag) { // these assets are not resolution dependent and only need to be loaded once
             // All sounds are located in the structure GameSetup.Sounds
             for (soundAssetName in MemoryMatch.GameSetup.Sounds) {
@@ -6019,8 +6052,8 @@ this.MemoryMatch = {
         assetLoader.addEventListener("complete", MemoryMatch.allAssetsLoaded.bind(MemoryMatch));
         assetLoader.addEventListener("progress", MemoryMatch.assetLoadProgress);
         assetLoader.addEventListener("error", MemoryMatch.assetLoadError);
-        assetLoader.loadManifest(assetManifest);
         assetLoader.setMaxConnections(4);
+        assetLoader.loadManifest(assetManifest);
         if (secondaryAssetManifest.length > 0) {
             MemoryMatch.secondaryAssetManifest = secondaryAssetManifest;
         }
@@ -6088,11 +6121,13 @@ function onGooglePlusLoaded () {
 // we call MemoryMatch.allAssetsLoaded
 //====================================================================================
 function initApp() {
+    var startUpInfo;
     MemoryMatch.setPlatform();
+    startUpInfo = "Loading " + MemoryMatch.getAppInfo();
     if (MemoryMatch.debugMode) {
-        MemoryMatch.debugLog("Loading " + MemoryMatch.GameSetup.gameTitle + " version " + MemoryMatch.GameVersion + " on " + MemoryMatch.platform + " using locale " + MemoryMatch.locale + (MemoryMatch.isTouchDevice ? " / Touch" : " / Mouse") + " in iframe: " + (MemoryMatch.isIFrame() ? 'YES' : 'NO'));
+        MemoryMatch.debugLog(startUpInfo);
     } else {
-        console.log("Loading " + MemoryMatch.GameSetup.gameTitle + " version " + MemoryMatch.GameVersion + " on " + MemoryMatch.platform + " using locale " + MemoryMatch.locale + (MemoryMatch.isTouchDevice ? " / Touch" : " / Mouse") + " in iframe: " + (MemoryMatch.isIFrame() ? 'YES' : 'NO'));
+        console.log(startUpInfo);
     }
 
     // Listeners for all possible cache events
@@ -6119,7 +6154,7 @@ function initApp() {
     MemoryMatch.setCanvasSize(null);
     MemoryMatch.loadAllAssets(false);
 
-//    runTests(); // run unit tests
+    //runTests(); // run unit tests
 }
 
 if ('applicationCache' in window && window['applicationCache'] !== null) {

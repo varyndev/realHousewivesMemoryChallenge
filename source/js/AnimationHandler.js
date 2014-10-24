@@ -648,7 +648,7 @@ MemoryMatch.AnimationHandler = {
 
         for (i = 0; i < this.activeCardQueue.length; i ++) {
             animatingObject = this.activeCardQueue[i];
-//            MemoryMatch.debugLog("Removing Actor " + i + "; " + animatingObject.actor.name);
+            MemoryMatch.debugLog("removeWithTag Actor " + i + "; " + animatingObject.actor.name);
             if (animatingObject.tag == tag) {
                 animatingObject.markedForRemoval = true;
                 if (animatingObject.actor != null && animatingObject.actor.parent != null && animatingObject.actor.parent.removeChild != null) {

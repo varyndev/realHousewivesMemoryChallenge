@@ -43,6 +43,8 @@ MemoryMatch.GameOptions = {
     secondaryColorFilter: null,
     primaryColorValue: null,
     secondaryColorValue: null,
+    updateLoadStatusTimerId: -1,
+    updateLoadStatusInterval: 500,
 
     setup: function (displayObject, stateCompleteCallbackFunction, isGameOptions) {
         this.stateCompleteCallback = stateCompleteCallbackFunction;
@@ -320,15 +322,32 @@ MemoryMatch.GameOptions = {
 
     setupInfoText: function () {
         var info,
-            infoTextField;
+            infoTextField,
+            loadingProgress = MemoryMatch.secondaryAssetLoaderProgress;
 
-        info = MemoryMatch.GameSetup.gameTitle + " version " + MemoryMatch.GameVersion + " on " + MemoryMatch.platform + " locale " + MemoryMatch.locale + (MemoryMatch.isTouchDevice ? " / Touch" : " / Mouse");
+        info = MemoryMatch.getAppInfo();
         infoTextField = new createjs.Text(info, MemoryMatch.getScaledFontSize(36) + " " + MemoryMatch.GameSetup.guiMediumFontName, MemoryMatch.GameSetup.guiInfoColor);
         infoTextField.textAlign = "left";
         infoTextField.x = this.marginLeft;
         infoTextField.y = this.backgroundHeight * 0.92;
         infoTextField.maxWidth = this.backgroundWidth - (this.marginLeft * 2);
         this.groupDisplayObject.addChild(infoTextField);
+
+        if (loadingProgress != -2) {
+            if (loadingProgress >= 0) {
+                info = loadingProgress.toString() + '%';
+            } else {
+                info = "";
+            }
+            infoTextField = new createjs.Text(info, MemoryMatch.getScaledFontSize(42) + " " + MemoryMatch.GameSetup.guiBoldFontName, MemoryMatch.GameSetup.guiInfoColor);
+            infoTextField.textAlign = "right";
+            infoTextField.maxWidth = (5 * 42) * MemoryMatch.stageScaleFactor;
+            infoTextField.x = this.backgroundWidth - (this.marginLeft * 0.25);
+            infoTextField.y = this.backgroundHeight * 0.92;
+            infoTextField.name = 'loadStatus';
+            this.groupDisplayObject.addChild(infoTextField);
+            this.updateLoadStatusTimerId = window.setTimeout(this.updateLoadStatus.bind(this), this.updateLoadStatusInterval);
+        }
     },
 
     setupButtons: function () {
@@ -520,11 +539,29 @@ MemoryMatch.GameOptions = {
         pageElement.style.display = 'block';
     },
 
+    updateLoadStatus: function () {
+        var infoTextField = this.groupDisplayObject.getChildByName('loadStatus'),
+            loadingProgress = MemoryMatch.secondaryAssetLoaderProgress;
+
+        if (infoTextField != null) {
+            if (loadingProgress != -1) {
+                infoTextField.text = loadingProgress.toString() + '%';
+                this.updateLoadStatusTimerId = window.setTimeout(this.updateLoadStatus.bind(this), this.updateLoadStatusInterval);
+            } else {
+                this.updateLoadStatusTimerId = -1;
+                this.groupDisplayObject.removeChild(infoTextField);
+            }
+        }
+    },
 
     killScreen: function () {
         // remove all display objects and object references:
         var i;
 
+        if (this.updateLoadStatusTimerId != -1) {
+            window.clearTimeout(this.updateLoadStatusTimerId);
+            this.updateLoadStatusTimerId = -1;
+        }
         this.primaryColorFilter = null;
         this.secondaryColorFilter = null;
         for (i = 0; i < this.buttonInstances.length; i ++) {

@@ -317,6 +317,8 @@ MemoryMatch.GameSetup = {
     mapAwardPosition: {x: 1024, y:540},
     mapSpecialMarkers: [{x: 650, y: 1306, icon: 'planeRouteCa'}, {x: 1270, y: 1190, icon: 'planeRouteGa'}, {x: 1712, y: 662, icon: 'bridge'}],
     GUIStrings: {
+        loadingMessages: ["We're loading...", "It's getting amazing!...", "Oh! This is looking good...", "Ready to play!"],
+        wordsOfEncouragement: ['Amazing', 'Spectacular', 'Awesome', 'Sensational', 'Impressive', 'Inspiring', 'Magnificent', 'Wonderful'],
         bookmarkTitle: 'Did you know?',
         bookmarkMessage: 'For a better playing experience you can bookmark this app by tapping the Share icon then select Add to Home Screen.',
         shareEmailMessage: 'Matching game with something extra - come play %gamename%. I really enjoy this game, you will too!',

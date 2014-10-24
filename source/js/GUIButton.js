@@ -59,7 +59,7 @@ MemoryMatch.GUIButton = function (parameters) {
     guiButton.buttonColorFilter = null;
     guiButton.buttonRollOverColorFilter = null;
     guiButton.refreshParent = null;
-    guiButton.flashingTimerId = null;
+    guiButton.flashingTimerId = -1;
     guiButton.flashingCounter = null;
     guiButton.flashingInterval = 500;
     guiButton.expandHitArea = 0;
@@ -431,14 +431,14 @@ MemoryMatch.GUIButton = function (parameters) {
 
     guiButton.setFlashing = function (flashingFlag) {
         this._isFlashing = flashingFlag;
-        if (this._isFlashing && this.flashingTimerId == null) {
+        if (this._isFlashing && this.flashingTimerId == -1) {
             this.flashingCounter = 1;
             this.updateFlashing();
         } else if ( ! this._isFlashing) {
             this.flashingCounter = 0;
-            if (this.flashingTimerId != null) {
+            if (this.flashingTimerId != -1) {
                 window.clearTimeout(this.flashingTimerId);
-                this.flashingTimerId = null;
+                this.flashingTimerId = -1;
                 MemoryMatch.stageUpdated = true;
             }
         }
@@ -454,6 +454,7 @@ MemoryMatch.GUIButton = function (parameters) {
             this.flashingTimerId = window.setTimeout(this.updateFlashing.bind(this), this.flashingInterval);
         } else {
             alpha = 1;
+            this.flashingTimerId = -1;
         }
         if (this.iconSprite != null) {
             this.iconSprite.alpha = alpha;
@@ -469,9 +470,9 @@ MemoryMatch.GUIButton = function (parameters) {
     };
 
     guiButton.kill = function () {
-        if (this.flashingTimerId != null) {
+        if (this.flashingTimerId != -1) {
             window.clearTimeout(this.flashingTimerId);
-            this.flashingTimerId = null;
+            this.flashingTimerId = -1;
         }
         if (this.buttonSprite != null) {
             this.buttonSprite.uncache();
