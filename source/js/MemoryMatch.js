@@ -11,7 +11,7 @@ var enginesisSession = enginesis || {};
 
 
 this.MemoryMatch = {
-    GameVersion: "1.0.88",
+    GameVersion: "1.1.91",
     platform: "unknown",
     locale: "en-US",
     debugMode: false,
@@ -792,6 +792,7 @@ this.MemoryMatch = {
             } else {
                 MemoryMatch.cardShowTime = 500;
             }
+            MemoryMatch.cardShowTime += (MemoryMatch.cardFlipTime * 1000);
             // Get card set based on level
             if (thisGameData.numCards != null) {
                 MemoryMatch.numCardsAvailable = thisGameData.numCards;
@@ -995,9 +996,9 @@ this.MemoryMatch = {
         MemoryMatch.gameStartTime = 0;
         MemoryMatch.nextTimerUpdateTime = 0;
         MemoryMatch.gameEndTime = 0;
-        MemoryMatch.totalScore -= MemoryMatch.gameScore; // TODO: I'm not sure this is correct for a Challenge game
+        MemoryMatch.totalScore -= MemoryMatch.gameScore;
         MemoryMatch.GameGUI.updateScoreDisplay(MemoryMatch.totalScore);
-        MemoryMatch.levelComplete = false; // TODO: this should come from prior user data
+        MemoryMatch.levelComplete = false;
         if (MemoryMatch.isChallengeGame) {
             MemoryMatch.gameNumber = 1;
             MemoryMatch.startGameWithNumber(99);
@@ -1482,6 +1483,8 @@ this.MemoryMatch = {
             centerOfBoardY = (MemoryMatch.playAreaHeight * 0.54), // a little extra to account for the HUD
             totalWidthNeeded = ((MemoryMatch.cardWidth + distanceBetweenCards) * MemoryMatch.columns),
             totalHeightNeeded = ((MemoryMatch.cardHeight + distanceBetweenCards) * MemoryMatch.rows),
+//            totalWidthNeeded = (column * (MemoryMatch.cardWidth + distanceBetweenCards)) + MemoryMatch.cardWidth;
+//            totalHeightNeeded = (row * (MemoryMatch.cardHeight + distanceBetweenCards)) + MemoryMatch.cardHeight;
             numberOfCards = 0,
             spriteData,
             gameData = MemoryMatch.getGameData(MemoryMatch.isChallengeGame),
@@ -1575,12 +1578,13 @@ this.MemoryMatch = {
             case MemoryMatch.GAMEPLAYTYPE.EYESPY:
                 MemoryMatch.gameMatchCount = 1;
                 MemoryMatch.simonUserIndex = 0;
-                allCardsShuffled = MemoryMatch.makeEyeSpyDeck(); // TODO: SPECIAL CASE! If allCardsShuffled then no more boards, player wins!
+                allCardsShuffled = MemoryMatch.makeEyeSpyDeck(); // SPECIAL CASE! If allCardsShuffled then no more boards, player wins!
                 // makeEyeSpyDeck computes new values for rows/cols, need to determine new play area dimensions
+                halfCardWidth = MemoryMatch.cardWidth * 0.5;
+                halfCardHeight = MemoryMatch.cardHeight * 0.5;
                 totalWidthNeeded = ((MemoryMatch.cardWidth + distanceBetweenCards) * MemoryMatch.columns);
                 totalHeightNeeded = ((MemoryMatch.cardHeight + distanceBetweenCards) * (MemoryMatch.rows + 1));
                 guiMatchCountLabel = 'Streak';
-                centerOfBoardY -= halfCardHeight;
                 break;
             default:
                 numberOfCards = MemoryMatch.rows * MemoryMatch.columns;
@@ -1616,12 +1620,10 @@ this.MemoryMatch = {
                     cardAnimator = MemoryMatch.AnimationHandler.addToAnimationQueue(card, startCardFlipTime + (150 * cardIndex), 0, false, card.showCard, null);
                     cardAnimator.showAtBegin = true;
                     if (cardIndex == startMatchCounter) {
-                        card.setMatchCounter(Math.ceil((MemoryMatch.rows * MemoryMatch.columns) * 0.5) + 1); // TODO: need to determine where this value should come from
+                        card.setMatchCounter(Math.ceil((MemoryMatch.rows * MemoryMatch.columns) * 0.5) + 1); // Match counter is determined by how many possible matches are on the board
                     }
-                    totalWidthNeeded = (column * (MemoryMatch.cardWidth + distanceBetweenCards)) + MemoryMatch.cardWidth;
                     cardIndex ++;
                 }
-                totalHeightNeeded = (row * (MemoryMatch.cardHeight + distanceBetweenCards)) + MemoryMatch.cardHeight;
             }
             // Scale the board based on how many rows/columns are showing so it fits the play area given the size of the cards.
             boardScaleSmallReduction = MemoryMatch.cardScaleFactor < 0.5 ? 0.08 : 0;
@@ -1635,21 +1637,7 @@ this.MemoryMatch = {
                 boardScale = 1.0;
             }
             boardScale = Math.floor(boardScale * 100) * 0.01;
-//            MemoryMatch.debugLog("Scaling board to " + boardScale.toString() + "% H/W (" + totalWidthNeeded + "," + totalHeightNeeded + ") center (" + centerOfBoardX + "," + centerOfBoardY + ")");
             MemoryMatch.boardContainer.setTransform(centerOfBoardX, centerOfBoardY, boardScale, boardScale, 0, 0, 0, totalWidthNeeded * 0.5 - halfCardWidth, totalHeightNeeded * 0.5 - halfCardHeight);
-
-
-// Debugging the board placement
-//            var bgColor = new createjs.Shape();
-//            bgColor.graphics.beginFill("#FF0").drawRoundRect(MemoryMatch.cardWidth * -0.5, MemoryMatch.cardHeight * -0.5, totalWidthNeeded, totalHeightNeeded, 8);
-//            bgColor.alpha = 0.3;
-//            MemoryMatch.boardContainer.addChild(bgColor);
-//            bgColor = new createjs.Shape();
-//            bgColor.graphics.beginFill("#F00").drawRect(totalWidthNeeded * 0.5 - halfCardWidth - 4, totalHeightNeeded * 0.5 - halfCardHeight - 4, 8, 8);
-//            MemoryMatch.boardContainer.addChild(bgColor);
-
-
-
 
             // perform post board setup tasks
             switch (MemoryMatch.gameType) {
@@ -2136,6 +2124,7 @@ this.MemoryMatch = {
         var numberOfCardsInLevel,
             showCardCountdownTimer = false,
             timerShowTime,
+            cardShowTime,
             animator;
 
         if (MemoryMatch.isGamePaused()) {
@@ -2144,7 +2133,11 @@ this.MemoryMatch = {
         }
         if (MemoryMatch.gamePlayState == MemoryMatch.GAMEPLAYSTATE.BOARD_SETUP && MemoryMatch.gameState == MemoryMatch.GAMESTATE.PLAY) {
             numberOfCardsInLevel = MemoryMatch.rows * MemoryMatch.columns;
+            if (MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.HAYSTACK || MemoryMatch.gameType == MemoryMatch.GAMEPLAYTYPE.EYESPY) {
+                numberOfCardsInLevel ++; // include the target card
+            }
             MemoryMatch.numberOfCardsShowing ++;
+            cardShowTime = MemoryMatch.cardShowTime + (MemoryMatch.cardFlipTime * 1000);
             if (MemoryMatch.numberOfCardsShowing >= numberOfCardsInLevel) {
                 switch (MemoryMatch.gameType) {
                     case MemoryMatch.GAMEPLAYTYPE.CONCENTRATION:
@@ -2158,7 +2151,7 @@ this.MemoryMatch = {
                         // we now want to briefly show all cards
                         MemoryMatch.showAllCards(true);
                         showCardCountdownTimer = true;
-                        animator = MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.allCardsOnBoard[0], MemoryMatch.cardShowTime, 0, false, null, MemoryMatch.onShowAllCardsWaitComplete);
+                        animator = MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.allCardsOnBoard[0], cardShowTime, 0, false, null, MemoryMatch.onShowAllCardsWaitComplete);
                         animator.tag = MemoryMatch.BOARD_ANIMATION_TAG;
                         break;
                     case MemoryMatch.GAMEPLAYTYPE.PATTERN:
@@ -2168,14 +2161,14 @@ this.MemoryMatch = {
                         MemoryMatch.gameEndTime = 0;
                         MemoryMatch.showAllPatternCards(true);
                         showCardCountdownTimer = true;
-                        animator = MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.allCardsOnBoard[0], MemoryMatch.cardShowTime, 0, false, null, MemoryMatch.onShowCardsWaitComplete);
+                        animator = MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.allCardsOnBoard[0], cardShowTime, 0, false, null, MemoryMatch.onShowCardsWaitComplete);
                         animator.tag = MemoryMatch.BOARD_ANIMATION_TAG;
                         break;
                     case MemoryMatch.GAMEPLAYTYPE.HAYSTACK:
                         // we now want to briefly show all cards
                         MemoryMatch.showAllCards(true);
                         showCardCountdownTimer = true;
-                        animator = MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.allCardsOnBoard[0], MemoryMatch.cardShowTime, 0, false, null, MemoryMatch.onShowAllCardsWaitComplete);
+                        animator = MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.allCardsOnBoard[0], cardShowTime, 0, false, null, MemoryMatch.onShowAllCardsWaitComplete);
                         animator.tag = MemoryMatch.BOARD_ANIMATION_TAG;
                         break;
                     case MemoryMatch.GAMEPLAYTYPE.SIMON:
@@ -2188,14 +2181,14 @@ this.MemoryMatch = {
                         // we now want to briefly show all cards
                         MemoryMatch.showAllCards(true);
                         showCardCountdownTimer = true;
-                        animator = MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.allCardsOnBoard[0], MemoryMatch.cardShowTime + 1000, 0, false, null, MemoryMatch.onShowAllCardsMonteWaitComplete);
+                        animator = MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.allCardsOnBoard[0], cardShowTime, 0, false, null, MemoryMatch.onShowAllCardsMonteWaitComplete);
                         animator.tag = MemoryMatch.BOARD_ANIMATION_TAG;
                         break;
                     case MemoryMatch.GAMEPLAYTYPE.EYESPY:
                         // show the target card
                         MemoryMatch.cardSelected.flip();
                         showCardCountdownTimer = true;
-                        animator = MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.cardSelected, MemoryMatch.cardShowTime, 0, false, null, MemoryMatch.onShowTargetCardWaitComplete);
+                        animator = MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.cardSelected, cardShowTime, 0, false, null, MemoryMatch.onShowTargetCardWaitComplete);
                         animator.tag = MemoryMatch.BOARD_ANIMATION_TAG;
                         MemoryMatch.gameStartTime = Date.now();
                         MemoryMatch.nextTimerUpdateTime = 0;
@@ -2563,7 +2556,7 @@ this.MemoryMatch = {
             globalCardPoint = MemoryMatch.boardContainer.localToGlobal(cardSelected.x, cardSelected.y);
             MemoryMatch.matchEffectsStars(globalCardPoint.x, globalCardPoint.y, 1);
             MemoryMatch.GameGUI.updateMatchCountDisplay(MemoryMatch.gameNumber);
-            MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.cardSelected, 1000, 0, false, null, MemoryMatch.onCardFlipCompleteEyeSpy);
+            MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.cardSelected, 1200, 0, false, null, MemoryMatch.onCardFlipCompleteEyeSpy);
             MemoryMatch.awardChallengeStreakMilestone();
         } else {
             MemoryMatch.cardsDoNotMatch();
@@ -2834,6 +2827,7 @@ this.MemoryMatch = {
     },
 
     onCardFlipCompleteEyeSpy: function (card) {
+        card.state = MemoryMatch.CARDSTATE.UP;
         card.flipBack();
         MemoryMatch.removeAllCards(MemoryMatch.gameCompleteNextGameOrLevel); // user completed the game, but wait for cards to dissolve before advancing
     },
@@ -2869,9 +2863,14 @@ this.MemoryMatch = {
         if (MemoryMatch.gamePaused || MemoryMatch.gameState != MemoryMatch.GAMESTATE.PLAY) {
             return;
         }
-        MemoryMatch.showAllPatternCards(false);
-        MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.CHOOSE_FIRST_CARD;
-        MemoryMatch.GameGUI.hideTimerCountdown();
+        // if any cards are still flipping we need to defer this
+        if (MemoryMatch.testIfAnyCardIsState(MemoryMatch.CARDSTATE.FLIPPING)) {
+            MemoryMatch.AnimationHandler.addToAnimationQueue(MemoryMatch.allCardsOnBoard[0], 250, 0, false, null, MemoryMatch.onShowCardsWaitComplete);
+        } else {
+            MemoryMatch.showAllPatternCards(false);
+            MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.CHOOSE_FIRST_CARD;
+            MemoryMatch.GameGUI.hideTimerCountdown();
+        }
     },
 
     onShowAllCardsWaitComplete: function (card) {
@@ -2948,6 +2947,7 @@ this.MemoryMatch = {
             return;
         }
         card.unselect();
+        card.state = MemoryMatch.CARDSTATE.UP;
         card.flipBack();
         MemoryMatch.showAllCards(true);
         MemoryMatch.gamePlayState = MemoryMatch.GAMEPLAYSTATE.CHOOSE_FIRST_CARD;
@@ -3569,7 +3569,6 @@ this.MemoryMatch = {
     },
 
     showMessageBalloon: function (iconId, message, points, x, y) {
-        // TODO: Show text sprite, animate it
         var animator,
             bounds,
             startX,
@@ -4128,7 +4127,7 @@ this.MemoryMatch = {
     },
 
     canUserAdvance: function () {
-        // TODO: user just completed a game, we need to verify they earned a score/stars to advance to the next game
+        // User just completed a game, we need to verify they earned a score/stars to advance to the next game
         // They would automatically advance if they already unlocked the next game. Otherwise we need to
         // check their current results to see if the unlocked the next level.
 
@@ -4265,7 +4264,7 @@ this.MemoryMatch = {
             challengeAdvanceStreak = MemoryMatch.GameSetup.levels[levelIndex].challengeAdvanceStreak;
             if (gameScoresCollection != null && gameScoresCollection.length > 0) {
                 for (i = 0; i < gameScoresCollection.length; i ++) {
-                    if (gameScoresCollection[i].gameId == 99 && gameScoresCollection[i].longestStreak >= challengeAdvanceStreak) { // TODO: is challenge game and user beat it
+                    if (gameScoresCollection[i].gameId == 99 && gameScoresCollection[i].longestStreak >= challengeAdvanceStreak) { // is challenge game and user beat it
                         challengesPassed ++;
                     }
                 }
@@ -5328,6 +5327,7 @@ this.MemoryMatch = {
             // begin card flip animation
             this.isEnabled = false;
             this.state = MemoryMatch.CARDSTATE.FLIPPING;
+            this.skewY = 0;
             cardAnimator = MemoryMatch.AnimationHandler.addToAnimationQueue(this, 0, 0, false, null, this.flipAnimationPhaseTwo);
             if (cardAnimator != null) {
                 cardAnimator.vYSkew = endSkew / MemoryMatch.cardFlipDx;
@@ -5355,6 +5355,7 @@ this.MemoryMatch = {
                 cardImage = card.getChildAt(card.SPRITEINDEX.SPRITE_CARDFACE),
                 endSkew = -90;
 
+            card.state = MemoryMatch.CARDSTATE.FLIPPING;
             card.skewY = 90;
             cardImage.visible = true;
             card.seenCount ++;
@@ -5382,6 +5383,8 @@ this.MemoryMatch = {
 
             cardBack.visible = true;
             cardImage.visible = false;
+            card.state = MemoryMatch.CARDSTATE.FLIPPING;
+            card.skewY = 90;
             if (card.matchCounter > 0) {
                 card.showMatchCounter(true);
             }
@@ -5430,12 +5433,16 @@ this.MemoryMatch = {
             if (MemoryMatch.gamePaused && ! MemoryMatch.showingDemo) {
                 return;
             }
+            // If this card is currently flipping we need to cancel that
+            if (this.state == MemoryMatch.CARDSTATE.FLIPPING) {
+                MemoryMatch.AnimationHandler.removeActor(this);
+                this.skewY = 0;
+            }
             // begin card flip animation
             this.isEnabled = false;
             this.state = MemoryMatch.CARDSTATE.FLIPPING;
-            cardAnimator = MemoryMatch.AnimationHandler.addToAnimationQueue(this, 0, 0, false, null, this.unflipAnimationPhaseTwo);
-
             this.unselect();
+            cardAnimator = MemoryMatch.AnimationHandler.addToAnimationQueue(this, 0, 0, false, null, this.unflipAnimationPhaseTwo);
             if (cardAnimator != null) {
                 cardAnimator.vYSkew = endSkew / MemoryMatch.cardFlipDx;
                 cardAnimator.endYSkew = endSkew;
@@ -5741,13 +5748,14 @@ this.MemoryMatch = {
     shouldAskUserToBookmarkApp: function () {
         var isAppBookmarked = MemoryMatch.isAppBookmarked(),
             isStandAloneApp = ! MemoryMatch.isIFrame(),
+            isNativeApp = MemoryMatch.isNativeBuild,
             isIosDevice = MemoryMatch.isDeviceiOS(),
             userDataObject = this.UserData.getUserDataObject(),
             askedUserToBookmark = userDataObject['askBookmark'] | 0,
             shouldAsk = false,
             isAdShowing = MemoryMatch.isAdShowing();
 
-        if (isIosDevice && isStandAloneApp && ! isAppBookmarked && askedUserToBookmark < 5 && ! isAdShowing) {
+        if (isIosDevice && isStandAloneApp && ! isNativeApp && ! isAppBookmarked && askedUserToBookmark < 5 && ! isAdShowing) {
             askedUserToBookmark ++;
             userDataObject['askBookmark'] = askedUserToBookmark;
             this.UserData.flush();
@@ -5768,7 +5776,7 @@ this.MemoryMatch = {
     },
 
     getAppInfo: function () {
-        return MemoryMatch.GameSetup.gameTitle + " version " + MemoryMatch.GameVersion + " on " + MemoryMatch.platform + " " + MemoryMatch.locale + (MemoryMatch.isTouchDevice ? ", Touch" : ", Mouse") + (MemoryMatch.isIFrame() ? ', iframe' : ', standalone') + (MemoryMatch.isNativeBuild ? ', Native' : ', Web');
+        return MemoryMatch.GameSetup.gameTitle + " version " + MemoryMatch.GameVersion + " on " + MemoryMatch.platform + " " + MemoryMatch.locale + (MemoryMatch.isTouchDevice ? ", Touch" : ", Mouse") + (MemoryMatch.isIFrame() ? ', iframe' : ', standalone') + (MemoryMatch.isNativeBuild ? ', Native' : ', Web') + ", scale:" + MemoryMatch.stageScaleFactor;
     },
 
     onVisibilityChange: function (event) {
@@ -6029,7 +6037,7 @@ this.MemoryMatch = {
                 }
             }
         }
-        useXHR = true; // ! MemoryMatch.isNativeBuild;
+        useXHR = ! MemoryMatch.isNativeBuild; // useXHR must be true for builds that get assets over http:, but false for assets from file:
         assetLoader = new createjs.LoadQueue(useXHR, "", "anonymous");
         if ( ! reloadFlag) { // these assets are not resolution dependent and only need to be loaded once
             // All sounds are located in the structure GameSetup.Sounds
@@ -6045,7 +6053,7 @@ this.MemoryMatch = {
             if (createjs.Sound.BrowserDetect.isIOS || createjs.Sound.BrowserDetect.isAndroid) {
                 MemoryMatch.debugLog("CreateJS.Sound error iOS or Android issues!");
             }
-            createjs.Sound.registerPlugins([createjs.HTMLAudioPlugin, createjs.WebAudioPlugin, createjs.FlashPlugin]);
+            createjs.Sound.registerPlugins([createjs.WebAudioPlugin, createjs.HTMLAudioPlugin]);
             createjs.Sound.alternateExtensions = ["mp3"];
         }
         MemoryMatch.assetLoader = assetLoader;

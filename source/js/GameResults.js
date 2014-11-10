@@ -409,10 +409,12 @@ MemoryMatch.GameResults = {
             spriteData = new createjs.SpriteSheet(spriteFrames),
             imageSprite = new createjs.Sprite(spriteData, spriteFrame),
             spriteSize = MemoryMatch.getSpriteFrameSize(spriteFrames, spriteFrame),
+            emptySprite,
+            emptySpriteSource,
             position,
             i,
-            gemPosition,
-            gemName,
+            badgePosition,
+            badgeName,
             landNumber,
             awardScale = 0.5,
             yOffset,
@@ -430,21 +432,36 @@ MemoryMatch.GameResults = {
         imageSprite.framerate = 0;
         this.groupDisplayObject.addChild(imageSprite);
 
-        // position gems relative to award position, accounting for the center registration of the award sprite
+        // position badges relative to award position, accounting for the center registration of the award sprite
+        spriteFrame = 'mapAwardEmpty';
+        if (spriteFrames.animations[spriteFrame] != null) {
+            emptySpriteSource = new createjs.Sprite(spriteData, spriteFrame);
+        } else {
+            emptySpriteSource = null;
+        }
         spriteFrame = 'mapAwardLand';
         position.x -= spriteSize.width * 0.5 * awardScale;
         position.y -= spriteSize.height * 0.5 * awardScale;
         for (i = 0; i < numberOfLevels; i ++) {
+            badgePosition = MemoryMatch.GameSetup.levels[i].gemPosition;
             landNumber = i + 1;
-            gemName = spriteFrame + landNumber.toString();
-            imageSprite = new createjs.Sprite(spriteData, gemName);
-            gemPosition = MemoryMatch.GameSetup.levels[i].gemPosition;
-            imageSprite.setTransform(position.x + (gemPosition.x * awardScale * MemoryMatch.stageScaleFactor), position.y + (gemPosition.y * awardScale * MemoryMatch.stageScaleFactor), awardScale, awardScale);
-            imageSprite.name = gemName;
+            badgeName = spriteFrame + landNumber.toString();
+            if (emptySpriteSource != null) {
+                if (i > 0) {
+                    emptySprite = emptySpriteSource.clone();
+                } else {
+                    emptySprite = emptySpriteSource;
+                }
+                emptySprite.setTransform(position.x + (badgePosition.x * awardScale * MemoryMatch.stageScaleFactor), position.y + (badgePosition.y * awardScale * MemoryMatch.stageScaleFactor), awardScale, awardScale);
+                this.groupDisplayObject.addChild(emptySprite);
+            }
+            imageSprite = new createjs.Sprite(spriteData, badgeName);
+            imageSprite.setTransform(position.x + (badgePosition.x * awardScale * MemoryMatch.stageScaleFactor), position.y + (badgePosition.y * awardScale * MemoryMatch.stageScaleFactor), awardScale, awardScale);
+            imageSprite.name = badgeName;
             imageSprite.visible = MemoryMatch.didUserBeatChallenge(landNumber);
             this.groupDisplayObject.addChild(imageSprite);
             if (MemoryMatch.levelComplete && imageSprite.visible && landNumber == MemoryMatch.gameLevel) {
-                spriteSize = MemoryMatch.getSpriteFrameSize(spriteFrames, gemName);
+                spriteSize = MemoryMatch.getSpriteFrameSize(spriteFrames, badgeName);
                 this.gemSprite = imageSprite.clone();
                 this.gemSprite.width = spriteSize.width;
                 this.gemSprite.height = spriteSize.height;

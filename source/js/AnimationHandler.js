@@ -240,14 +240,23 @@ MemoryMatch.AnimationHandler = {
                     isAnimating = true;
                     animatingObject.actor.skewY += animatingObject.vYSkew;
                     if (animatingObject.endYSkew != null && animatingObject.vYSkew != null && animatingObject.vYSkew != 0) {
-                        if (animatingObject.vYSkew > 0 && animatingObject.actor.skewY >= animatingObject.endYSkew) {
+                        if ((animatingObject.vYSkew > 0 && animatingObject.actor.skewY >= animatingObject.endYSkew)
+                            || (animatingObject.vYSkew < 0 && animatingObject.actor.skewY <= animatingObject.endYSkew)) {
                             animatingObject.actor.skewY = animatingObject.endYSkew;
                             animatingObject.vYSkew = null;
                             animatingObject.endYSkew = null;
-                        } else if (animatingObject.vYSkew < 0 && animatingObject.actor.skewY <= animatingObject.endYSkew) {
-                            animatingObject.actor.skewY = animatingObject.endYSkew;
-                            animatingObject.vYSkew = null;
-                            animatingObject.endYSkew = null;
+                        }
+                    }
+                }
+                if (animatingObject.vXSkew != null && animatingObject.vXSkew != 0) {
+                    isAnimating = true;
+                    animatingObject.actor.skewX += animatingObject.vXSkew;
+                    if (animatingObject.endXSkew != null && animatingObject.vXSkew != null && animatingObject.vXSkew != 0) {
+                        if ((animatingObject.vXSkew > 0 && animatingObject.actor.skewX >= animatingObject.endXSkew)
+                            || (animatingObject.vXSkew < 0 && animatingObject.actor.skewX <= animatingObject.endXSkew)) {
+                            animatingObject.actor.skewX = animatingObject.endXSkew;
+                            animatingObject.vXSkew = null;
+                            animatingObject.endXSkew = null;
                         }
                     }
                 }
@@ -257,11 +266,8 @@ MemoryMatch.AnimationHandler = {
                     isAnimating = true;
                     animatingObject.actor.rotation += animatingObject.vRotation;
                     if (animatingObject.endRotation != null && animatingObject.vRotation != null && animatingObject.vRotation != 0) {
-                        if (animatingObject.vRotation > 0 && animatingObject.actor.rotation >= animatingObject.endRotation) {
-                            animatingObject.actor.rotation = animatingObject.endRotation;
-                            animatingObject.vRotation = null;
-                            animatingObject.endRotation = null;
-                        } else if (animatingObject.vRotation < 0 && animatingObject.actor.rotation <= animatingObject.endRotation) {
+                        if ((animatingObject.vRotation > 0 && animatingObject.actor.rotation >= animatingObject.endRotation)
+                            || (animatingObject.vRotation < 0 && animatingObject.actor.rotation <= animatingObject.endRotation)) {
                             animatingObject.actor.rotation = animatingObject.endRotation;
                             animatingObject.vRotation = null;
                             animatingObject.endRotation = null;

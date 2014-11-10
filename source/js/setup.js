@@ -140,7 +140,7 @@ MemoryMatch.GameSetup = {
             cardHeight: 512,
             numCards: 19,
             levelName:"Pattern",
-            levelIntro: "You are shown a pattern, you must select the cards in that pattern. You need at least a streak of 5 to advance.",
+            levelIntro: "You are shown a pattern, you must select the cards in that pattern. You need at least a streak of 3 to advance.",
             startMatchCount: 4,
             cardShowTime: 1000,
             progression: [{tolerance: 1, columns:5, rows:3}, {tolerance: 1, columns:5, rows:3}, {tolerance: 1, columns:5, rows:4}, {tolerance: 1, columns:5, rows:4}, {tolerance: 1, columns:6, rows:4}, {tolerance: 1, columns:6, rows:4}, {tolerance: 1, columns:7, rows:4}]
@@ -187,7 +187,7 @@ MemoryMatch.GameSetup = {
         },
         {gameId: 8, gameType: 8, games:15, tolerance: 1, columns:5, rows:1,
             levelName:"Parts vs. Whole",
-            levelIntro: "You are shown a set of cards, only one is part of the target card. Pick the correct card to advance. You must complete 5 boards to advance.",
+            levelIntro: "You are shown a set of cards, only one is part of the target card. Pick the correct card to advance. You must complete 3 boards to advance.",
             cardSprites: ["NJ3.png"],
             cardWidth: 384,
             cardHeight: 512,
