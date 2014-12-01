@@ -1,5 +1,4 @@
 email
-images
 badges
 .DS_Store
 js/.DS_Store
